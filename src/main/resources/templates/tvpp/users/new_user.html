@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>New device</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">Create new user</h1>
+
+    <form action="#" th:action="@{${controllerPath}}" th:object="${tvppUserDTO}" method="post">
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{username}" id="username" class="form-control">
+            <label for="username" class="form-label">Username</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="password" th:field="*{password}" id="password" class="form-control">
+            <label for="password" class="form-label">Password</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <div class="form-check">
+                <input type="checkbox" th:field="*{enabled}" id="enabled_chb"
+                       class="form-check-input"/>
+                <label for="enabled_chb" class="form-label">Enabled</label>
+            </div>
+        </div>
+
+
+        <div class="row">
+                <label for="dropRole">User role</label>
+                <select th:field="*{role}" id="dropRole">
+                    <option selected value="">Select role</option>
+                    <option th:each="role : ${roles}" th:value="${role}" th:text="${role.name}"></option>
+                </select>
+        </div>
+
+
+        <div class="form-outline">
+            <input class="btn btn-primary" type="submit" value="Add User"/>
+        </div>
+        <div class="form-outline">
+            <a class="btn btn-light" data-mdb-ripple-color="dark" th:href=@{${controllerPath}} role="button">Cancel</a>
+        </div>
+    </form>
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+</div>
+</body>
+</html>

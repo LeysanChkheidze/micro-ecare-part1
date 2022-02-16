@@ -38,11 +38,11 @@
                 <a th:href="@{${pathEdit}(id=${user.getId})}">Edit</a>
             </td>
             <td sec:authorize="hasRole('ROLE_ADMIN')">
-                <!--form action="#" th:action="@{${pathDeleteUpdate}(id=${device.deviceId})}" th:method="delete"
-                      th:id="${device.deviceId}">
+                <form action="#" th:action="@{${pathDeleteUpdate}(id=${user.getId})}" th:method="delete"
+                      th:id="${user.getId}">
                     <a href="javascript:{}"
-                       th:onclick="|document.getElementById('${device.deviceId}').submit(); return false;|">Delete</a>
-                </form-->
+                       th:onclick="|document.getElementById('${user.getId}').submit(); return false;|">Delete</a>
+                </form>
             </td>
         </tr>
 
@@ -51,7 +51,7 @@
 
 
 </div>
-<p sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{${pathNew}}">Add new device</a></p>
+<p sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{${pathNew}}">Create new user</a></p>
 
 </body>
 </html>

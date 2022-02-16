@@ -1,8 +1,11 @@
 package com.javaschool.microecare.usermanagement.dto;
 
+import lombok.ToString;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+@ToString
 public class TvppUserDTO {
     @Size(min = 3, max = 50)
     @NotBlank(message = "Username is mandatory")
