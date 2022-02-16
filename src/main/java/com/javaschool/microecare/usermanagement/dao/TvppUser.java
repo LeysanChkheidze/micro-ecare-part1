@@ -1,0 +1,90 @@
+package com.javaschool.microecare.usermanagement.dao;
+
+import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
+import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+@Entity
+@Table(name = "TVPP_USERS")
+public class TvppUser {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    private int id;
+
+    @Column(unique = true)
+    @Size(min = 3, max = 50)
+    @NotBlank(message = "Username is mandatory")
+    private String username;
+
+    @Column
+    @Size(min = 3)
+    @NotBlank(message = "Password is mandatory")
+    private String password;
+
+    @Column
+    private String role; // should be prefixed with ROLE_
+
+    @Column
+    private boolean enabled;
+
+    public TvppUser() {
+        this.enabled = true;
+    }
+
+    public TvppUser(TvppUserDTO userDTO) {
+        this();
+        this.username = userDTO.getUsername();
+        if (userDTO.getRole() != null) {
+            this.role = userDTO.getRole().name();
+        } else {
+            this.role = TVPPRoles.ROLE_EMPLOYEE.name();
+        }
+
+        this.enabled = userDTO.isEnabled();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+}
+
