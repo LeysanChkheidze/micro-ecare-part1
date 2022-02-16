@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<h1 class="mb-3">Users</h1>
+<div th:if="${users.empty}">
+    <h2>No users yet!</h2>
+</div>
+<div th:if="${!users.empty}">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Enabled</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.getId}"></td>
+            <td th:text="${user.getUsername}"></td>
+            <td th:text="${user.getRole}"></td>
+
+            <td th:text="${user.isEnabled}"></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{${pathEdit}(id=${user.getId})}">Edit</a>
+            </td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <!--form action="#" th:action="@{${pathDeleteUpdate}(id=${device.deviceId})}" th:method="delete"
+                      th:id="${device.deviceId}">
+                    <a href="javascript:{}"
+                       th:onclick="|document.getElementById('${device.deviceId}').submit(); return false;|">Delete</a>
+                </form-->
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+<p sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{${pathNew}}">Add new device</a></p>
+
+</body>
+</html>

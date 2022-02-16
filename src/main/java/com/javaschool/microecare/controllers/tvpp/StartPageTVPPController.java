@@ -13,9 +13,10 @@ public class StartPageTVPPController {
     @Value("${directory.templates.tvpp.startpage}")
     private String templateFolder;
 
+
+
     @GetMapping
     public String getStartPage(Model model) {
-
         return templateFolder + "startpage";
     }
 }

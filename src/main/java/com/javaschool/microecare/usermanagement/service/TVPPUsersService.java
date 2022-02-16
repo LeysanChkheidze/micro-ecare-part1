@@ -3,6 +3,7 @@ package com.javaschool.microecare.usermanagement.service;
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.repository.TVPPUserRepo;
+import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -22,6 +24,12 @@ public class TVPPUsersService {
 
     public List<TvppUser> getAllUsers() {
         return tvppUserRepo.findAll();
+    }
+
+    public List<TVPPUserView> getAllUserViews() {
+        return tvppUserRepo.findAll().stream()
+                .map(TVPPUserView::new)
+                .collect(Collectors.toList());
     }
 
     public TvppUser registerUser(TvppUserDTO userDTO) {
