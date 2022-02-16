@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.javaschool.microecare.usermanagement.dto.TVPPRoles.*;
+
 @EnableWebSecurity
 public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
     //Roles for TVPP users:
@@ -18,6 +20,7 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+    //TODO: убрать захардкоженного юзера
     private static final String leysanUserName = "leysan";
     private static final String leysanPassword = "leysan123";
 
@@ -43,11 +46,11 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
                 //TODO: перенести эндпоинты в конфиг
 
                 //admin pages (only tariffs/all available for non-admin)
-                .mvcMatchers("/tvpp/start").hasAnyRole("ADMIN", "EMPLOYEE")
-                .mvcMatchers("/tvpp/tariffs/").hasAnyRole("ADMIN", "EMPLOYEE")
-                .mvcMatchers("/tvpp/tariffs/**").hasRole("ADMIN")
-                .mvcMatchers("/admin/tariffs/all").hasAnyRole("ADMIN", "USER")
-                .mvcMatchers("/admin/**").hasRole("ADMIN")
+                .mvcMatchers("/tvpp/start").hasAnyRole(getAllRoles())
+                //.mvcMatchers("/tvpp/tariffs/").hasAnyRole("ADMIN", "EMPLOYEE")
+                .mvcMatchers("/tvpp/users/**").hasRole(ROLE_ADMIN.getSpringRoleName())
+                // .mvcMatchers("/admin/tariffs/all").hasAnyRole("ADMIN", "USER")
+                // .mvcMatchers("/admin/**").hasRole("ADMIN")
 
                 .anyRequest().authenticated()
                 .and()
@@ -55,7 +58,6 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic(); // (3)
     }
-
 
 
     @Bean

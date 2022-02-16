@@ -6,14 +6,17 @@ import com.javaschool.microecare.usermanagement.repository.TVPPUserRepo;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@PropertySource("messages.properties")
 @Service
 public class TVPPUsersService {
 
@@ -21,6 +24,13 @@ public class TVPPUsersService {
     TVPPUserRepo tvppUserRepo;
     @Autowired
     PasswordEncoder encoder;
+
+    @Value("${general.unknown_field.constraint_violation.msg}")
+    String constraintViolationMessage;
+
+    @Value("${user.name.not_unique.msg}")
+    String nonUniqueUsernameMessage;
+
 
     public List<TvppUser> getAllUsers() {
         return tvppUserRepo.findAll();
@@ -38,22 +48,27 @@ public class TVPPUsersService {
         try {
             return tvppUserRepo.save(user);
         } catch (DataIntegrityViolationException e) {
-            throw instantiateEntityCannotBeSavedException(e);
+            throw createSavingEntityException(e);
         }
 
     }
 
-    private EntityCannotBeSavedException instantiateEntityCannotBeSavedException(DataIntegrityViolationException e) {
-        String errorMessage;
-        if (e.getCause().getCause().toString().contains("duplicate key")) {
-            if (e.getCause().getCause().toString().contains("Key (username)")) {
-                errorMessage = "User with the same username already exists";
+    private EntityCannotBeSavedException createSavingEntityException(DataIntegrityViolationException e) {
+        String errorMessage = resolveMessage(e);
+        return new EntityCannotBeSavedException("TVPP user", errorMessage);
+    }
+
+    private String resolveMessage(DataIntegrityViolationException e) {
+        String specificMessage = e.getMostSpecificCause().getMessage();
+
+        if (specificMessage != null) {
+            if (specificMessage.contains("Key (username)")) {
+                return nonUniqueUsernameMessage;
             } else {
-                errorMessage = "Duplicate key value violates unique constraint";
+                return constraintViolationMessage;
             }
         } else {
-            errorMessage = e.getMessage();
+            return e.getClass().getName();
         }
-        return new EntityCannotBeSavedException("TVPP user", errorMessage);
     }
 }
