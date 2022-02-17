@@ -6,6 +6,7 @@ import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.service.TVPPUsersService;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
+import com.javaschool.microecare.utils.PageModelUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +29,7 @@ public class UsersPageTVPPController {
     private String controllerPath;
 
 
-    final
-    TVPPUsersService tvppUsersService;
+    final TVPPUsersService tvppUsersService;
 
     public UsersPageTVPPController(TVPPUsersService tvppUsersService) {
         this.tvppUsersService = tvppUsersService;
@@ -37,10 +37,12 @@ public class UsersPageTVPPController {
 
     @ModelAttribute
     public void setPathsAttributes(Model model) {
-        model.addAttribute("pathNew", controllerPath + newPath);
+       model.addAttribute("pathNew", controllerPath + newPath);
         model.addAttribute("pathEdit", controllerPath + editPath);
         model.addAttribute("pathDeleteUpdate", controllerPath + "/{id}");
         model.addAttribute("controllerPath", controllerPath);
+        //TODO: утильный метод не сеттит значения, они null. разобраться, почему
+        //PageModelUtils.setStandardPathsAttributes(model, controllerPath);
     }
 
     @GetMapping
