@@ -2,7 +2,7 @@ package com.javaschool.microecare.usermanagement.viewmodel;
 
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 
-public class TVPPUserView {
+public class TVPPUserView implements Comparable<TVPPUserView>{
     private int id;
     private String username;
     private String role;
@@ -45,5 +45,10 @@ public class TVPPUserView {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public int compareTo(TVPPUserView o) {
+        return this.username.compareTo(o.getUsername());
     }
 }

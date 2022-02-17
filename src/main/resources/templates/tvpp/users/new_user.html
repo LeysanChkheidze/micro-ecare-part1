@@ -15,7 +15,7 @@
 <div class="container">
     <h1 class="mb-3">Create new user</h1>
 
-    <form action="#" th:action="@{${controllerPath}}" th:object="${tvppUserDTO}" method="post">
+    <form action="#" th:action="@{${controllerPath}}" th:object="${tvppUserDTO}" method="post" autocomplete="off" aria-autocomplete="off">
         <div th:switch="${errorMessage}">
             <div th:case="null">
             </div>
@@ -26,14 +26,14 @@
 
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{username}" id="username" class="form-control">
-            <label for="username" class="form-label">Username</label>
+            <input type="text" th:field="*{username}" id="aaa" class="form-control" autocomplete="off" aria-autocomplete="off" name="aaa">
+            <label for="aaa" class="form-label">Username</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="password" th:field="*{password}" id="password" class="form-control">
-            <label for="password" class="form-label">Password</label>
+            <input type="password" th:field="*{password}" id="bbb" class="form-control" autocomplete="off" aria-autocomplete="off" name="bbb">
+            <label for="bbb" class="form-label">Password</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
         </div>
 

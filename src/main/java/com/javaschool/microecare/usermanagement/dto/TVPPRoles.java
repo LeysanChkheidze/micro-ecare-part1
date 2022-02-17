@@ -18,4 +18,9 @@ public enum TVPPRoles {
         return new String[]{ROLE_ADMIN.springRoleName, ROLE_EMPLOYEE.springRoleName};
     }
 
+    public static TVPPRoles getRoleByName(String name) {
+        return valueOf(name);
+
+    }
+
 }

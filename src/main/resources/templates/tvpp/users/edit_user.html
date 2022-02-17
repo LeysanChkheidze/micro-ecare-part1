@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit user</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container-fluid">
+    <h1 class="mb-3">Edit user</h1>
+
+    <div id="userID" th:text="'Selected option ' + ${userView.username}"></div>
+
+
+    <form action="#" th:action="@{${pathDeleteUpdate}(id=${userView.id})}" th:object="${tvppUserDTO}"
+          th:method="patch" autocomplete="off" aria-autocomplete="off">
+
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+        <input type="hidden" th:field="*{password}" value="willBeIgnored">
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{username}" id="aaa" class="form-control" value="${userView.username}"
+                   autocomplete="off" aria-autocomplete="off" name="aaa">
+            <label for="aaa" class="form-label">Username</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <div class="form-check">
+                <input type="checkbox" th:field="*{enabled}" id="enabled_chb" value="${userView.isEnabled}"
+                       class="form-check-input"/>
+                <label for="enabled_chb" class="form-label">Enabled</label>
+            </div>
+        </div>
+
+        <div>
+            <label for="dropGroup">User role</label>
+            <select class="form-control" th:field="*{role}" id="dropGroup" value="${userView.role}">
+                <option value="-1">Select role</option>
+                <option th:each="rl : ${roles}" th:value="${rl}" th:text="${rl.name}"></option>
+            </select>
+        </div>
+
+        <div class="form-outline mb4">
+            <input class="btn btn-primary" type="submit" value="Update User"/>
+        </div>
+        <div class="form-outline mb-4">
+            <a class="btn btn-light" th:href=@{${controllerPath}} role="button">Cancel</a>
+        </div>
+    </form>
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+</div>
+</body>
+</html>
