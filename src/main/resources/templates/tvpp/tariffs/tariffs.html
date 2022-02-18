@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Tariffs</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
 </head>
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
@@ -12,10 +13,15 @@
 <br>
 <h1 class="mb-3">Tariffs</h1>
 
+<div th:if="${successfulAction == true}">
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+
 <div th:if="${tariffs.empty}">
     <h2>No tariffs yet!</h2>
 </div>
 <div th:if="${!tariffs.empty}">
+
     <table class="table table-striped">
         <thead>
         <tr>

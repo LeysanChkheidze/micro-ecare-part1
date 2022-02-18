@@ -27,6 +27,10 @@ public class TariffsPageTVPPController {
     @Value("${general.price.nonnumber.msg}")
     private String priceDigitsMessage;
 
+    private boolean successfulAction = false;
+    private String successActionName;
+    private int successId;
+
     final TariffsService tariffsService;
     final CommonEntityService commonEntityService;
 
@@ -40,13 +44,27 @@ public class TariffsPageTVPPController {
         commonEntityService.setPathsAttributes(model, controllerPath);
     }
 
+    private void setAllTariffsModel(Model model) {
+        model.addAttribute("tariffs", tariffsService.getAllTariffViews());
+        if (successfulAction) {
+           // String successEntityName = "Tariff";
+            model.addAllAttributes(Map.of("successfulAction", true,
+                    "successEntityName", "Tariff",
+                    "successAction", successActionName,
+                    "successId", successId));
+        }
+    }
+
     @GetMapping
     public String getTariffsPage(Model model) {
-        model.addAttribute("tariffs", tariffsService.getAllTariffViews());
+        setAllTariffsModel(model);
+        successfulAction = false;
         return templateFolder + "tariffs";
     }
 
     private void setModelForTariffsPage(Model model) {
+        //todo: will be used to populate options to model
+
     }
 
     @GetMapping("${endpoints.tvpp.entity.path.new}")
@@ -63,7 +81,10 @@ public class TariffsPageTVPPController {
             return templateFolder + "new_tariff";
         }
         try {
-            tariffsService.saveNewTariff(tariffDTO);
+            Tariff newTariff = tariffsService.saveNewTariff(tariffDTO);
+            successfulAction = true;
+            successActionName = "created";
+            successId = newTariff.getTariffId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             model.addAttribute("errorEntity", e.getEntityName());
@@ -99,7 +120,10 @@ public class TariffsPageTVPPController {
         }
 
         try {
-            tariffsService.updateTariff(id, tariffDTO);
+            Tariff updatedTariff = tariffsService.updateTariff(id, tariffDTO);
+            successfulAction = true;
+            successActionName = "updated";
+            successId = updatedTariff.getTariffId();
             return "redirect:" + controllerPath;
 
         } catch (EntityCannotBeSavedException e) {
@@ -114,9 +138,15 @@ public class TariffsPageTVPPController {
 
     @DeleteMapping("/{id}")
     public String deleteTariff(@PathVariable("id") int id, Model model) {
-        tariffsService.deleteTariffById(id);
+        try {
+            tariffsService.deleteTariffById(id);
+            successfulAction = true;
+            successActionName = "deleted";
+            successId = id;
+        } catch (RuntimeException e) {
+            //todo: add error popup
+        }
         return "redirect:" + controllerPath;
-
     }
 
 

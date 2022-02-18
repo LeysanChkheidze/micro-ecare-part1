@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Users</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+
 </head>
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
@@ -12,6 +14,11 @@
 <br>
 <br>
 <h1 class="mb-3">Users</h1>
+
+<div th:if="${successfulAction == true}">
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+
 <div th:if="${users.empty}">
     <h2>No users yet!</h2>
 </div>

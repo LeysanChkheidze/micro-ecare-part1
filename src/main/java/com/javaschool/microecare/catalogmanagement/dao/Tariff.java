@@ -56,7 +56,7 @@ public class Tariff {
 
     @Override
     public String toString() {
-        return String.format("Tariff [name: %s, id: %d, price: %s, option id's: %s",
+        return String.format("Tariff [name: %s, id: %d, price: %s, option id's: ",
                 getTariffName(),
                 getTariffId(),
                 getMonthlyPrice());

@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @Controller
 @RequestMapping("${endpoints.tvpp.users.controller_path}")
@@ -23,6 +24,10 @@ public class UsersPageTVPPController {
     private String templateFolder;
     @Value("${endpoints.tvpp.users.controller_path}")
     private String controllerPath;
+
+    private boolean successfulAction = false;
+    private String successActionName;
+    private int successId;
 
 
     final TVPPUsersService tvppUsersService;
@@ -38,9 +43,21 @@ public class UsersPageTVPPController {
         commonEntityService.setPathsAttributes(model, controllerPath);
     }
 
+    private void setAllUsersModel(Model model) {
+        model.addAttribute("users", tvppUsersService.getAllUserViews());
+        if (successfulAction) {
+            model.addAllAttributes(Map.of("successfulAction", true,
+                    "successEntityName", "TVPP user",
+                    "successAction", successActionName,
+                    "successId", successId));
+        }
+    }
+
     @GetMapping
     public String getUsersPage(Model model) {
-        model.addAttribute("users", tvppUsersService.getAllUserViews());
+        // model.addAttribute("users", tvppUsersService.getAllUserViews());
+        setAllUsersModel(model);
+        successfulAction = false;
         return templateFolder + "users";
     }
 
@@ -62,7 +79,11 @@ public class UsersPageTVPPController {
             return templateFolder + "new_user";
         }
         try {
-            tvppUsersService.registerUser(tvppUserDTO);
+            TvppUser newUser = tvppUsersService.registerUser(tvppUserDTO);
+
+            successfulAction = true;
+            successActionName = "created";
+            successId = newUser.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             model.addAttribute("errorEntity", e.getEntityName());
@@ -97,7 +118,11 @@ public class UsersPageTVPPController {
         }
 
         try {
-            tvppUsersService.updateUser(id, tvppUserDTO);
+            TvppUser updatedUser = tvppUsersService.updateUser(id, tvppUserDTO);
+
+            successfulAction = true;
+            successActionName = "updated";
+            successId = updatedUser.getId();
             return "redirect:" + controllerPath;
 
         } catch (EntityCannotBeSavedException e) {
@@ -112,8 +137,18 @@ public class UsersPageTVPPController {
 
     @DeleteMapping("/{id}")
     public String deleteDevice(@PathVariable("id") int id, Model model) {
-        tvppUsersService.deleteUserByID(id);
+        try {
+            tvppUsersService.deleteUserByID(id);
+            successfulAction = true;
+            successActionName = "deleted";
+            successId = id;
+
+        } catch (RuntimeException e) {
+            //todo: add modal for error
+        }
         return "redirect:" + controllerPath;
+
+
     }
 
 
