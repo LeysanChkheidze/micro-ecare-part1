@@ -1,5 +1,6 @@
 package com.javaschool.microecare.usermanagement.dao;
 
+import com.javaschool.microecare.catalogmanagement.dao.BaseEntity;
 import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 
@@ -9,11 +10,11 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "TVPP_USERS")
-public class TvppUser {
-    @Id
+public class TvppUser extends BaseEntity {
+    /*@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
-    private int id;
+    private int id;*/
 
     @Column(name = "NAME", unique = true)
     @Size(min = 3, max = 50)
@@ -32,11 +33,12 @@ public class TvppUser {
     private boolean enabled;
 
     public TvppUser() {
+        super();
         this.enabled = true;
     }
 
     public TvppUser(TvppUserDTO userDTO) {
-        this();
+        super();
         this.username = userDTO.getUsername().trim();
         if (userDTO.getRole() != null) {
             this.role = userDTO.getRole().name();
@@ -47,14 +49,14 @@ public class TvppUser {
         this.enabled = userDTO.isEnabled();
     }
 
-    public int getId() {
+   /* public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
-
+*/
     public String getUsername() {
         return username;
     }

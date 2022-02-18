@@ -3,7 +3,7 @@ package com.javaschool.microecare.utils;
 import javax.persistence.EntityNotFoundException;
 
 public class EntityNotFoundInDBException extends EntityNotFoundException {
-    int id;
+    long id;
     String entityName;
 
     public EntityNotFoundInDBException(String message) {
@@ -14,13 +14,13 @@ public class EntityNotFoundInDBException extends EntityNotFoundException {
         super();
     }
 
-    public EntityNotFoundInDBException(int id, String entityName) {
+    public EntityNotFoundInDBException(long id, String entityName) {
         super(String.format("%s with id %d isn't found", entityName, id));
         this.id = id;
         this.entityName = entityName;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

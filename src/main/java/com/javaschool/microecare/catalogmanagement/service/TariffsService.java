@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class TariffsService {
                 .collect(Collectors.toList());
     }
 
-    public Tariff getTariff(int id) {
+    public Tariff getTariff(long id) {
         return tariffRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "Tariff"));
     }
 
@@ -51,11 +52,12 @@ public class TariffsService {
         }
     }
 
-    public Tariff updateTariff(int id, TariffDTO tariffDTO) {
+    public Tariff updateTariff(long id, TariffDTO tariffDTO) {
         Tariff tariff = tariffRepo.getById(id);
         tariff.setTariffName(tariffDTO.getTariffName().trim());
         tariff.setMonthlyPrice(tariffDTO.getMonthlyPrice());
         tariff.setTariffDescription(tariffDTO.getTariffDescription().trim());
+        tariff.setUpdateTime(LocalDateTime.now());
 
         try {
             return tariffRepo.save(tariff);
@@ -64,7 +66,7 @@ public class TariffsService {
         }
     }
 
-    public void deleteTariffById(int id) {
+    public void deleteTariffById(long id) {
         tariffRepo.deleteById(id);
     }
 

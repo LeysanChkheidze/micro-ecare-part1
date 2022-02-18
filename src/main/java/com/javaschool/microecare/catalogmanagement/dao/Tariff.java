@@ -3,24 +3,21 @@ package com.javaschool.microecare.catalogmanagement.dao;
 import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Getter
 @Setter
 @Entity
 @Table(name = "TARIFFS")
-public class Tariff {
-    @Id
+public class Tariff extends BaseEntity {
+    /*@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "TARIFF_ID")
-    private int tariffId;
+    private int tariffId;*/
 
     @Column(name = "TARIFF_NAME", unique = true)
     @NotBlank
@@ -41,14 +38,15 @@ public class Tariff {
     }
 
     public Tariff(TariffDTO tariffDTO) {
-        this();
+        super();
         this.tariffName = tariffDTO.getTariffName().trim();
         this.monthlyPrice = tariffDTO.getMonthlyPrice();
         this.tariffDescription = tariffDTO.getTariffDescription().trim();
     }
 
-    public Tariff(int tariffId, String tariffName, BigDecimal monthlyPrice, String tariffDescription) {
-        this.tariffId = tariffId;
+    public Tariff(String tariffName, BigDecimal monthlyPrice, String tariffDescription) {
+        // this.tariffId = tariffId;
+        super();
         this.tariffName = tariffName;
         this.monthlyPrice = monthlyPrice;
         this.tariffDescription = tariffDescription;
@@ -58,7 +56,8 @@ public class Tariff {
     public String toString() {
         return String.format("Tariff [name: %s, id: %d, price: %s, option id's: ",
                 getTariffName(),
-                getTariffId(),
-                getMonthlyPrice());
+                super.getId(),
+        //  getTariffId(),
+        getMonthlyPrice());
     }
 }

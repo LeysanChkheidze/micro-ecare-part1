@@ -27,7 +27,7 @@ public class UsersPageTVPPController {
 
     private boolean successfulAction = false;
     private String successActionName;
-    private int successId;
+    private long successId;
 
 
     final TVPPUsersService tvppUsersService;
@@ -94,7 +94,7 @@ public class UsersPageTVPPController {
     }
 
     @GetMapping("${endpoints.tvpp.entity.path.edit}")
-    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+    public String showUpdateForm(@PathVariable("id") long id, Model model) {
         TvppUser user = tvppUsersService.getUser(id);
 
         TVPPUserView userView = new TVPPUserView(user);
@@ -108,7 +108,7 @@ public class UsersPageTVPPController {
 
 
     @PatchMapping("/{id}")
-    public String updateUser(@PathVariable("id") int id, @Valid TvppUserDTO tvppUserDTO,
+    public String updateUser(@PathVariable("id") long id, @Valid TvppUserDTO tvppUserDTO,
                              BindingResult result, Model model) {
         if (result.hasErrors()) {
             setModelForUserPage(model);
@@ -136,7 +136,7 @@ public class UsersPageTVPPController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteDevice(@PathVariable("id") int id, Model model) {
+    public String deleteDevice(@PathVariable("id") long id, Model model) {
         try {
             tvppUsersService.deleteUserByID(id);
             successfulAction = true;

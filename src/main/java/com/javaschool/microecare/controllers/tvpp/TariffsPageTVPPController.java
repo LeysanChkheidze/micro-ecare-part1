@@ -29,7 +29,7 @@ public class TariffsPageTVPPController {
 
     private boolean successfulAction = false;
     private String successActionName;
-    private int successId;
+    private long successId;
 
     final TariffsService tariffsService;
     final CommonEntityService commonEntityService;
@@ -84,7 +84,7 @@ public class TariffsPageTVPPController {
             Tariff newTariff = tariffsService.saveNewTariff(tariffDTO);
             successfulAction = true;
             successActionName = "created";
-            successId = newTariff.getTariffId();
+            successId = newTariff.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             model.addAttribute("errorEntity", e.getEntityName());
@@ -123,7 +123,7 @@ public class TariffsPageTVPPController {
             Tariff updatedTariff = tariffsService.updateTariff(id, tariffDTO);
             successfulAction = true;
             successActionName = "updated";
-            successId = updatedTariff.getTariffId();
+            successId = updatedTariff.getId();
             return "redirect:" + controllerPath;
 
         } catch (EntityCannotBeSavedException e) {

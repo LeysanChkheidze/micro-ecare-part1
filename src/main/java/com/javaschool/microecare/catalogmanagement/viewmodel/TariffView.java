@@ -8,19 +8,19 @@ import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class TariffView implements Comparable<TariffView>{
-    private int id;
+    private long id;
     private String tariffName;
     private BigDecimal monthlyPrice;
     private String tariffDescription;
 
     public TariffView(Tariff tariff) {
-        this.id = tariff.getTariffId();
+        this.id = tariff.getId();
         this.tariffName = tariff.getTariffName();
         this.monthlyPrice = tariff.getMonthlyPrice();
         this.tariffDescription = tariff.getTariffDescription();
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

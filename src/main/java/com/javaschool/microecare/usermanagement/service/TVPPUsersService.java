@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,10 +45,6 @@ public class TVPPUsersService {
     }
 
     public List<TVPPUserView> getAllUserViews() {
-        /*return tvppUserRepo.findAll().stream()
-                .map(TVPPUserView::new)
-                .sorted()
-                .collect(Collectors.toList());*/
         List<TVPPUserView> userViews = new ArrayList<>();
         List<TvppUser> users = tvppUserRepo.findAll();
         for (TvppUser user : users) {
@@ -57,11 +54,11 @@ public class TVPPUsersService {
         return userViews;
     }
 
-    public TvppUser getUser(int id) {
+    public TvppUser getUser(long id) {
         return tvppUserRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "TVPPUser"));
     }
 
-    public TVPPUserView getUserView(int id) {
+    public TVPPUserView getUserView(long id) {
         TvppUser user = tvppUserRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "TVPPUser"));
         return new TVPPUserView(user);
     }
@@ -77,7 +74,7 @@ public class TVPPUsersService {
         }
     }
 
-    public TvppUser updateUser(int id, TvppUserDTO userDTO) {
+    public TvppUser updateUser(long id, TvppUserDTO userDTO) {
         TvppUser user = tvppUserRepo.getById(id);
         user.setUsername(userDTO.getUsername().trim());
         user.setEnabled(userDTO.isEnabled());
@@ -86,6 +83,7 @@ public class TVPPUsersService {
         } else {
             user.setRole(TVPPRoles.ROLE_EMPLOYEE.name());
         }
+        user.setUpdateTime(LocalDateTime.now());
         try {
             return tvppUserRepo.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -94,7 +92,7 @@ public class TVPPUsersService {
 
     }
 
-    public void deleteUserByID(int id) {
+    public void deleteUserByID(long id) {
         tvppUserRepo.deleteById(id);
     }
 
