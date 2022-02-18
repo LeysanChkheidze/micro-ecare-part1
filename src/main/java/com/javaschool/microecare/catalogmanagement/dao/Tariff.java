@@ -1,5 +1,6 @@
 package com.javaschool.microecare.catalogmanagement.dao;
 
+import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
@@ -37,6 +38,13 @@ public class Tariff {
     private String tariffDescription;
 
     public Tariff() {
+    }
+
+    public Tariff(TariffDTO tariffDTO) {
+        this();
+        this.tariffName = tariffDTO.getTariffName().trim();
+        this.monthlyPrice = tariffDTO.getMonthlyPrice();
+        this.tariffDescription = tariffDTO.getTariffDescription().trim();
     }
 
     public Tariff(int tariffId, String tariffName, BigDecimal monthlyPrice, String tariffDescription) {

@@ -1,10 +1,12 @@
 package com.javaschool.microecare.catalogmanagement.dto;
 
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
+import lombok.ToString;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
+@ToString
 public class TariffDTO {
 
     @NotBlank(message = "{field.mandatory.msg}")
@@ -12,7 +14,7 @@ public class TariffDTO {
     private String tariffName;
 
 
-    @Digits(integer = 3, fraction = 2, message = "{tariff.name.size.msg}")
+    @Digits(integer = 3, fraction = 2, message = "{tariff.price.size.msg}")
     @Positive(message = "{general.price.negative.msg}")
     @NotNull(message = "{field.mandatory.msg}")
     private BigDecimal monthlyPrice;

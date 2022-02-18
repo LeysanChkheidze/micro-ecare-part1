@@ -15,20 +15,20 @@ public class TvppUser {
     @Column(name = "ID")
     private int id;
 
-    @Column(unique = true)
+    @Column(name = "NAME", unique = true)
     @Size(min = 3, max = 50)
     @NotBlank(message = "Username is mandatory")
     private String username;
 
-    @Column
+    @Column(name = "PASSWORD")
     @Size(min = 3)
     @NotBlank(message = "Password is mandatory")
     private String password;
 
-    @Column
+    @Column(name = "ROLE")
     private String role; // should be prefixed with ROLE_
 
-    @Column
+    @Column(name = "ENABLED")
     private boolean enabled;
 
     public TvppUser() {
@@ -37,7 +37,7 @@ public class TvppUser {
 
     public TvppUser(TvppUserDTO userDTO) {
         this();
-        this.username = userDTO.getUsername();
+        this.username = userDTO.getUsername().trim();
         if (userDTO.getRole() != null) {
             this.role = userDTO.getRole().name();
         } else {

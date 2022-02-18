@@ -1,12 +1,12 @@
 package com.javaschool.microecare.controllers.tvpp;
 
+import com.javaschool.microecare.catalogmanagement.service.CommonEntityService;
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.service.TVPPUsersService;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
-import com.javaschool.microecare.utils.PageModelUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,28 +21,21 @@ public class UsersPageTVPPController {
 
     @Value("${directory.templates.tvpp.users}")
     private String templateFolder;
-    @Value("${endpoints.tvpp.entity.path.new}")
-    private String newPath;
-    @Value("${endpoints.tvpp.entity.path.edit}")
-    private String editPath;
     @Value("${endpoints.tvpp.users.controller_path}")
     private String controllerPath;
 
 
     final TVPPUsersService tvppUsersService;
+    final CommonEntityService commonEntityService;
 
-    public UsersPageTVPPController(TVPPUsersService tvppUsersService) {
+    public UsersPageTVPPController(TVPPUsersService tvppUsersService, CommonEntityService commonEntityService) {
         this.tvppUsersService = tvppUsersService;
+        this.commonEntityService = commonEntityService;
     }
 
     @ModelAttribute
     public void setPathsAttributes(Model model) {
-       model.addAttribute("pathNew", controllerPath + newPath);
-        model.addAttribute("pathEdit", controllerPath + editPath);
-        model.addAttribute("pathDeleteUpdate", controllerPath + "/{id}");
-        model.addAttribute("controllerPath", controllerPath);
-        //TODO: утильный метод не сеттит значения, они null. разобраться, почему
-        //PageModelUtils.setStandardPathsAttributes(model, controllerPath);
+        commonEntityService.setPathsAttributes(model, controllerPath);
     }
 
     @GetMapping
@@ -66,7 +59,6 @@ public class UsersPageTVPPController {
     public String createNewDevice(@Valid TvppUserDTO tvppUserDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
             setModelForUserPage(model);
-            //  BindingResultUtils.setNiceValidationMessages(model, result, List.of("username"), "java.lang.NumberFormatException", priceDigitsMessage);
             return templateFolder + "new_user";
         }
         try {
@@ -122,7 +114,6 @@ public class UsersPageTVPPController {
     public String deleteDevice(@PathVariable("id") int id, Model model) {
         tvppUsersService.deleteUserByID(id);
         return "redirect:" + controllerPath;
-
     }
 
 

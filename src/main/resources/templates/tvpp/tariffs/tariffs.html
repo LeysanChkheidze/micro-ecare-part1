@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Tariffs</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<h1 class="mb-3">Tariffs</h1>
+
+<div th:if="${tariffs.empty}">
+    <h2>No tariffs yet!</h2>
+</div>
+<div th:if="${!tariffs.empty}">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Monthly price</th>
+            <th>Description</th>
+            <th>Compatible options</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Edit options</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="tariff : ${tariffs}">
+            <td th:text="${tariff.id}"></td>
+            <td th:text="${tariff.tariffName}"></td>
+            <td th:text="${tariff.monthlyPrice}"></td>
+            <td th:text="${tariff.tariffDescription}"></td>
+            <!--td th:text="${tariff.compatibleOptionsNames}"></td-->
+            <td></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')"><a
+                    th:href="@{${pathEdit}(id=${tariff.id})}">Edit</a></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')"><a
+                    th:href="@{${pathEditOptions}(id=${tariff.id})}">Edit options</a>
+            </td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <form action="#" th:action="@{${pathDeleteUpdate}(id=${tariff.id})}" th:method="delete"
+                      th:id="${tariff.id}">
+                    <a href="javascript:{}"
+                       th:onclick="|document.getElementById('${tariff.id}').submit(); return false;|">Delete</a>
+                </form>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+<p sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{${pathNew}}">Add new tariff</a>
+</p>
+
+
+</body>
+</html>

@@ -5,26 +5,26 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.BindingResultUtils;
 import org.springframework.validation.FieldError;
 
 import java.util.List;
 
 @PropertySource("application.properties")
-public class PageModelUtils {
+public class PageModelUtils extends BindingResultUtils {
 
-    @Value("${endpoints.tvpp.entity.path.new}")
-    private static String standardNewEntityPath;
-    @Value("${endpoints.tvpp.entity.path.edit}")
-    private static String standardEditEntityPath;
 
-    public static void setNiceValidationMessages(Model model, BindingResult bindingResult, List<String> fieldsToReplaceMessages,
+    //TODO: выпилить, если не пригодится
+    /*public static void setNiceValidationMessages(Model model, BindingResult bindingResult, List<String> fieldsToReplaceMessages,
                                                  String replacedMessage, String newMessage) {
 
         List<FieldError> allFieldErrors = bindingResult.getFieldErrors();
         BindingResult newResult = new BeanPropertyBindingResult(bindingResult.getTarget(), bindingResult.getObjectName());
 
         for (FieldError error : allFieldErrors) {
-            if (fieldsToReplaceMessages.contains(error.getField())) {
+            FieldError newError = resolveNiceError(error, bindingResult.getObjectName(), fieldsToReplaceMessages, replacedMessage, newMessage);
+            newResult.addError(newError);
+            *//*if (fieldsToReplaceMessages.contains(error.getField())) {
                 if (error.getDefaultMessage() != null && error.getDefaultMessage().contains(replacedMessage)) {
                     FieldError newError = new FieldError(bindingResult.getObjectName(), error.getField(), newMessage);
                     newResult.addError(newError);
@@ -33,16 +33,29 @@ public class PageModelUtils {
                 }
             } else {
                 newResult.addError(error);
-            }
+            }*//*
         }
         model.addAttribute("org.springframework.validation.BindingResult." + bindingResult.getObjectName(), newResult);
+    }*/
 
-    }
+    /*private static FieldError resolveNiceError(FieldError originalError, String objectName, List<String> fieldsToReplaceMessages, String replacedMessage, String newMessage) {
+        if (fieldsToReplaceMessages.contains(originalError.getField())) {
+            if (originalError.getDefaultMessage() != null && originalError.getDefaultMessage().contains(replacedMessage)) {
+                return new FieldError(objectName, originalError.getField(), newMessage);
+            }
+        }
+        return originalError;
+        *//*if (fieldsToReplaceMessages.contains(originalError.getField())) {
+            if (originalError.getDefaultMessage() != null && originalError.getDefaultMessage().contains(replacedMessage)) {
+                return new FieldError(objectName, originalError.getField(), newMessage);
 
-    public static void setStandardPathsAttributes(Model model, String controllerPath) {
-        model.addAttribute("pathNew", controllerPath + standardNewEntityPath);
-        model.addAttribute("pathEdit", controllerPath + standardEditEntityPath);
-        model.addAttribute("pathDeleteUpdate", controllerPath + "/{id}");
-        model.addAttribute("controllerPath", controllerPath);
-    }
+            } else {
+                return originalError;
+            }
+        } else {
+            return originalError;
+        }*//*
+    }*/
+
+
 }
