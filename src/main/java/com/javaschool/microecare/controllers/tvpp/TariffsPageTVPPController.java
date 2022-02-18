@@ -2,7 +2,7 @@ package com.javaschool.microecare.controllers.tvpp;
 
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
-import com.javaschool.microecare.catalogmanagement.service.CommonEntityService;
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.catalogmanagement.service.TariffsService;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
@@ -47,7 +47,6 @@ public class TariffsPageTVPPController {
     private void setAllTariffsModel(Model model) {
         model.addAttribute("tariffs", tariffsService.getAllTariffViews());
         if (successfulAction) {
-           // String successEntityName = "Tariff";
             model.addAllAttributes(Map.of("successfulAction", true,
                     "successEntityName", "Tariff",
                     "successAction", successActionName,
@@ -109,8 +108,8 @@ public class TariffsPageTVPPController {
 
 
     @PatchMapping("/{id}")
-    public String updateUser(@PathVariable("id") int id, @Valid TariffDTO tariffDTO,
-                             BindingResult result, Model model) {
+    public String updateTariff(@PathVariable("id") int id, @Valid TariffDTO tariffDTO,
+                               BindingResult result, Model model) {
         if (result.hasErrors()) {
             setModelForTariffsPage(model);
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage), "java.lang.NumberFormatException");
@@ -139,7 +138,7 @@ public class TariffsPageTVPPController {
     @DeleteMapping("/{id}")
     public String deleteTariff(@PathVariable("id") int id, Model model) {
         try {
-            tariffsService.deleteTariffById(id);
+            tariffsService.deleteTariff(id);
             successfulAction = true;
             successActionName = "deleted";
             successId = id;

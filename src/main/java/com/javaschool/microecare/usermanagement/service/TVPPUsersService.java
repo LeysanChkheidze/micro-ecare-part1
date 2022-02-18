@@ -1,12 +1,11 @@
 package com.javaschool.microecare.usermanagement.service;
 
-import com.javaschool.microecare.catalogmanagement.service.CommonEntityService;
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.repository.TVPPUserRepo;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
-import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import com.javaschool.microecare.utils.EntityNotFoundInDBException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -26,9 +25,6 @@ public class TVPPUsersService {
     final TVPPUserRepo tvppUserRepo;
     final PasswordEncoder encoder;
     final CommonEntityService commonEntityService;
-
-    @Value("${general.unknown_field.constraint_violation.msg}")
-    String constraintViolationMessage;
 
     @Value("${user.name.not_unique.msg}")
     String nonUniqueUsernameMessage;
@@ -70,7 +66,7 @@ public class TVPPUsersService {
         try {
             return tvppUserRepo.save(user);
         } catch (DataIntegrityViolationException e) {
-            throw createSavingEntityException(e);
+            throw commonEntityService.createSavingEntityException(e, "TVPP User", "Key (name)", nonUniqueUsernameMessage);
         }
     }
 
@@ -87,18 +83,13 @@ public class TVPPUsersService {
         try {
             return tvppUserRepo.save(user);
         } catch (DataIntegrityViolationException e) {
-            throw createSavingEntityException(e);
+            throw commonEntityService.createSavingEntityException(e, "TVPP User", "Key (name)", nonUniqueUsernameMessage);
         }
 
     }
 
     public void deleteUserByID(long id) {
         tvppUserRepo.deleteById(id);
-    }
-
-    private EntityCannotBeSavedException createSavingEntityException(DataIntegrityViolationException e) {
-        String errorMessage = commonEntityService.resolveIntegrityViolationMessage(e, "Key (name)", nonUniqueUsernameMessage);
-        return new EntityCannotBeSavedException("TVPP user", errorMessage);
     }
 
 

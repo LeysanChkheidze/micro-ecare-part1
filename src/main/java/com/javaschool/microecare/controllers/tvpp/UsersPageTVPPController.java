@@ -1,6 +1,6 @@
 package com.javaschool.microecare.controllers.tvpp;
 
-import com.javaschool.microecare.catalogmanagement.service.CommonEntityService;
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;

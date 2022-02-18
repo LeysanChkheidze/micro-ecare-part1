@@ -2,12 +2,9 @@ package com.javaschool.microecare.catalogmanagement.viewmodel;
 
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
-public class TariffView implements Comparable<TariffView>{
+public class TariffView implements Comparable<TariffView> {
     private long id;
     private String tariffName;
     private BigDecimal monthlyPrice;

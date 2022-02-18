@@ -1,6 +1,7 @@
 package com.javaschool.microecare.catalogmanagement.dao;
 
 import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
+import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,10 +15,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "TARIFFS")
 public class Tariff extends BaseEntity {
-    /*@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "TARIFF_ID")
-    private int tariffId;*/
 
     @Column(name = "TARIFF_NAME", unique = true)
     @NotBlank
@@ -35,6 +32,7 @@ public class Tariff extends BaseEntity {
     private String tariffDescription;
 
     public Tariff() {
+        super();
     }
 
     public Tariff(TariffDTO tariffDTO) {
@@ -45,7 +43,6 @@ public class Tariff extends BaseEntity {
     }
 
     public Tariff(String tariffName, BigDecimal monthlyPrice, String tariffDescription) {
-        // this.tariffId = tariffId;
         super();
         this.tariffName = tariffName;
         this.monthlyPrice = monthlyPrice;
@@ -57,7 +54,6 @@ public class Tariff extends BaseEntity {
         return String.format("Tariff [name: %s, id: %d, price: %s, option id's: ",
                 getTariffName(),
                 super.getId(),
-        //  getTariffId(),
-        getMonthlyPrice());
+                getMonthlyPrice());
     }
 }

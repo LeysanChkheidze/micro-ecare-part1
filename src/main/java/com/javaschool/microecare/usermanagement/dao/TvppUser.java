@@ -1,6 +1,6 @@
 package com.javaschool.microecare.usermanagement.dao;
 
-import com.javaschool.microecare.catalogmanagement.dao.BaseEntity;
+import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
 import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 

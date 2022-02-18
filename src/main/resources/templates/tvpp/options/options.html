@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Options</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<h1 class="mb-3">Options</h1>
+
+<div th:if="${successfulAction == true}">
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+
+<div th:if="${options.empty}">
+    <h2>No options yet!</h2>
+</div>
+<div th:if="${!options.empty}">
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>One time price</th>
+            <th>Monthly price</th>
+            <th>Description</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="option : ${options}">
+            <td th:text="${option.id}"></td>
+            <td th:text="${option.optionName}"></td>
+            <td th:text="${option.oneTimePrice}"></td>
+            <td th:text="${option.monthlyPrice}"></td>
+            <td th:text="${option.optionDescription}"></td>
+            <td></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')"><a
+                    th:href="@{${pathEdit}(id=${option.id})}">Edit</a></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <form action="#" th:action="@{${pathDeleteUpdate}(id=${option.id})}" th:method="delete"
+                      th:id="${option.id}">
+                    <a href="javascript:{}"
+                       th:onclick="|document.getElementById('${option.id}').submit(); return false;|">Delete</a>
+                </form>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+<p sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{${pathNew}}">Add new option</a>
+</p>
+
+
+</body>
+</html>

@@ -1,5 +1,6 @@
-package com.javaschool.microecare.catalogmanagement.service;
+package com.javaschool.microecare.commonentitymanagement.service;
 
+import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,6 +30,12 @@ public class CommonEntityService {
         model.addAttribute("controllerPath", controllerPath);
     }
 
+    public EntityCannotBeSavedException createSavingEntityException(DataIntegrityViolationException e, String entityName, String searchSubstring, String niceMessage) {
+        //TODO: change String searchSubstring to List<String> for entities which have multiple unique fields
+        String errorMessage = resolveIntegrityViolationMessage(e, searchSubstring, niceMessage);
+        return new EntityCannotBeSavedException(entityName, errorMessage);
+    }
+
     public String resolveIntegrityViolationMessage(DataIntegrityViolationException e, String searchSubstring, String niceMessage) {
         String specificMessage = e.getMostSpecificCause().getMessage();
         if (specificMessage != null) {
@@ -44,7 +51,6 @@ public class CommonEntityService {
         }
         return constraintViolationMessage;
     }
-
 
 
     public void setNiceValidationMessages(Model model, BindingResult bindingResult, Map<String, String> fieldMessageMap,

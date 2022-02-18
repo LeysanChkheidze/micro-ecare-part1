@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Update option</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">Update option</h1>
+    <form action="#" th:action="@{${pathDeleteUpdate}(id=${optionView.id})}" th:object="${optionDTO}"
+          th:method="patch">
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{optionName}" id="optionName" class="form-control"
+                   value="${optionView.optionName}">
+            <label for="optionName" class="form-label">Option name</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('optionName')}" th:errors="*{optionName}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{oneTimePrice}" id="oneTimePrice" class="form-control"
+                   value="${optionView.oneTimePrice}">
+            <label for="oneTimePrice" class="form-label">One time price</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('oneTimePrice')}" th:errors="*{oneTimePrice}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{monthlyPrice}" id="monthlyPrice" class="form-control"
+                   value="${optionView.monthlyPrice}">
+            <label for="monthlyPrice" class="form-label">Monthly price</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('monthlyPrice')}" th:errors="*{monthlyPrice}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <textarea id="optionDescription" th:field="*{optionDescription}" rows="4" class="form-control"
+                      value="${optionView.optionDescription}"></textarea>
+            <label class="form-label" for="optionDescription">Description</label>
+            <span th:if="${#fields.hasErrors('optionDescription')}" th:errors="*{optionDescription}"></span>
+        </div>
+
+
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="Update Option"/>
+        </div>
+        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+
+    </form>
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+</div>
+</body>
+</html>

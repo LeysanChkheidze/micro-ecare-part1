@@ -1,4 +1,4 @@
-package com.javaschool.microecare.catalogmanagement.dao;
+package com.javaschool.microecare.commonentitymanagement.dao;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

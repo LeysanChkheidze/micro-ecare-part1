@@ -15,7 +15,7 @@ public class TariffDTO {
 
 
     @Digits(integer = 3, fraction = 2, message = "{tariff.price.size.msg}")
-    @Positive(message = "{general.price.negative.msg}")
+    @Positive(message = "{general.price.negativeOrNull.msg}")
     @NotNull(message = "{field.mandatory.msg}")
     private BigDecimal monthlyPrice;
 
