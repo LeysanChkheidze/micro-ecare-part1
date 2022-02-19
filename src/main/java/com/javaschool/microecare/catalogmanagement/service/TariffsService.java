@@ -138,6 +138,9 @@ public class TariffsService {
     public Tariff updateCompatibleOptionsInTariff(long id, OptionListDTO optionListDTO) {
         Tariff tariff = tariffRepo.getById(id);
         Set<Option> newOptions = getOptionsSetByIDs(optionListDTO.getOptionIDs());
+
+
+
         tariff.setCompatibleOptions(newOptions);
         try {
             return tariffRepo.save(tariff);

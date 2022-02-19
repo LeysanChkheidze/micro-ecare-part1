@@ -8,5 +8,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface OptionsRepo extends JpaRepository<Option, Long> {
 
-    int deleteById(long Id);
+    //int deleteById(long Id);
 }

@@ -55,6 +55,16 @@ public class Option extends BaseEntity {
         this.optionDescription = optionDTO.getOptionDescription().trim();
     }
 
+    public void addCompatibleTariff(Tariff tariff) {
+        this.compatibleTariffs.add(tariff);
+        tariff.getCompatibleOptions().add(this);
+    }
+
+    public void removeCompatibleTariff(Tariff tariff) {
+        this.compatibleTariffs.remove(tariff);
+        tariff.getCompatibleOptions().remove(this);
+    }
+
     @Override
     public String toString() {
         return String.format("Option [name: %s, id: %d, one time price: %s, monthly price: %s]",

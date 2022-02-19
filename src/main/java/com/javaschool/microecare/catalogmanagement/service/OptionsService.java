@@ -1,8 +1,10 @@
 package com.javaschool.microecare.catalogmanagement.service;
 
 import com.javaschool.microecare.catalogmanagement.dao.Option;
+import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
 import com.javaschool.microecare.catalogmanagement.repository.OptionsRepo;
+import com.javaschool.microecare.catalogmanagement.repository.TariffsRepo;
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.catalogmanagement.viewmodel.ShortOptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 public class OptionsService {
     final CommonEntityService commonEntityService;
     final OptionsRepo optionsRepo;
+    final TariffsRepo tariffsRepo;
 
     /**
      * Message text for non-unique name, returned at attempt to save Option with the same name as existing one.
@@ -38,10 +42,12 @@ public class OptionsService {
      *
      * @param commonEntityService is used to manage features common for all entities
      * @param optionsRepo         the options repo
+     * @param tariffsRepo         tariffs repo
      */
-    public OptionsService(CommonEntityService commonEntityService, OptionsRepo optionsRepo) {
+    public OptionsService(CommonEntityService commonEntityService, OptionsRepo optionsRepo, TariffsRepo tariffsRepo) {
         this.commonEntityService = commonEntityService;
         this.optionsRepo = optionsRepo;
+        this.tariffsRepo = tariffsRepo;
     }
 
 
@@ -130,21 +136,24 @@ public class OptionsService {
     }
 
     /**
-     * Delete option.
+     * Removes the option from tariff-option relationship, saves tariffs and deletes option
      *
      * @param id the id of option to delete
      */
-    public int deleteOption(long id) {
-        //TODO: Боря-Боря, что тут происходит, почему меня выкидывает из метода сразу после optionsRepo.deleteById(id);
-        // и я даже не захожу в вывод на печать???
-        int deletedRows = optionsRepo.deleteById(id);
-        System.out.println("deleted " + deletedRows);
-        return deletedRows;
+    @Transactional
+    public void deleteOption(long id) {
+        Option option = optionsRepo.getById(id);
+        for (Tariff relatedTariff : option.getCompatibleTariffs()) {
+            relatedTariff.getCompatibleOptions().remove(option);
+            tariffsRepo.save(relatedTariff);
+        }
+        optionsRepo.deleteById(id);
     }
 
 
     /**
      * Returns set of options by provided set of option id's
+     *
      * @param optionIDs option id's to find options
      * @return set of found options
      */
