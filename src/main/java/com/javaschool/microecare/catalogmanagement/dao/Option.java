@@ -7,9 +7,11 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -36,6 +38,9 @@ public class Option extends BaseEntity {
 
     @Column(name = "DESCRIPTION")
     private String optionDescription;
+
+    @ManyToMany(mappedBy = "compatibleOptions")
+    Set<Tariff> compatibleTariffs;
 
 
     public Option() {

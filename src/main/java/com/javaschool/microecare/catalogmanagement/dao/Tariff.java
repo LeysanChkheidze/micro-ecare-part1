@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 
 @Getter
@@ -30,6 +31,12 @@ public class Tariff extends BaseEntity {
 
     @Column(name = "DESCRIPTION")
     private String tariffDescription;
+
+    @ManyToMany
+    @JoinTable(name = "tariff_option",
+            joinColumns = @JoinColumn(name = "tariff_id"),
+            inverseJoinColumns = @JoinColumn(name = "option_id"))
+    Set<Option> compatibleOptions;
 
     public Tariff() {
         super();

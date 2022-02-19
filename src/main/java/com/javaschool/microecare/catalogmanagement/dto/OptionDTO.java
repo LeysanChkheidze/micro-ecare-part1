@@ -1,11 +1,14 @@
 package com.javaschool.microecare.catalogmanagement.dto;
 
 import com.javaschool.microecare.catalogmanagement.dao.Option;
+import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 import lombok.ToString;
 
-import javax.persistence.Column;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ToString
 public class OptionDTO {
@@ -25,6 +28,8 @@ public class OptionDTO {
 
     private String optionDescription;
 
+    private Set<Long> compatibleTariffsIDs;
+
     public OptionDTO() {
     }
 
@@ -33,6 +38,25 @@ public class OptionDTO {
         this.monthlyPrice = option.getMonthlyPrice();
         this.oneTimePrice = option.getOneTimePrice();
         this.optionDescription = option.getOptionDescription();
+        this.compatibleTariffsIDs = resolveCompatibleTariffsIDs(option.getCompatibleTariffs());
+    }
+
+    private Set<Long> resolveCompatibleTariffsIDs(Set<Tariff> tariffs) {
+        if (tariffs == null || tariffs.size() == 0) {
+            return Collections.emptySet();
+        }
+        return tariffs.stream()
+                .map(Tariff::getId)
+                .collect(Collectors.toSet());
+
+    }
+
+    public Set<Long> getCompatibleTariffsIDs() {
+        return compatibleTariffsIDs;
+    }
+
+    public void setCompatibleTariffsIDs(Set<Long> compatibleTariffsIDs) {
+        this.compatibleTariffsIDs = compatibleTariffsIDs;
     }
 
     public String getOptionName() {

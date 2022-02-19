@@ -1,8 +1,15 @@
 package com.javaschool.microecare.catalogmanagement.viewmodel;
 
 import com.javaschool.microecare.catalogmanagement.dao.Option;
+import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class OptionView implements Comparable<OptionView> {
     private long id;
@@ -10,6 +17,7 @@ public class OptionView implements Comparable<OptionView> {
     private BigDecimal monthlyPrice;
     private BigDecimal oneTimePrice;
     private String optionDescription;
+    private SortedSet<String> compatibleTariffsNames;
 
     public OptionView(Option option) {
         this.id = option.getId();
@@ -17,9 +25,26 @@ public class OptionView implements Comparable<OptionView> {
         this.monthlyPrice = option.getMonthlyPrice();
         this.oneTimePrice = option.getOneTimePrice();
         this.optionDescription = option.getOptionDescription();
+        this.compatibleTariffsNames = getCompatibleTariffsNames(option.getCompatibleTariffs());
     }
 
+    private SortedSet<String> getCompatibleTariffsNames(Set<Tariff> compatibleTariffs) {
+        if (compatibleTariffs == null || compatibleTariffs.size() == 0) {
+            return Collections.emptySortedSet();
+        }
+        return compatibleTariffs.stream()
+                .map(Tariff::getTariffName)
+                .sorted()
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
 
+    public SortedSet<String> getCompatibleTariffsNames() {
+        return compatibleTariffsNames;
+    }
+
+    public void setCompatibleTariffsNames(SortedSet<String> compatibleTariffsNames) {
+        this.compatibleTariffsNames = compatibleTariffsNames;
+    }
 
     public long getId() {
         return id;

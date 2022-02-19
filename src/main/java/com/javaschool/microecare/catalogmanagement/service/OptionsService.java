@@ -4,6 +4,7 @@ import com.javaschool.microecare.catalogmanagement.dao.Option;
 import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
 import com.javaschool.microecare.catalogmanagement.repository.OptionsRepo;
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
+import com.javaschool.microecare.catalogmanagement.viewmodel.ShortOptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.utils.EntityNotFoundInDBException;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +13,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +46,7 @@ public class OptionsService {
 
 
     /**
-     * Gets all option views sorted.
+     * Gets all option views as list sorted.
      *
      * @return the all option views
      */
@@ -52,6 +55,28 @@ public class OptionsService {
                 .map(OptionView::new)
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets all option short views as list sorted.
+     *
+     * @return the all option short views
+     */
+    public List<ShortOptionView> getAllOptionsShortViews() {
+        return optionsRepo.findAll().stream()
+                .map(ShortOptionView::new)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    public Set<ShortOptionView> getShortViews(Set<Option> options) {
+        if (options == null || options.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        return options.stream()
+                .map(ShortOptionView::new)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -107,10 +132,31 @@ public class OptionsService {
     /**
      * Delete option.
      *
-     * @param id the id
+     * @param id the id of option to delete
      */
-    public void deleteOption(long id) {
-        optionsRepo.deleteById(id);
+    public int deleteOption(long id) {
+        //TODO: Боря-Боря, что тут происходит, почему меня выкидывает из метода сразу после optionsRepo.deleteById(id);
+        // и я даже не захожу в вывод на печать???
+        int deletedRows = optionsRepo.deleteById(id);
+        System.out.println("deleted " + deletedRows);
+        return deletedRows;
+    }
+
+
+    /**
+     * Returns set of options by provided set of option id's
+     * @param optionIDs option id's to find options
+     * @return set of found options
+     */
+    public Set<Option> getOptionsSetByIDs(Set<Long> optionIDs) {
+        if (null == optionIDs || optionIDs.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        return optionIDs.stream()
+                .map(id -> optionsRepo.getById(id))
+                .collect(Collectors.toSet());
+
     }
 
 

@@ -200,6 +200,9 @@ public class OptionsPageTVPPController {
             successId = id;
         } catch (RuntimeException e) {
             //todo: add error popup
+        } catch (Throwable e) {
+            //tODO: Боря, я сошла с ума, у меня после optionsService.deleteOption(id); сразу вызывается ретурн
+            e.printStackTrace();
         }
         return "redirect:" + controllerPath;
     }

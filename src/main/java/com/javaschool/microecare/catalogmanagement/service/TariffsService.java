@@ -1,7 +1,10 @@
 package com.javaschool.microecare.catalogmanagement.service;
 
+import com.javaschool.microecare.catalogmanagement.dao.Option;
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
+import com.javaschool.microecare.catalogmanagement.dto.OptionListDTO;
 import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
+import com.javaschool.microecare.catalogmanagement.repository.OptionsRepo;
 import com.javaschool.microecare.catalogmanagement.repository.TariffsRepo;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
@@ -12,7 +15,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -23,7 +28,13 @@ import java.util.stream.Collectors;
 public class TariffsService {
 
     final TariffsRepo tariffRepo;
+    final OptionsRepo optionsRepo;
     final CommonEntityService commonEntityService;
+    //TODO: Боря, мне нужно получить список опций по списку их айди.
+    // Вроде логично этот метод держать в OptionsService, но инжектить в одном сервисе другой наверное странно?
+    // Но иметь в сервисе для тарифов метод, который занимается только опциями - тоже странно. Как правильно?
+
+    final OptionsService optionsService;
 
     /**
      * Message text for non-unique name, returned at attempt to save Tariff with the same name as existing one.
@@ -37,9 +48,12 @@ public class TariffsService {
      * @param tariffRepo          the tariff repo
      * @param commonEntityService is used to manage features common for all entities
      */
-    public TariffsService(TariffsRepo tariffRepo, CommonEntityService commonEntityService) {
+    public TariffsService(TariffsRepo tariffRepo, CommonEntityService commonEntityService, OptionsService optionsService,
+                          OptionsRepo optionsRepo) {
         this.tariffRepo = tariffRepo;
         this.commonEntityService = commonEntityService;
+        this.optionsService = optionsService;
+        this.optionsRepo = optionsRepo;
     }
 
     /**
@@ -112,6 +126,40 @@ public class TariffsService {
         tariffRepo.deleteById(id);
     }
 
+
+
+    /**
+     * Updates the list of compatible options for tariff
+     *
+     * @param id            tariff id which compatible options should be updated
+     * @param optionListDTO optionListDTO to which compatible options should be set
+     * @return updated tariff
+     */
+    public Tariff updateCompatibleOptionsInTariff(long id, OptionListDTO optionListDTO) {
+        Tariff tariff = tariffRepo.getById(id);
+        Set<Option> newOptions = getOptionsSetByIDs(optionListDTO.getOptionIDs());
+        tariff.setCompatibleOptions(newOptions);
+        try {
+            return tariffRepo.save(tariff);
+        } catch (DataIntegrityViolationException e) {
+            throw commonEntityService.createSavingEntityException(e, "Tariff", "Key (tariff_name)", nonUniqueNameMessage);
+        }
+    }
+
+    /**
+     * Returns set of options by provided set of option id's
+     *
+     * @param optionIDs option id's to find options
+     * @return set of found options
+     */
+    public Set<Option> getOptionsSetByIDs(Set<Long> optionIDs) {
+        if (null == optionIDs || optionIDs.size() == 0) {
+            return Collections.emptySet();
+        }
+        return optionIDs.stream()
+                .map(optionsRepo::getById)
+                .collect(Collectors.toSet());
+    }
 
 
 }

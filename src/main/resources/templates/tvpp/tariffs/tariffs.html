@@ -42,7 +42,11 @@
             <td th:text="${tariff.monthlyPrice}"></td>
             <td th:text="${tariff.tariffDescription}"></td>
             <!--td th:text="${tariff.compatibleOptionsNames}"></td-->
-            <td></td>
+            <td>
+                <ul>
+                    <li th:each="optionView : ${tariff.compatibleOptionViews}" th:text = "${optionView.optionName}"></li>
+                </ul>
+            </td>
             <td sec:authorize="hasRole('ROLE_ADMIN')"><a
                     th:href="@{${pathEdit}(id=${tariff.id})}">Edit</a></td>
             <td sec:authorize="hasRole('ROLE_ADMIN')"><a

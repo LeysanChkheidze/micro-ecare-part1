@@ -1,7 +1,11 @@
 package com.javaschool.microecare.controllers.tvpp;
 
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
+import com.javaschool.microecare.catalogmanagement.dto.OptionListDTO;
 import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
+import com.javaschool.microecare.catalogmanagement.service.OptionsService;
+import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
+import com.javaschool.microecare.catalogmanagement.viewmodel.ShortOptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.catalogmanagement.service.TariffsService;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
@@ -14,7 +18,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Controller Tariffs page in TVPP.
@@ -27,6 +33,8 @@ public class TariffsPageTVPPController {
     private String templateFolder;
     @Value("${endpoints.tvpp.tariffs.controller_path}")
     private String controllerPath;
+    @Value("${endpoints.tvpp.tariffs.path.edit_options}")
+    private String pathEditOptions;
     @Value("${general.price.nonnumber.msg}")
     private String priceDigitsMessage;
 
@@ -36,6 +44,7 @@ public class TariffsPageTVPPController {
 
     final TariffsService tariffsService;
     final CommonEntityService commonEntityService;
+    final OptionsService optionsService;
 
     /**
      * Instantiates a new Tariffs page tvpp controller.
@@ -43,9 +52,11 @@ public class TariffsPageTVPPController {
      * @param commonEntityService the CommonEntityService service with methods relevant to any entity
      * @param tariffsService      the TariffsService
      */
-    public TariffsPageTVPPController(TariffsService tariffsService, CommonEntityService commonEntityService) {
+    public TariffsPageTVPPController(TariffsService tariffsService, CommonEntityService commonEntityService,
+                                     OptionsService optionsService) {
         this.tariffsService = tariffsService;
         this.commonEntityService = commonEntityService;
+        this.optionsService = optionsService;
     }
 
     /**
@@ -56,6 +67,7 @@ public class TariffsPageTVPPController {
     @ModelAttribute
     public void setPathsAttributes(Model model) {
         commonEntityService.setPathsAttributes(model, controllerPath);
+        model.addAttribute("pathEditOptions", controllerPath + pathEditOptions);
     }
 
     /**
@@ -87,9 +99,10 @@ public class TariffsPageTVPPController {
         return templateFolder + "tariffs";
     }
 
-    private void setModelForTariffsPage(Model model) {
-        //todo: will be used to populate options to model
 
+    private void setModelForTariffsPage(Model model) {
+        List<ShortOptionView> allExistingOptions = optionsService.getAllOptionsShortViews();
+        model.addAttribute("allOptions", allExistingOptions);
     }
 
     /**
@@ -193,6 +206,70 @@ public class TariffsPageTVPPController {
             TariffView tariffView = new TariffView(tariffsService.getTariff(id));
             model.addAttribute("tariffView", tariffView);
             return templateFolder + "edit_tariff";
+        }
+    }
+
+    private void setModelForUpdateTariffOptionsPage(Model model, Tariff tariff) {
+        TariffView tariffView = new TariffView(tariff);
+        List<ShortOptionView> allExistingOptions = optionsService.getAllOptionsShortViews();
+        model.addAttribute("allOptions", allExistingOptions);
+        Set<ShortOptionView> compatibleOptions = optionsService.getShortViews(tariff.getCompatibleOptions());
+        model.addAttribute("compatibleOptions", compatibleOptions);
+        model.addAttribute("tariffView", tariffView);
+        model.addAttribute("tariffView", tariffView);
+    }
+
+    /**
+     * Returns update tariff compatible options page at get request.
+     *
+     * @param id    the id of the tariff to update compatible options
+     * @param model the page model
+     * @return update tariff options page template
+     */
+    @GetMapping("${endpoints.tvpp.tariffs.path.edit_options}")
+    public String showUpdateOptionsForm(@PathVariable("id") int id, Model model) {
+        Tariff tariff = tariffsService.getTariff(id);
+        setModelForUpdateTariffOptionsPage(model, tariff);
+        OptionListDTO optionListDTO = new OptionListDTO(tariff);
+        model.addAttribute("optionListDTO", optionListDTO);
+        return templateFolder + "edit_tariff_options";
+    }
+
+
+    /**
+     * Updates compatible options for existing tariff at patch request using validated OptionListDTO.
+     * In case of validation errors in TariffDTO returns update tariff page with human-readable validation messages in model
+     * In case if EntityCannotBeSavedException caught during saving updated tariff returns update tariff page with
+     * error field name and error message in model
+     *
+     * @param id            the id of the tariff to update
+     * @param optionListDTO the optionListDTO to use to set new parameters of the tariff
+     * @param result        the binding result
+     * @param model         the page model
+     * @return all tariffs or update tariff template depending on result of saving of the new tariff
+     */
+    @PatchMapping("${endpoints.tvpp.tariffs.path.edit_options}")
+    public String updateTariffOptions(@PathVariable("id") int id, @Valid OptionListDTO optionListDTO,
+                                      BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            Tariff tariff = tariffsService.getTariff(id);
+            setModelForUpdateTariffOptionsPage(model, tariff);
+            return templateFolder + "edit_tariff_options";
+        }
+
+        try {
+            Tariff updatedTariff = tariffsService.updateCompatibleOptionsInTariff(id, optionListDTO);
+            successfulAction = true;
+            successActionName = "compatible options updated";
+            successId = updatedTariff.getId();
+            return "redirect:" + controllerPath;
+
+        } catch (EntityCannotBeSavedException e) {
+            model.addAttribute("errorEntity", e.getEntityName());
+            model.addAttribute("errorMessage", e.getMessage());
+            Tariff tariff = tariffsService.getTariff(id);
+            setModelForUpdateTariffOptionsPage(model, tariff);
+            return templateFolder + "edit_tariff_options";
         }
     }
 
