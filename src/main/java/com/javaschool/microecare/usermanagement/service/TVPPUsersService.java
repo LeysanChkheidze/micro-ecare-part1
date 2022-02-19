@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Service to manage TVPP users
+ */
 @PropertySource("messages.properties")
 @Service
 public class TVPPUsersService {
@@ -26,9 +29,19 @@ public class TVPPUsersService {
     final PasswordEncoder encoder;
     final CommonEntityService commonEntityService;
 
+    /**
+     * Message text for non-unique username, returned at attempt to save TVPPUser with the same name as existing one.
+     */
     @Value("${user.name.not_unique.msg}")
     String nonUniqueUsernameMessage;
 
+    /**
+     * Instantiates a new Tvpp users service.
+     *
+     * @param tvppUserRepo        the tvpp user repo
+     * @param encoder             the encoder for user's password
+     * @param commonEntityService the common entity service
+     */
     public TVPPUsersService(TVPPUserRepo tvppUserRepo, PasswordEncoder encoder, CommonEntityService commonEntityService) {
         this.tvppUserRepo = tvppUserRepo;
         this.encoder = encoder;
@@ -36,10 +49,20 @@ public class TVPPUsersService {
     }
 
 
+    /**
+     * Gets all users.
+     *
+     * @return the all users
+     */
     public List<TvppUser> getAllUsers() {
         return tvppUserRepo.findAll();
     }
 
+    /**
+     * Gets all user views sorted.
+     *
+     * @return the all user views
+     */
     public List<TVPPUserView> getAllUserViews() {
         List<TVPPUserView> userViews = new ArrayList<>();
         List<TvppUser> users = tvppUserRepo.findAll();
@@ -50,16 +73,37 @@ public class TVPPUsersService {
         return userViews;
     }
 
+    /**
+     * Gets user.
+     *
+     * @param id the id
+     * @return the user
+     * @throws EntityNotFoundInDBException if user isn't found by id
+     */
     public TvppUser getUser(long id) {
         return tvppUserRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "TVPPUser"));
     }
 
+    /**
+     * Gets user view.
+     *
+     * @param id the id
+     * @return the user view
+     * @throws EntityNotFoundInDBException if user isn't found by id
+     */
     public TVPPUserView getUserView(long id) {
         TvppUser user = tvppUserRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "TVPPUser"));
         return new TVPPUserView(user);
     }
 
 
+    /**
+     * Saves new TVPPUser using UserDTO.
+     *
+     * @param userDTO the user dto
+     * @return the tvpp user
+     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if username provided in userDTO is not unique
+     */
     public TvppUser registerUser(TvppUserDTO userDTO) {
         TvppUser user = new TvppUser(userDTO);
         user.setPassword(encoder.encode(userDTO.getPassword()));
@@ -70,6 +114,14 @@ public class TVPPUsersService {
         }
     }
 
+    /**
+     * Updates new TVPPUser using UserDTO.
+     *
+     * @param id      the id
+     * @param userDTO the user dto
+     * @return the tvpp user
+     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if username provided in userDTO is not unique
+     */
     public TvppUser updateUser(long id, TvppUserDTO userDTO) {
         TvppUser user = tvppUserRepo.getById(id);
         user.setUsername(userDTO.getUsername().trim());
@@ -88,6 +140,11 @@ public class TVPPUsersService {
 
     }
 
+    /**
+     * Delete user by id.
+     *
+     * @param id the id
+     */
     public void deleteUserByID(long id) {
         tvppUserRepo.deleteById(id);
     }
