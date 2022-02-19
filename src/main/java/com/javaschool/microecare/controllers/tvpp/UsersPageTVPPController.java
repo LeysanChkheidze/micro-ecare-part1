@@ -7,6 +7,8 @@ import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.service.TVPPUsersService;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
+
 
 /**
  * Controller for TVPP Users page in TVPP.
@@ -31,6 +34,8 @@ public class UsersPageTVPPController {
     private boolean successfulAction = false;
     private String successActionName;
     private long successId;
+
+    Logger logger = LoggerFactory.getLogger(UsersPageTVPPController.class);
 
 
     final TVPPUsersService tvppUsersService;
@@ -83,6 +88,7 @@ public class UsersPageTVPPController {
     public String getUsersPage(Model model) {
         setAllUsersModel(model);
         successfulAction = false;
+        logger.info("Opening TVPP users page");
         return templateFolder + "users";
     }
 
