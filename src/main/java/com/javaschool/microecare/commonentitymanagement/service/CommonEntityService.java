@@ -1,15 +1,18 @@
 package com.javaschool.microecare.commonentitymanagement.service;
 
+import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -115,6 +118,20 @@ public class CommonEntityService {
             }
         }
         return originalError;
+    }
+
+    /**
+     * Sets update time field in an entity and saves the entity in a provided repository
+     *
+     * @param baseEntity    an entity to set update time and save
+     * @param jpaRepository repository relevant for the entity
+     * @param <T>           specific type of the entity, e.g. Tariff, Option, etc.
+     * @return saved entity
+     */
+    public <T extends BaseEntity> T saveWithUpdateTime(T baseEntity, JpaRepository<T, Long> jpaRepository) {
+        baseEntity.setUpdateTime(LocalDateTime.now());
+        return jpaRepository.save(baseEntity);
+
     }
 
 

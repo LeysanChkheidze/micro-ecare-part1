@@ -106,7 +106,7 @@ public class OptionsService {
     public Option saveNewOption(OptionDTO optionDTO) {
         Option option = new Option(optionDTO);
         try {
-            return optionsRepo.save(option);
+            return commonEntityService.saveWithUpdateTime(option, optionsRepo);
         } catch (DataIntegrityViolationException e) {
             throw commonEntityService.createSavingEntityException(e, "Option", "Key (option_name)", nonUniqueNameMessage);
         }
@@ -129,7 +129,7 @@ public class OptionsService {
         option.setUpdateTime(LocalDateTime.now());
 
         try {
-            return optionsRepo.save(option);
+            return commonEntityService.saveWithUpdateTime(option, optionsRepo);
         } catch (DataIntegrityViolationException e) {
             throw commonEntityService.createSavingEntityException(e, "Option", "Key (option_name)", nonUniqueNameMessage);
         }
@@ -145,7 +145,7 @@ public class OptionsService {
         Option option = optionsRepo.getById(id);
         for (Tariff relatedTariff : option.getCompatibleTariffs()) {
             relatedTariff.getCompatibleOptions().remove(option);
-            tariffsRepo.save(relatedTariff);
+            commonEntityService.saveWithUpdateTime(relatedTariff, tariffsRepo);
         }
         optionsRepo.deleteById(id);
     }

@@ -3,7 +3,6 @@ package com.javaschool.microecare.catalogmanagement.dao;
 import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

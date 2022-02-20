@@ -90,7 +90,7 @@ public class TariffsService {
     public Tariff saveNewTariff(TariffDTO tariffDTO) {
         Tariff tariff = new Tariff(tariffDTO);
         try {
-            return tariffRepo.save(tariff);
+            return commonEntityService.saveWithUpdateTime(tariff, tariffRepo);
         } catch (DataIntegrityViolationException e) {
             throw commonEntityService.createSavingEntityException(e, "Tariff", "Key (tariff_name)", nonUniqueNameMessage);
         }
@@ -111,7 +111,7 @@ public class TariffsService {
         tariff.setUpdateTime(LocalDateTime.now());
 
         try {
-            return tariffRepo.save(tariff);
+            return commonEntityService.saveWithUpdateTime(tariff, tariffRepo);
         } catch (DataIntegrityViolationException e) {
             throw commonEntityService.createSavingEntityException(e, "Tariff", "Key (tariff_name)", nonUniqueNameMessage);
         }
@@ -127,7 +127,6 @@ public class TariffsService {
     }
 
 
-
     /**
      * Updates the list of compatible options for tariff
      *
@@ -140,10 +139,9 @@ public class TariffsService {
         Set<Option> newOptions = getOptionsSetByIDs(optionListDTO.getOptionIDs());
 
 
-
         tariff.setCompatibleOptions(newOptions);
         try {
-            return tariffRepo.save(tariff);
+            return commonEntityService.saveWithUpdateTime(tariff, tariffRepo);
         } catch (DataIntegrityViolationException e) {
             throw commonEntityService.createSavingEntityException(e, "Tariff", "Key (tariff_name)", nonUniqueNameMessage);
         }
