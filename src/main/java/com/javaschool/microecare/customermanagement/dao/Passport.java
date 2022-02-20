@@ -27,8 +27,8 @@ public class Passport extends BaseEntity {
     @NotBlank
     private Date issueDate;
 
- /*   @OneToOne(mappedBy = "passportData")
-    private Customer customer;*/
+    @OneToOne(mappedBy = "passport")
+    private Customer customer;
 
     public Passport() {
         super();
@@ -58,11 +58,11 @@ public class Passport extends BaseEntity {
         this.issueDate = issueDate;
     }
 
-    /*public Customer getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
-    }*/
+    }
 }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Customers</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<h1 class="mb-3">Options</h1>
+
+<div th:if="${successfulAction == true}">
+    <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+
+<div th:if="${customers.empty}">
+    <h2>No customers yet!</h2>
+</div>
+<div th:if="${!customers.empty}">
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Document number</th>
+            <th>Contracts</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">View details</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Create a contract</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="customer : ${customers}">
+            <td th:text="${customer.id}"></td>
+            <td th:text="${customer.personalDataView.firstName}"></td>
+            <td th:text="${customer.personalDataView.lastName}"></td>
+            <td>here document nr</td>
+            <td>here contracts</td>
+            <td>here view link</td>
+            <td>here create contract link</td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <form action="#" th:action="@{${pathDeleteUpdate}(id=${customer.id})}" th:method="delete"
+                      th:id="${customer.id}">
+                    <a href="javascript:{}"
+                       th:onclick="|document.getElementById('${customer.id}').submit(); return false;|">Delete</a>
+                </form>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+<p sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{${pathNew}}">Add new customer</a>
+</p>
+
+
+</body>
+</html>
