@@ -3,12 +3,13 @@ package com.javaschool.microecare.customermanagement.viewmodel;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class PersonalDataView {
     private String firstName;
     private String lastName;
-    private Date birthday;
+    private LocalDate birthday;
 
     public PersonalDataView() {
     }
@@ -44,11 +45,11 @@ public class PersonalDataView {
         this.lastName = lastName;
     }
 
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 }

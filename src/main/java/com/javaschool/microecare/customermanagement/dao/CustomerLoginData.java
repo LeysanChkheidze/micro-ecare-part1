@@ -22,6 +22,6 @@ public class CustomerLoginData extends BaseEntity {
     @NotBlank
     @Size(min = 6, max = 50)
     private String password;
-    @OneToOne(mappedBy = "loginData ")
+    @OneToOne(mappedBy = "loginData")
     private Customer customer;
 }

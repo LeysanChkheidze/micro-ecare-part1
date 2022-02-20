@@ -1,6 +1,7 @@
 package com.javaschool.microecare.customermanagement.dao;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.customermanagement.dto.PassportDTO;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -25,13 +27,20 @@ public class Passport extends BaseEntity {
 
     @Column(name = "ISSUE_DATE")
     @NotBlank
-    private Date issueDate;
+    private LocalDate issueDate;
 
     @OneToOne(mappedBy = "passport")
     private Customer customer;
 
     public Passport() {
         super();
+    }
+
+    public Passport(PassportDTO passportDTO) {
+        super();
+        this.passportType = passportDTO.getPassportType();
+        this.documentID = passportDTO.getDocumentID();
+        this.issueDate = LocalDate.parse(passportDTO.getIssueDate());
     }
 
     public PassportType getPassportType() {
@@ -50,11 +59,11 @@ public class Passport extends BaseEntity {
         this.documentID = documentID;
     }
 
-    public Date getIssueDate() {
+    public LocalDate getIssueDate() {
         return issueDate;
     }
 
-    public void setIssueDate(Date issueDate) {
+    public void setIssueDate(LocalDate issueDate) {
         this.issueDate = issueDate;
     }
 

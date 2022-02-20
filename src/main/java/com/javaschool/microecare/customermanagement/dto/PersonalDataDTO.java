@@ -2,9 +2,7 @@ package com.javaschool.microecare.customermanagement.dto;
 
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
-import java.util.Date;
 
 public class PersonalDataDTO {
     @NotBlank(message = "{field.mandatory.msg}")
@@ -14,10 +12,15 @@ public class PersonalDataDTO {
     @Size(min = 2, max = 50, message = "{personal_data.last_name.size.msg}")
     private String lastName;
     @NotBlank(message = "{field.mandatory.msg}")
-    @Past(message = "{personal_data.birthday.future.msg}")
-    private Date birthday;
+    private String birthday;
 
     public PersonalDataDTO() {
+    }
+
+    public PersonalDataDTO(String firstName, String lastName, String birthday) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthday = birthday;
     }
 
     public String getFirstName() {
@@ -36,11 +39,11 @@ public class PersonalDataDTO {
         this.lastName = lastName;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 }
