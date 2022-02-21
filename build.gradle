@@ -30,6 +30,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	runtimeOnly 'org.postgresql:postgresql:42.3.1'
+	implementation group: 'org.passay', name: 'passay', version: '1.0'
+	implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+
 }
 
 tasks.named('test') {

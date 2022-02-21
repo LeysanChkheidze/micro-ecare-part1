@@ -3,10 +3,11 @@ package com.javaschool.microecare.customermanagement.dto;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class PassportDTO {
-    @NotBlank(message = "{field.mandatory.msg}")
+    @NotNull(message = "{field.mandatory.msg}")
     PassportType passportType;
 
     @NotBlank(message = "{field.mandatory.msg}")

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Basket</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">Basket</h1>
+    <div th:each="order : ${orders}">
+        <div th:text="${order}"></div>
+    </div>
+    <hr>
+
+
+
+
+</div>
+</body>
+</html>

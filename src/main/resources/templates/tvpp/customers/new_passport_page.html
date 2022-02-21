@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Passport data</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">New customer: Passport data</h1>
+    <form action="#" th:action="@{${passportPath}}" th:object="${passportDTO}" method="post">
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+
+
+        <div>
+            <select class="form-control" th:field="*{passportType}" id="dropPassport">
+                <option value="" selected disabled hidden>Select type</option>
+                <option th:each="type : ${passportTypes}" th:value="${type}"
+                        th:text="${type.displayName}"></option>
+            </select>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('passportType')}" th:errors="*{passportType}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{documentID}" id="documentID" class="form-control">
+            <label for="documentID" class="form-label">Document ID</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('documentID')}" th:errors="*{documentID}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text" th:field="*{issueDate}" id="issueDate" class="form-control">
+            <label for="issueDate" class="form-label">Issue date</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}">
+        </div>
+
+
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="Next"/>
+        </div>
+        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+    </form>
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+    </form>
+</div>
+</body>
+</html>

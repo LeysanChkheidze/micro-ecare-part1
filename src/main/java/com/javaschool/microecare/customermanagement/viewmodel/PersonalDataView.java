@@ -2,6 +2,7 @@ package com.javaschool.microecare.customermanagement.viewmodel;
 
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
+import com.javaschool.microecare.customermanagement.dto.PersonalDataDTO;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -18,6 +19,12 @@ public class PersonalDataView {
         this.firstName = personalData.getFirstName();
         this.lastName = personalData.getLastName();
         this.birthday = personalData.getBirthday();
+    }
+
+    public PersonalDataView(PersonalDataDTO personalDataDTO) {
+        this.firstName = personalDataDTO.getFirstName();
+        this.lastName = personalDataDTO.getLastName();
+        this.birthday = LocalDate.parse(personalDataDTO.getBirthday());
     }
 
     public PersonalDataView(Customer customer) {

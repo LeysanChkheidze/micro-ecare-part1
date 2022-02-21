@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer overview</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">Customer overview</h1>
+
+    <!--section id ="title">
+        <div class="row my-4 px-5">
+            <div class="text-center col-12 py-2">
+                <h4>Your order:</h4>
+            </div>
+
+        </div>
+    </section-->
+    <hr>
+
+    <section id="personal_data">
+        <div>
+            <h5 class="card-title">Personal data</h5>
+            <dl class="row">
+                <dt class="col-sm-3">First Name</dt>
+                <dd class="col-sm-9" th:text="${customerView.personalDataView.firstName}"></dd>
+                <dt class="col-sm-3">Last Name</dt>
+                <dd class="col-sm-9" th:text="${customerView.personalDataView.lastName}"></dd>
+                <dt class="col-sm-3">Birthday</dt>
+                <dd class="col-sm-9" th:text="${customerView.personalDataView.birthday}"></dd>
+
+            </dl>
+        </div>
+    </section>
+    <hr>
+    <section id="passport_data">
+        <div>
+            <h5 class="card-title">Passport data</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Document type</dt>
+                <dd class="col-sm-9" th:text="${customerView.passportView.passportType}"></dd>
+                <dt class="col-sm-3">Document ID</dt>
+                <dd class="col-sm-9" th:text="${customerView.passportView.documentID}"></dd>
+                <dt class="col-sm-3">Issue date</dt>
+                <dd class="col-sm-9" th:text="${customerView.passportView.issueDate}"></dd>
+
+            </dl>
+        </div>
+    </section>
+    <hr>
+    <section id="address">
+        <div>
+            <h5 class="card-title">Address</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Postcode</dt>
+                <dd class="col-sm-9" th:text="${customerView.addressView.postcode}"></dd>
+                <dt class="col-sm-3">City</dt>
+                <dd class="col-sm-9" th:text="${customerView.addressView.city}"></dd>
+                <dt class="col-sm-3">Street</dt>
+                <dd class="col-sm-9" th:text="${customerView.addressView.street}"></dd>
+                <dt class="col-sm-3">House number</dt>
+                <dd class="col-sm-9" th:text="${customerView.addressView.houseNr}"></dd>
+                <dt class="col-sm-3">House number addition</dt>
+                <dd class="col-sm-9" th:text="${customerView.addressView.houseNrAddition}"></dd>
+                <dt class="col-sm-3">Flat number</dt>
+                <dd class="col-sm-9" th:text="${customerView.addressView.flatNr}"></dd>
+            </dl>
+        </div>
+    </section>
+
+    <hr>
+    <section id="login">
+        <div>
+            <h5 class="card-title">Login data</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">
+                    <p th:text="${customerView.loginDataView.email}"></p>
+                    <p>Password will be generated automatically</p>
+                </dd>
+            </dl>
+
+        </div>
+    </section>
+
+    <hr>
+    <form action="#" th:action="@{${submitPath}}" method="post">
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="To Basket"/>
+        </div>
+    </form>
+
+
+</div>
+</body>
+</html>

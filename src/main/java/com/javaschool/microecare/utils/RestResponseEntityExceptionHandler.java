@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-//TODO: возможно тут я делаю фигню, и можно попроще
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,

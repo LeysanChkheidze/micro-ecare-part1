@@ -1,12 +1,13 @@
 package com.javaschool.microecare.customermanagement.viewmodel;
 
-import com.javaschool.microecare.customermanagement.dao.Customer;
-import com.javaschool.microecare.customermanagement.dao.Passport;
-import com.javaschool.microecare.customermanagement.dao.PersonalData;
+import com.javaschool.microecare.customermanagement.dao.*;
+import com.javaschool.microecare.customermanagement.dto.*;
 
-public class CustomerView implements Comparable<CustomerView>{
+public class CustomerView implements Comparable<CustomerView> {
     private PersonalDataView personalDataView;
     private PassportView passportView;
+    private AddressView addressView;
+    private LoginDataView loginDataView;
 
     public CustomerView() {
     }
@@ -14,11 +15,39 @@ public class CustomerView implements Comparable<CustomerView>{
     public CustomerView(Customer customer) {
         PersonalData personalData = customer.getPersonalData();
         if (personalData != null) {
-            this.personalDataView = new PersonalDataView();
+            this.personalDataView = new PersonalDataView(personalData);
         }
         Passport passport = customer.getPassport();
         if (passport != null) {
             this.passportView = new PassportView(passport);
+        }
+        Address address = customer.getAddress();
+        if (address != null) {
+            this.addressView = new AddressView(address);
+        }
+        LoginData loginData = customer.getLoginData();
+        if (loginData != null) {
+            this.loginDataView = new LoginDataView(loginData);
+        }
+    }
+
+    public CustomerView(CustomerDTO customerDTO) {
+        PersonalDataDTO personalDataDTO = customerDTO.getPersonalDataDTO();
+
+        if (personalDataDTO != null) {
+            this.personalDataView = new PersonalDataView(personalDataDTO);
+        }
+        PassportDTO passportDTO = customerDTO.getPassportDTO();
+        if (passportDTO != null) {
+            this.passportView = new PassportView(passportDTO);
+        }
+        AddressDTO addressDTO = customerDTO.getAddressDTO();
+        if (addressDTO != null) {
+            this.addressView = new AddressView(addressDTO);
+        }
+        LoginDataDTO loginDataDTO = customerDTO.getLoginDataDTO();
+        if (loginDataDTO != null) {
+            this.loginDataView = new LoginDataView(loginDataDTO);
         }
 
     }
@@ -29,6 +58,22 @@ public class CustomerView implements Comparable<CustomerView>{
 
     public void setPassportView(PassportView passportView) {
         this.passportView = passportView;
+    }
+
+    public AddressView getAddressView() {
+        return addressView;
+    }
+
+    public void setAddressView(AddressView addressView) {
+        this.addressView = addressView;
+    }
+
+    public LoginDataView getLoginDataView() {
+        return loginDataView;
+    }
+
+    public void setLoginDataView(LoginDataView loginDataView) {
+        this.loginDataView = loginDataView;
     }
 
     public PersonalDataView getPersonalDataView() {

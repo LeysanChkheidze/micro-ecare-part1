@@ -1,6 +1,7 @@
 package com.javaschool.microecare.customermanagement.viewmodel;
 
 import com.javaschool.microecare.customermanagement.dao.Passport;
+import com.javaschool.microecare.customermanagement.dto.PassportDTO;
 
 import java.time.LocalDate;
 
@@ -13,6 +14,12 @@ public class PassportView {
         this.passportType = passport.getPassportType().getDisplayName();
         this.documentID = passport.getDocumentID();
         this.issueDate = passport.getIssueDate();
+    }
+
+    public PassportView(PassportDTO passportDTO) {
+        this.passportType = passportDTO.getPassportType().getDisplayName();
+        this.documentID = passportDTO.getDocumentID();
+        this.issueDate = LocalDate.parse(passportDTO.getIssueDate());
     }
 
     public String getPassportType() {

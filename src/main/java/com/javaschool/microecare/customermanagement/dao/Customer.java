@@ -22,7 +22,7 @@ public class Customer extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "login_data_id", referencedColumnName = "id")
-    private CustomerLoginData loginData;
+    private LoginData loginData;
 
     public Customer() {
     }
@@ -41,5 +41,21 @@ public class Customer extends BaseEntity {
 
     public void setPassport(Passport passport) {
         this.passport = passport;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public LoginData getLoginData() {
+        return loginData;
+    }
+
+    public void setLoginData(LoginData loginData) {
+        this.loginData = loginData;
     }
 }
