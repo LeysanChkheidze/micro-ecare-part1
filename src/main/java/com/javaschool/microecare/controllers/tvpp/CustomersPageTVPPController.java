@@ -52,9 +52,9 @@ public class CustomersPageTVPPController {
     final CustomersService customersService;
     final CustomerDTO customerDTO;
     @Autowired
-    TVPPBasket TVPPBasket;
+    TVPPBasket basket;
 
-    public CustomersPageTVPPController(CommonEntityService commonEntityService, CustomersService customersService, CustomerDTO customerDTO, TVPPBasket TVPPBasket) {
+    public CustomersPageTVPPController(CommonEntityService commonEntityService, CustomersService customersService) {
         this.commonEntityService = commonEntityService;
         this.customersService = customersService;
         this.customerDTO = new CustomerDTO();
@@ -69,7 +69,6 @@ public class CustomersPageTVPPController {
         model.addAttribute("loginPath", controllerPath + loginPath);
         model.addAttribute("overviewPath", overviewPath);
         model.addAttribute("basketPath", basketControllerPath);
-       // commonEntityService.setBasketItems(model);
     }
 
     private void setAllCustomersModel(Model model) {
@@ -192,7 +191,7 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.overview}")
     public String postNewCustomerOrder(Model model) {
         NewCustomerOrder newCustomerOrder = new NewCustomerOrder(customerDTO);
-        TVPPBasket.add(newCustomerOrder);
+        basket.add(newCustomerOrder);
         customersService.resetCustomerDTO(customerDTO);
         return "redirect:" + basketControllerPath;
     }

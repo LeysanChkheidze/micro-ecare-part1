@@ -1,6 +1,8 @@
 package com.javaschool.microecare.customermanagement.dao;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.customermanagement.dto.*;
+import com.javaschool.microecare.customermanagement.service.LockInitiator;
 
 import javax.persistence.*;
 
@@ -8,6 +10,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "CUSTOMERS")
 public class Customer extends BaseEntity {
+
+    @Column(name = "BLOCKED")
+    private boolean blocked;
+    @Column(name = "LOCK_INITIATOR")
+    private LockInitiator lockInitiator;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "personal_data_id", referencedColumnName = "id")
     private PersonalData personalData;
@@ -25,6 +33,31 @@ public class Customer extends BaseEntity {
     private LoginData loginData;
 
     public Customer() {
+        blocked = false;
+    }
+
+    public Customer(CustomerDTO customerDTO) {
+        super();
+        blocked = false;
+        PersonalDataDTO personalDataDTO = customerDTO.getPersonalDataDTO();
+        if (personalDataDTO != null) {
+            this.personalData = new PersonalData(personalDataDTO);
+        }
+        PassportDTO passportDTO = customerDTO.getPassportDTO();
+        if (passportDTO != null) {
+            this.passport = new Passport(passportDTO);
+        }
+
+        AddressDTO addressDTO = customerDTO.getAddressDTO();
+        if (addressDTO != null) {
+            this.address = new Address(addressDTO);
+        }
+
+        LoginDataDTO loginDataDTO = customerDTO.getLoginDataDTO();
+        if (loginDataDTO != null) {
+            this.loginData = new LoginData(loginDataDTO);
+        }
+
     }
 
     public PersonalData getPersonalData() {

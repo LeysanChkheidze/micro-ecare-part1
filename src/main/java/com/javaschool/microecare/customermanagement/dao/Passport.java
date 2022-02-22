@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Date;
@@ -17,7 +18,7 @@ import java.util.Date;
 @Table(name = "PASSPORTS")
 public class Passport extends BaseEntity {
     @Column(name = "PASSPORT_TYPE")
-    @NotBlank
+    @NotNull
     PassportType passportType;
 
     @Column(name = "DOCUMENT_ID")
@@ -26,7 +27,7 @@ public class Passport extends BaseEntity {
     private String documentID;
 
     @Column(name = "ISSUE_DATE")
-    @NotBlank
+    @NotNull
     private LocalDate issueDate;
 
     @OneToOne(mappedBy = "passport")

@@ -1,6 +1,7 @@
 package com.javaschool.microecare.customermanagement.dao;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.customermanagement.dto.LoginDataDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,6 +31,12 @@ public class LoginData extends BaseEntity {
     public LoginData() {
         super();
         this.initialPassword = true;
+    }
+
+    public LoginData(LoginDataDTO loginDataDTO) {
+        super();
+        this.initialPassword = true;
+        this.email = loginDataDTO.getEmail();
     }
 
     public String getEmail() {

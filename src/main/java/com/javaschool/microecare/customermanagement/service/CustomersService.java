@@ -1,6 +1,7 @@
 package com.javaschool.microecare.customermanagement.service;
 
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
+import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
 import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.repository.CustomersRepo;
@@ -63,7 +64,9 @@ public class CustomersService {
         int passwordLength = 10;
         RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder().withinRange(33, 45)
                 .build();
-        return pwdGenerator.generate(passwordLength);
+        String password =  pwdGenerator.generate(passwordLength);
+        System.out.println("Generated password: " + password);
+        return password;
         //todo: use passay?
         /*PasswordGenerator gen = new PasswordGenerator();
         CharacterData lowerCaseChars = EnglishCharacterData.LowerCase;
@@ -93,5 +96,10 @@ public class CustomersService {
         String password = gen.generatePassword(10, splCharRule, lowerCaseRule,
                 upperCaseRule, digitRule);
         return password;*/
+    }
+
+    public void setInitialPassword(Customer customer) {
+        String password = generateRandomPassword();
+        customer.getLoginData().setPassword(password);
     }
 }

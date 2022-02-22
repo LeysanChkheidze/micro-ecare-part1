@@ -2,7 +2,7 @@
 <html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Basket</title>
+    <title>Confirmation</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
 </head>
 <body>
@@ -11,9 +11,10 @@
 <br>
 <br>
 <div class="container">
-    <h1 class="mb-3">Basket</h1>
-    <div th:each="order : ${orders}">
-        <div th:text="${order}"></div>
+    <h1 class="mb-3">Order confirmation</h1>
+    <div th:each="entry : ${resultMap}">
+        <div th:text="${entry.value}"></div>
+        <div th:text="${entry.key}"></div>
     </div>
     <hr>
 

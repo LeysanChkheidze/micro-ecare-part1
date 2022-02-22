@@ -1,21 +1,24 @@
 package com.javaschool.microecare.customermanagement.dao;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.customermanagement.dto.AddressDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Entity
 @Table(name = "ADDRESSES")
 public class Address extends BaseEntity {
 
+    //TODO: а нужна ли вообще валидация в энтитях, или достаточно в дто?
+
     @Column(name = "POSTCODE")
-    @NotBlank
-    @Size(min = 100000, max = 999999)
+    @NotNull
+    @Min(value = 10000)
+    @Max(value = 99999)
     private int postcode;
     @Column(name = "CITY")
     @NotBlank
@@ -26,7 +29,7 @@ public class Address extends BaseEntity {
     @Size(min = 2, max = 100)
     private String street;
     @Column(name = "HOUSE_NR")
-    @NotBlank
+    @NotNull
     private int houseNr;
     @Column(name = "HOUSE_NR_ADDITION")
     private String houseNrAddition;
@@ -36,6 +39,15 @@ public class Address extends BaseEntity {
     private Customer customer;
 
     public Address() {
+    }
+
+    public Address(AddressDTO addressDTO) {
+        this.postcode = addressDTO.getPostcode();
+        this.city = addressDTO.getCity();
+        this.street = addressDTO.getStreet();
+        this.houseNr = addressDTO.getHouseNr();
+        this.houseNrAddition = addressDTO.getHouseNrAddition();
+        this.flatNr = addressDTO.getFlatNr();
     }
 
     public int getPostcode() {
