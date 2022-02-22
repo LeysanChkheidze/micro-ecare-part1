@@ -67,6 +67,7 @@ public class CustomersPageTVPPController {
         model.addAttribute("addressPath", controllerPath + addressPath);
         model.addAttribute("passportPath", controllerPath + passportPath);
         model.addAttribute("loginPath", controllerPath + loginPath);
+        model.addAttribute("submitPath", controllerPath + overviewPath);
         model.addAttribute("overviewPath", overviewPath);
         model.addAttribute("basketPath", basketControllerPath);
     }
@@ -83,7 +84,6 @@ public class CustomersPageTVPPController {
 
     @GetMapping
     public String getCustomersPage(Model model, @RequestParam(required = false) Boolean cancel) {
-
         setAllCustomersModel(model);
         successfulAction = false;
         if (cancel != null && cancel) {
@@ -102,14 +102,8 @@ public class CustomersPageTVPPController {
         if (result.hasErrors()) {
             return templateFolder + "new_personal_data";
         }
-        try {
-            customerDTO.setPersonalDataDTO(personalDataDTO);
-            return "redirect:" + controllerPath + passportPath;
-        } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            return templateFolder + "new_personal_data";
-        }
+        customerDTO.setPersonalDataDTO(personalDataDTO);
+        return "redirect:" + controllerPath + passportPath;
     }
 
     private void setPassportPageModel(Model model) {
@@ -126,17 +120,11 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.passport}")
     public String postPassportData(@Valid PassportDTO passportDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            // commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
+            setPassportPageModel(model);
             return templateFolder + "new_passport_page";
         }
-        try {
-            customerDTO.setPassportDTO(passportDTO);
-            return "redirect:" + controllerPath + addressPath;
-        } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            return templateFolder + "new_passport_page";
-        }
+        customerDTO.setPassportDTO(passportDTO);
+        return "redirect:" + controllerPath + addressPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.address}")
@@ -147,17 +135,10 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.address}")
     public String postAddressData(@Valid AddressDTO addressDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            // commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
             return templateFolder + "new_address_page";
         }
-        try {
-            customerDTO.setAddressDTO(addressDTO);
-            return "redirect:" + controllerPath + loginPath;
-        } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            return templateFolder + "new_address_page";
-        }
+        customerDTO.setAddressDTO(addressDTO);
+        return "redirect:" + controllerPath + loginPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.login}")
@@ -168,23 +149,16 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.login}")
     public String postLoginData(@Valid LoginDataDTO loginDataDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            // commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
             return templateFolder + "new_login_page";
         }
-        try {
-            customerDTO.setLoginDataDTO(loginDataDTO);
-            return "redirect:" + controllerPath + overviewPath;
-        } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            return templateFolder + "new_login_page";
-        }
+        customerDTO.setLoginDataDTO(loginDataDTO);
+        return "redirect:" + controllerPath + overviewPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.overview}")
     public String showOverviewPage(Model model) {
         model.addAttribute("customerView", new CustomerView(customerDTO));
-        model.addAttribute("submitPath", controllerPath + overviewPath);
+  //      model.addAttribute("submitPath", controllerPath + overviewPath);
         return templateFolder + "overview_page";
     }
 
@@ -195,7 +169,6 @@ public class CustomersPageTVPPController {
         customersService.resetCustomerDTO(customerDTO);
         return "redirect:" + basketControllerPath;
     }
-
 
 
     @DeleteMapping("/{id}")
