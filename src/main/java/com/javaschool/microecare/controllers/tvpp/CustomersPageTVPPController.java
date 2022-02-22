@@ -5,7 +5,7 @@ import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
-import com.javaschool.microecare.ordermanagement.Basket;
+import com.javaschool.microecare.ordermanagement.TVPPBasket;
 import com.javaschool.microecare.ordermanagement.NewCustomerOrder;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -55,9 +52,9 @@ public class CustomersPageTVPPController {
     final CustomersService customersService;
     final CustomerDTO customerDTO;
     @Autowired
-    Basket basket;
+    TVPPBasket TVPPBasket;
 
-    public CustomersPageTVPPController(CommonEntityService commonEntityService, CustomersService customersService, CustomerDTO customerDTO, Basket basket) {
+    public CustomersPageTVPPController(CommonEntityService commonEntityService, CustomersService customersService, CustomerDTO customerDTO, TVPPBasket TVPPBasket) {
         this.commonEntityService = commonEntityService;
         this.customersService = customersService;
         this.customerDTO = new CustomerDTO();
@@ -72,6 +69,7 @@ public class CustomersPageTVPPController {
         model.addAttribute("loginPath", controllerPath + loginPath);
         model.addAttribute("overviewPath", overviewPath);
         model.addAttribute("basketPath", basketControllerPath);
+       // commonEntityService.setBasketItems(model);
     }
 
     private void setAllCustomersModel(Model model) {
@@ -85,9 +83,13 @@ public class CustomersPageTVPPController {
     }
 
     @GetMapping
-    public String getCustomersPage(Model model) {
+    public String getCustomersPage(Model model, @RequestParam(required = false) Boolean cancel) {
+
         setAllCustomersModel(model);
         successfulAction = false;
+        if (cancel != null && cancel) {
+            customersService.resetCustomerDTO(customerDTO);
+        }
         return templateFolder + "customers";
     }
 
@@ -190,7 +192,8 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.overview}")
     public String postNewCustomerOrder(Model model) {
         NewCustomerOrder newCustomerOrder = new NewCustomerOrder(customerDTO);
-        basket.add(newCustomerOrder);
+        TVPPBasket.add(newCustomerOrder);
+        customersService.resetCustomerDTO(customerDTO);
         return "redirect:" + basketControllerPath;
     }
 }

@@ -8,11 +8,11 @@ import java.util.List;
 
 @Configuration
 @SessionScope
-public class Basket {
+public class TVPPBasket {
 
     List<AbstractOrder> ordersInBasket = new ArrayList<>();
 
-    public Basket() {
+    public TVPPBasket() {
     }
 
 

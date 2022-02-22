@@ -2,8 +2,7 @@ package com.javaschool.microecare.customermanagement.service;
 
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
-import com.javaschool.microecare.customermanagement.dto.CustomerDTO;
-import com.javaschool.microecare.customermanagement.dto.PersonalDataDTO;
+import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.repository.CustomersRepo;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import org.apache.commons.text.RandomStringGenerator;
@@ -35,6 +34,13 @@ public class CustomersService {
                 .map(CustomerView::new)
                 // .sorted()
                 .collect(Collectors.toList());
+    }
+
+    public void resetCustomerDTO(CustomerDTO customerDTO) {
+        customerDTO.setPersonalDataDTO(new PersonalDataDTO());
+        customerDTO.setPassportDTO(new PassportDTO());
+        customerDTO.setAddressDTO(new AddressDTO());
+        customerDTO.setLoginDataDTO(new LoginDataDTO());
     }
 
     public void setPersonalDataToCustomerDTO(CustomerDTO customerDTO, PersonalDataDTO personalDataDTO) {

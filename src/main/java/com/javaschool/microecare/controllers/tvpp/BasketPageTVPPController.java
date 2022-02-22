@@ -2,7 +2,7 @@ package com.javaschool.microecare.controllers.tvpp;
 
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.ordermanagement.AbstractOrder;
-import com.javaschool.microecare.ordermanagement.Basket;
+import com.javaschool.microecare.ordermanagement.TVPPBasket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -19,14 +19,14 @@ import java.util.List;
 @PropertySource("messages.properties")
 public class BasketPageTVPPController {
 
-    @Value("${directory.templates.tvpp.basket}")
+    @Value("${directory.templates.tvpp.tvpp_basket}")
     private String templateFolder;
     @Value("${endpoints.tvpp.basket.controller_path}")
     private String controllerPath;
 
     //todo: basket has @SessionScope, but is
     @Autowired
-    Basket basket;
+    TVPPBasket TVPPBasket;
     @Autowired
     final CommonEntityService commonEntityService;
 
@@ -42,7 +42,7 @@ public class BasketPageTVPPController {
 
     @GetMapping
     public String getBasketPage(Model model) {
-        List<AbstractOrder> savedOrders = basket.getOrdersInBasket();
+        List<AbstractOrder> savedOrders = TVPPBasket.getOrdersInBasket();
         model.addAttribute("orders", savedOrders);
         return templateFolder + "basket";
     }

@@ -37,7 +37,7 @@
         <div class="form-outline mb-4">
             <input class="btn btn-primary" type="submit" value="To overview"/>
         </div>
-        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
     </form>
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
     </form>

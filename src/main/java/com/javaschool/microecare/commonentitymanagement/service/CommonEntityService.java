@@ -1,7 +1,9 @@
 package com.javaschool.microecare.commonentitymanagement.service;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.ordermanagement.TVPPBasket;
 import com.javaschool.microecare.utils.EntityCannotBeSavedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,6 +34,9 @@ public class CommonEntityService {
     @Value("${general.unknown_field.constraint_violation.msg}")
     String constraintViolationMessage;
 
+    @Autowired
+    TVPPBasket TVPPBasket;
+
     /**
      * Sets standard paths for actions against any entity into attributes of model
      *
@@ -43,6 +48,16 @@ public class CommonEntityService {
         model.addAttribute("pathEdit", controllerPath + editPath);
         model.addAttribute("pathDeleteUpdate", controllerPath + "/{id}");
         model.addAttribute("controllerPath", controllerPath);
+    }
+
+    /**
+     * Sets number of items in basket to attributes of a model
+     *
+     * @param model the model
+     */
+    public void setBasketItems(Model model) {
+        int items = TVPPBasket.getNumberOfOrders();
+        model.addAttribute("basketItems", items);
     }
 
     /**
