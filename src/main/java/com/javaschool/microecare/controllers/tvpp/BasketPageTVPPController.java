@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public class BasketPageTVPPController {
     private String controllerPath;
     @Value("${endpoints.tvpp.basket.confirmation}")
     private String confirmationPath;
+
+    private Map<Long, String> resultMap = new HashMap<>();
 
     @Autowired
     TVPPBasket basket;
@@ -62,8 +65,8 @@ public class BasketPageTVPPController {
 
         if (basketService.validateBasket()) {
             try {
-                Map<Long, String> resultMap = basketService.saveAllOrders();
-                model.addAttribute("resultMap", resultMap);
+                resultMap = basketService.saveAllOrders();
+                //  model.addAttribute("resultMap", resultMap);
                 basketService.cleanBasket(basket);
                 //   return templateFolder + "confirmation";
                 return "redirect:" + controllerPath + confirmationPath;
@@ -79,6 +82,11 @@ public class BasketPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.basket.confirmation}")
     public String showConfirmationPage(Model model) {
+        //TODO: вот это извращение, но как правильно положить мапу в модель, чтобы она не обнулялась после resultMap.clear()?
+        Map<Long, String> modelResult = new HashMap<>();
+        modelResult.putAll(resultMap);
+        model.addAttribute("resultMap", modelResult);
+        resultMap.clear();
         return templateFolder + "confirmation";
     }
 }

@@ -2,8 +2,12 @@ package com.javaschool.microecare.customermanagement.viewmodel;
 
 import com.javaschool.microecare.customermanagement.dao.*;
 import com.javaschool.microecare.customermanagement.dto.*;
+import org.apache.logging.log4j.util.PropertySource;
+
+import java.util.Comparator;
 
 public class CustomerView implements Comparable<CustomerView> {
+    private long id;
     private PersonalDataView personalDataView;
     private PassportView passportView;
     private AddressView addressView;
@@ -13,6 +17,7 @@ public class CustomerView implements Comparable<CustomerView> {
     }
 
     public CustomerView(Customer customer) {
+        this.id = customer.getId();
         PersonalData personalData = customer.getPersonalData();
         if (personalData != null) {
             this.personalDataView = new PersonalDataView(personalData);
@@ -84,9 +89,16 @@ public class CustomerView implements Comparable<CustomerView> {
         this.personalDataView = personalDataView;
     }
 
-    //TODO: implement:
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public int compareTo(CustomerView o) {
-        return 0;
+        return Long.compare(this.id, o.getId());
     }
 }

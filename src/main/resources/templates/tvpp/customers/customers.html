@@ -40,9 +40,11 @@
             <td th:text="${customer.id}"></td>
             <td th:text="${customer.personalDataView.firstName}"></td>
             <td th:text="${customer.personalDataView.lastName}"></td>
-            <td>here document nr</td>
+            <td th:text="${customer.passportView.documentID}"></td>
             <td>here contracts</td>
-            <td>here view link</td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{${pathView}(id=${customer.id})}">Details</a>
+            </td>
             <td>here create contract link</td>
             <td sec:authorize="hasRole('ROLE_ADMIN')">
                 <form action="#" th:action="@{${pathDeleteUpdate}(id=${customer.id})}" th:method="delete"

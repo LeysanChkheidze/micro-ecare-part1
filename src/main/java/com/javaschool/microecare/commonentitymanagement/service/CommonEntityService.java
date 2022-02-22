@@ -28,6 +28,8 @@ public class CommonEntityService {
     private String newPath;
     @Value("${endpoints.tvpp.entity.path.edit}")
     private String editPath;
+    @Value("${endpoints.tvpp.entity.path.view}")
+    private String viewPath;
     /**
      * The Constraint violation message, returned when an entity cannot be saved due to DB contraint violation of unknown source.
      */
@@ -47,6 +49,7 @@ public class CommonEntityService {
         model.addAttribute("pathNew", controllerPath + newPath);
         model.addAttribute("pathEdit", controllerPath + editPath);
         model.addAttribute("pathDeleteUpdate", controllerPath + "/{id}");
+        model.addAttribute("pathView", controllerPath + viewPath);
         model.addAttribute("controllerPath", controllerPath);
     }
 
