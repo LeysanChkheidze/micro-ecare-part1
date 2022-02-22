@@ -195,4 +195,19 @@ public class CustomersPageTVPPController {
         customersService.resetCustomerDTO(customerDTO);
         return "redirect:" + basketControllerPath;
     }
+
+
+
+    @DeleteMapping("/{id}")
+    public String deleteTariff(@PathVariable("id") int id, Model model) {
+        try {
+            customersService.deleteCustomer(id);
+            successfulAction = true;
+            successActionName = "deleted";
+            successId = id;
+        } catch (RuntimeException e) {
+            //todo: add error popup
+        }
+        return "redirect:" + controllerPath;
+    }
 }

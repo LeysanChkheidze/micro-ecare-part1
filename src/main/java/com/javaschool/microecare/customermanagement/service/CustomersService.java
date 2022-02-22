@@ -10,6 +10,7 @@ import org.apache.commons.text.RandomStringGenerator;
 import org.passay.CharacterRule;
 import org.passay.PasswordGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.CharacterData;
 
 import java.util.List;
@@ -101,5 +102,11 @@ public class CustomersService {
     public void setInitialPassword(Customer customer) {
         String password = generateRandomPassword();
         customer.getLoginData().setPassword(password);
+    }
+
+    @Transactional
+    public void deleteCustomer(long id) {
+      //  Customer customer = customersRepo.getById(id);
+        customersRepo.deleteById(id);
     }
 }
