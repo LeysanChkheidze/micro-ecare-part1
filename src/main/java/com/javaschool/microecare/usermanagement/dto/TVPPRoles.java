@@ -2,7 +2,8 @@ package com.javaschool.microecare.usermanagement.dto;
 
 public enum TVPPRoles {
     ROLE_ADMIN("ADMIN"),
-    ROLE_EMPLOYEE("EMPLOYEE");
+    ROLE_EMPLOYEE("EMPLOYEE"),
+    ROLE_VP2("VP2");
 
     String springRoleName;
 
@@ -15,7 +16,7 @@ public enum TVPPRoles {
     }
 
     public static String[] getAllRoles() {
-        return new String[]{ROLE_ADMIN.springRoleName, ROLE_EMPLOYEE.springRoleName};
+        return new String[]{ROLE_ADMIN.springRoleName, ROLE_EMPLOYEE.springRoleName, ROLE_VP2.springRoleName};
     }
 
     public static TVPPRoles getRoleByName(String name) {

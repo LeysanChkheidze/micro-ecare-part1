@@ -1,17 +1,15 @@
 package com.javaschool.microecare.customermanagement.service;
 
-import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
 import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.repository.CustomersRepo;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import org.apache.commons.text.RandomStringGenerator;
-import org.passay.CharacterRule;
-import org.passay.PasswordGenerator;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.CharacterData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +18,14 @@ import java.util.stream.Collectors;
 public class CustomersService {
 
     final CustomersRepo customersRepo;
+    final PasswordEncoder encoder;
 
-    public CustomersService(CustomersRepo customersRepo) {
+    @Value("${customer.email.not_unique.msg}")
+    String nonUniqueEmailMessage;
+
+    public CustomersService(CustomersRepo customersRepo, PasswordEncoder encoder) {
         this.customersRepo = customersRepo;
+        this.encoder = encoder;
     }
 
     /**
@@ -31,10 +34,9 @@ public class CustomersService {
      * @return the all option views
      */
     public List<CustomerView> getAllCustomerViews() {
-        //todo: implement proper comparable and sort the list
         return customersRepo.findAll().stream()
                 .map(CustomerView::new)
-                // .sorted()
+                .sorted()
                 .collect(Collectors.toList());
     }
 
@@ -52,6 +54,7 @@ public class CustomersService {
     }
 
     public CustomerDTO getCustomerDTOFromPersonalDataDTO(PersonalDataDTO personalDataDTO) {
+        //CustomerDTO customerDTO = CustomerDTO.createCustomerDTO();
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setPersonalDataDTO(personalDataDTO);
         return customerDTO;
@@ -63,9 +66,9 @@ public class CustomersService {
 
     public String generateRandomPassword() {
         int passwordLength = 10;
-        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder().withinRange(33, 45)
+        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder().withinRange('a', 'z')
                 .build();
-        String password =  pwdGenerator.generate(passwordLength);
+        String password = pwdGenerator.generate(passwordLength);
         System.out.println("Generated password: " + password);
         return password;
         //todo: use passay?
@@ -104,9 +107,15 @@ public class CustomersService {
         customer.getLoginData().setPassword(password);
     }
 
+    public void setInitialLoginData(Customer customer) {
+        String password = generateRandomPassword();
+        customer.getLoginData().setPassword(encoder.encode(password));
+        customer.getLoginData().setRole("ROLE_VP2");
+    }
+
     @Transactional
     public void deleteCustomer(long id) {
-      //  Customer customer = customersRepo.getById(id);
+        //  Customer customer = customersRepo.getById(id);
         customersRepo.deleteById(id);
     }
 }

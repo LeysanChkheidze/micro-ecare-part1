@@ -39,11 +39,13 @@ public class BasketService {
     public Map<Long, String> saveAllOrders() {
         Map<Long, String> savedEntities = new HashMap<>();
         for (AbstractOrder abstractOrder : tvppBasket.getOrdersInBasket()) {
+            // todo: add order type enum
             if (abstractOrder instanceof NewCustomerOrder) {
                 NewCustomerOrder orderToSave = (NewCustomerOrder) abstractOrder;
                 CustomerDTO customerDTO = orderToSave.getCustomerDTO();
                 Customer newCustomer = new Customer(customerDTO);
-                customersService.setInitialPassword(newCustomer);
+                //  customersService.setInitialPassword(newCustomer);
+                customersService.setInitialLoginData(newCustomer);
                 //todo: encode password
                 try {
                     Customer savedCustomer = customerRepo.save(newCustomer);

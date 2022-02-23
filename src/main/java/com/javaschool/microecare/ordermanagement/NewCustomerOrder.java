@@ -9,6 +9,9 @@ public class NewCustomerOrder implements AbstractOrder {
     }
 
     public NewCustomerOrder(CustomerDTO customerDTO) {
+
+        //todo: убрать проверки на нулл, потому что CustomerDTO создает все поля, они никогда не будут нулл
+       // this.customerDTO = CustomerDTO.createCustomerDTO();
         this.customerDTO = new CustomerDTO();
         PersonalDataDTO personalDataDTO = customerDTO.getPersonalDataDTO();
         if (personalDataDTO != null) {

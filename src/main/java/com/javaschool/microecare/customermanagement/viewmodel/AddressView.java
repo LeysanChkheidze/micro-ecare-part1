@@ -9,12 +9,12 @@ import javax.validation.constraints.Size;
 
 public class AddressView {
 
-    private int postcode;
+    private Integer postcode;
     private String city;
     private String street;
-    private int houseNr;
+    private Integer houseNr;
     private String houseNrAddition;
-    private int flatNr;
+    private Integer flatNr;
 
     public AddressView() {
     }
@@ -37,11 +37,11 @@ public class AddressView {
         this.flatNr = address.getFlatNr();
     }
 
-    public int getPostcode() {
+    public Integer getPostcode() {
         return postcode;
     }
 
-    public void setPostcode(int postcode) {
+    public void setPostcode(Integer postcode) {
         this.postcode = postcode;
     }
 
@@ -61,11 +61,11 @@ public class AddressView {
         this.street = street;
     }
 
-    public int getHouseNr() {
+    public Integer getHouseNr() {
         return houseNr;
     }
 
-    public void setHouseNr(int houseNr) {
+    public void setHouseNr(Integer houseNr) {
         this.houseNr = houseNr;
     }
 
@@ -77,11 +77,11 @@ public class AddressView {
         this.houseNrAddition = houseNrAddition;
     }
 
-    public int getFlatNr() {
+    public Integer getFlatNr() {
         return flatNr;
     }
 
-    public void setFlatNr(int flatNr) {
+    public void setFlatNr(Integer flatNr) {
         this.flatNr = flatNr;
     }
 }

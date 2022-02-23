@@ -23,7 +23,7 @@ import java.util.List;
  */
 @PropertySource("messages.properties")
 @Service
-public class TVPPUsersService {
+public class  TVPPUsersService {
 
     final TVPPUserRepo tvppUserRepo;
     final PasswordEncoder encoder;

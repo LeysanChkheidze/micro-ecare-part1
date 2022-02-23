@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class OptionView implements Comparable<OptionView> {
@@ -25,20 +24,21 @@ public class OptionView implements Comparable<OptionView> {
         this.monthlyPrice = option.getMonthlyPrice();
         this.oneTimePrice = option.getOneTimePrice();
         this.optionDescription = option.getOptionDescription();
-        this.compatibleTariffsNames = getCompatibleTariffsNames(option.getCompatibleTariffs());
+        this.compatibleTariffsNames = getTariffsNames(option.getCompatibleTariffs());
     }
 
-    private SortedSet<String> getCompatibleTariffsNames(Set<Tariff> compatibleTariffs) {
+    private SortedSet<String> getTariffsNames(Set<Tariff> compatibleTariffs) {
         if (compatibleTariffs == null || compatibleTariffs.size() == 0) {
             return Collections.emptySortedSet();
         }
         return compatibleTariffs.stream()
                 .map(Tariff::getTariffName)
-                .sorted()
+                //   .sorted()
+                //todo: a не повторяется ли это?
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    public SortedSet<String> getCompatibleTariffsNames() {
+    public SortedSet<String> getTariffsNames() {
         return compatibleTariffsNames;
     }
 

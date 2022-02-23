@@ -11,10 +11,6 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "TVPP_USERS")
 public class TvppUser extends BaseEntity {
-    /*@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private int id;*/
 
     @Column(name = "NAME", unique = true)
     @Size(min = 3, max = 50)
@@ -49,14 +45,6 @@ public class TvppUser extends BaseEntity {
         this.enabled = userDTO.isEnabled();
     }
 
-   /* public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-*/
     public String getUsername() {
         return username;
     }

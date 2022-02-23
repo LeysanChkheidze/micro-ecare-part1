@@ -19,7 +19,7 @@ public class Address extends BaseEntity {
     @NotNull
     @Min(value = 10000)
     @Max(value = 99999)
-    private int postcode;
+    private Integer postcode;
     @Column(name = "CITY")
     @NotBlank
     @Size(min = 2, max = 100)
@@ -30,11 +30,11 @@ public class Address extends BaseEntity {
     private String street;
     @Column(name = "HOUSE_NR")
     @NotNull
-    private int houseNr;
+    private Integer houseNr;
     @Column(name = "HOUSE_NR_ADDITION")
     private String houseNrAddition;
     @Column(name = "FLAT_NR")
-    private int flatNr;
+    private Integer flatNr;
     @OneToOne(mappedBy = "address")
     private Customer customer;
 
@@ -50,11 +50,11 @@ public class Address extends BaseEntity {
         this.flatNr = addressDTO.getFlatNr();
     }
 
-    public int getPostcode() {
+    public Integer getPostcode() {
         return postcode;
     }
 
-    public void setPostcode(int postcode) {
+    public void setPostcode(Integer postcode) {
         this.postcode = postcode;
     }
 
@@ -74,11 +74,11 @@ public class Address extends BaseEntity {
         this.street = street;
     }
 
-    public int getHouseNr() {
+    public Integer getHouseNr() {
         return houseNr;
     }
 
-    public void setHouseNr(int houseNr) {
+    public void setHouseNr(Integer houseNr) {
         this.houseNr = houseNr;
     }
 
@@ -90,11 +90,11 @@ public class Address extends BaseEntity {
         this.houseNrAddition = houseNrAddition;
     }
 
-    public int getFlatNr() {
+    public Integer getFlatNr() {
         return flatNr;
     }
 
-    public void setFlatNr(int flatNr) {
+    public void setFlatNr(Integer flatNr) {
         this.flatNr = flatNr;
     }
 }

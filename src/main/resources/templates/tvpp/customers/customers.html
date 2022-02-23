@@ -28,7 +28,7 @@
             <th>ID</th>
             <th>First Name</th>
             <th>Last Name</th>
-            <th>Document number</th>
+            <th>Email</th>
             <th>Contracts</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">View details</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Create a contract</th>
@@ -40,7 +40,7 @@
             <td th:text="${customer.id}"></td>
             <td th:text="${customer.personalDataView.firstName}"></td>
             <td th:text="${customer.personalDataView.lastName}"></td>
-            <td th:text="${customer.passportView.documentID}"></td>
+            <td th:text="${customer.loginDataView.email}"></td>
             <td>here contracts</td>
             <td sec:authorize="hasRole('ROLE_ADMIN')">
                 <a th:href="@{${pathView}(id=${customer.id})}">Details</a>

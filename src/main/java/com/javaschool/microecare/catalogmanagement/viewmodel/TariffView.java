@@ -48,7 +48,7 @@ public class TariffView implements Comparable<TariffView> {
         }
         return compatibleOptions.stream()
                 .map(Option::getOptionName)
-                .sorted()
+              //  .sorted()
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 

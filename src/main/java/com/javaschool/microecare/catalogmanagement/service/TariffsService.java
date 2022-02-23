@@ -30,10 +30,6 @@ public class TariffsService {
     final TariffsRepo tariffRepo;
     final OptionsRepo optionsRepo;
     final CommonEntityService commonEntityService;
-    //TODO: Боря, мне нужно получить список опций по списку их айди.
-    // Вроде логично этот метод держать в OptionsService, но инжектить в одном сервисе другой наверное странно?
-    // Но иметь в сервисе для тарифов метод, который занимается только опциями - тоже странно. Как правильно?
-
     final OptionsService optionsService;
 
     /**
@@ -158,6 +154,7 @@ public class TariffsService {
             return Collections.emptySet();
         }
         return optionIDs.stream()
+                //todo: кешировать опции, чтобы не лазить в базу за ними все время
                 .map(optionsRepo::getById)
                 .collect(Collectors.toSet());
     }

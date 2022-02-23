@@ -1,5 +1,6 @@
 package com.javaschool.microecare.usermanagement.auth;
 
+import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,10 +16,17 @@ public class UserDetailsImpl implements UserDetails {
     private final boolean isEnabled;
 
     public UserDetailsImpl(TvppUser user) {
-        username = user.getUsername();
-        password = user.getPassword();
-        rolesAndAuthorities = List.of(new SimpleGrantedAuthority(user.getRole()));
-        isEnabled = user.isEnabled();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.rolesAndAuthorities = List.of(new SimpleGrantedAuthority(user.getRole()));
+        this.isEnabled = user.isEnabled();
+    }
+
+    public UserDetailsImpl(Customer customer) {
+        this.username = customer.getLoginData().getEmail();
+        this.password = customer.getLoginData().getPassword();
+        this.rolesAndAuthorities = List.of(new SimpleGrantedAuthority(customer.getLoginData().getRole()));
+        this.isEnabled = customer.getLoginData().isEnabled();
     }
 
 

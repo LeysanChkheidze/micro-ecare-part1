@@ -12,30 +12,36 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "LOGIN_DATA")
+@Table(name = "CUSTOMER_LOGIN_DATA")
 public class LoginData extends BaseEntity {
 
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", unique = true)
     @NotBlank
     @Email
     private String email;
     @Column(name = "PASSWORD")
     @NotBlank
-    @Size(min = 6, max = 50)
+    @Size(min = 6)
     private String password;
+    @Column(name = "ROLE")
+    private String role; // should be prefixed with ROLE_
     @Column(name = "IS_INITIAL")
     private boolean initialPassword;
+    @Column(name = "ENABLED")
+    private boolean enabled;
     @OneToOne(mappedBy = "loginData")
     private Customer customer;
 
     public LoginData() {
         super();
         this.initialPassword = true;
+        this.enabled = true;
     }
 
     public LoginData(LoginDataDTO loginDataDTO) {
         super();
         this.initialPassword = true;
+        this.enabled = true;
         this.email = loginDataDTO.getEmail();
     }
 
@@ -69,5 +75,21 @@ public class LoginData extends BaseEntity {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
