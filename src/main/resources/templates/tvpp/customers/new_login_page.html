@@ -23,7 +23,8 @@
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{email}" id="email" class="form-control">
+            <input type="text" th:value="${customerDTO.loginDataDTO.email}" id="email" th:id="email" th:name="email"
+                   class="form-control">
             <label for="email" class="form-label">Email</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
         </div>
@@ -38,6 +39,7 @@
             <input class="btn btn-primary" type="submit" value="To overview"/>
         </div>
         <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${addressPath}} role="button">Back</a>
     </form>
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
     </form>

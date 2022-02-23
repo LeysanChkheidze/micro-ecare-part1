@@ -24,7 +24,9 @@
 
 
         <div>
-            <select class="form-control" th:field="*{passportType}" id="dropPassport">
+            <!--select class="form-control" th:field="*{passportType}" th:value = "${customerDTO.passportDTO.passportType}" id="dropPassport"-->
+            <select class="form-control"  th:value="${customerDTO?.passportDTO?.passportType?.name}" id="dropPassport"
+                    th:id="passportType" th:name="passportType">
                 <option value="" selected disabled hidden>Select type</option>
                 <option th:each="type : ${passportTypes}" th:value="${type}"
                         th:text="${type.displayName}"></option>
@@ -33,13 +35,18 @@
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{documentID}" id="documentID" class="form-control">
+
+            <!--input type="text" th:field="*{documentID}" th:value = "${customerDTO.passportDTO.documentID}" id="documentID" class="form-control"-->
+            <input type="text" th:value="${customerDTO.passportDTO.documentID}" id="documentID" th:id="documentID"
+                   th:name="documentID" class="form-control">
             <label for="documentID" class="form-label">Document ID</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('documentID')}" th:errors="*{documentID}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{issueDate}" id="issueDate" class="form-control">
+            <!--input type="text" th:field="*{issueDate}"  th:value = "${customerDTO.passportDTO.issueDate}" id="issueDate" class="form-control"-->
+            <input type="text" th:value="${customerDTO.passportDTO.issueDate}" id="issueDate" th:id="issueDate"
+                   th:name="issueDate" class="form-control">
             <label for="issueDate" class="form-label">Issue date</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}">
         </div>
@@ -49,6 +56,7 @@
             <input class="btn btn-primary" type="submit" value="Next"/>
         </div>
         <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${personalDataPath}} role="button">Back</a>
     </form>
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
     </form>

@@ -44,6 +44,7 @@ public class BasketService {
                 CustomerDTO customerDTO = orderToSave.getCustomerDTO();
                 Customer newCustomer = new Customer(customerDTO);
                 customersService.setInitialPassword(newCustomer);
+                //todo: encode password
                 try {
                     Customer savedCustomer = customerRepo.save(newCustomer);
                     savedEntities.put(savedCustomer.getId(), "New customer");

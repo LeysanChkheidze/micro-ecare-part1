@@ -11,7 +11,7 @@ public class AddressDTO {
     @Min(value = 10000, message = "{address.postcode.size.msg}")
     @Max(value = 99999, message = "{address.postcode.size.msg}")
     @Positive(message = "{address.postcode.size.msg}")
-    private int postcode;
+    private Integer postcode;
     @NotBlank(message = "{field.mandatory.msg}")
     @Size(min = 2, max = 100, message = "{address.city.size.msg}")
     private String city;
@@ -19,9 +19,9 @@ public class AddressDTO {
     @Size(min = 2, max = 100, message = "{address.city.size.msg}")
     private String street;
     @NotNull(message = "{field.mandatory.msg}")
-    private int houseNr;
+    private Integer houseNr;
     private String houseNrAddition;
-    private int flatNr;
+    private Integer flatNr;
 
     public AddressDTO() {
     }
@@ -35,11 +35,11 @@ public class AddressDTO {
         this.flatNr = address.getFlatNr();
     }
 
-    public int getPostcode() {
+    public Integer getPostcode() {
         return postcode;
     }
 
-    public void setPostcode(int postcode) {
+    public void setPostcode(Integer postcode) {
         this.postcode = postcode;
     }
 
@@ -59,11 +59,11 @@ public class AddressDTO {
         this.street = street;
     }
 
-    public int getHouseNr() {
+    public Integer getHouseNr() {
         return houseNr;
     }
 
-    public void setHouseNr(int houseNr) {
+    public void setHouseNr(Integer houseNr) {
         this.houseNr = houseNr;
     }
 
@@ -75,11 +75,11 @@ public class AddressDTO {
         this.houseNrAddition = houseNrAddition;
     }
 
-    public int getFlatNr() {
+    public Integer getFlatNr() {
         return flatNr;
     }
 
-    public void setFlatNr(int flatNr) {
+    public void setFlatNr(Integer flatNr) {
         this.flatNr = flatNr;
     }
 }

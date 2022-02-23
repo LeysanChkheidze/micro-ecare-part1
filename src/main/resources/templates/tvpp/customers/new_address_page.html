@@ -23,37 +23,45 @@
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{postcode}" id="postcode" class="form-control">
+
+            <input type="text" th:value="${customerDTO.addressDTO.postcode}" id="postcode" th:name="postcode"
+                   th:id="postcode" class="form-control">
             <label for="postcode" class="form-label">Postcode</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('postcode')}" th:errors="*{postcode}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{city}" id="city" class="form-control">
+            <input type="text" th:value="${customerDTO.addressDTO.city}" id="city" th:id="city" th:name="city"
+                   class="form-control">
             <label for="city" class="form-label">City</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{street}" id="street" class="form-control">
+            <input type="text" th:value="${customerDTO.addressDTO.street}" id="street" th:id="street" th:name="street"
+                   class="form-control">
             <label for="street" class="form-label">Street</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('street')}" th:errors="*{street}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{houseNr}" id="houseNr" class="form-control">
+            <input type="text" th:value="${customerDTO.addressDTO.houseNr}" id="houseNr" th:id="houseNr" th:name="houseNr"
+                   class="form-control">
             <label for="houseNr" class="form-label">House Nr</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('houseNr')}" th:errors="*{houseNr}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{houseNrAddition}" id="houseNrAddition" class="form-control">
+            <input type="text" th:value="${customerDTO.addressDTO.houseNrAddition}" id="houseNrAddition"
+                   th:id="houseNrAddition" th:name="houseNrAddition" class="form-control">
             <label for="houseNrAddition" class="form-label">House Nr Addition</label>
-            <p class="alert alert-danger" th:if="${#fields.hasErrors('houseNrAddition')}" th:errors="*{houseNrAddition}">
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('houseNrAddition')}"
+               th:errors="*{houseNrAddition}">
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:field="*{flatNr}" id="flatNr" class="form-control">
+            <input type="text" th:value="${customerDTO.addressDTO.flatNr}" id="flatNr" th:id="flatNr" th:name="flatNr"
+                   class="form-control">
             <label for="flatNr" class="form-label">Flat Nr</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('flatNr')}" th:errors="*{flatNr}">
         </div>
@@ -62,6 +70,7 @@
             <input class="btn btn-primary" type="submit" value="Next"/>
         </div>
         <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${passportPath}} role="button">Back</a>
     </form>
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
     </form>

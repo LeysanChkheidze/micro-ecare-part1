@@ -7,7 +7,6 @@ import com.javaschool.microecare.customermanagement.service.PassportType;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import com.javaschool.microecare.ordermanagement.TVPPBasket;
 import com.javaschool.microecare.ordermanagement.NewCustomerOrder;
-import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -61,7 +60,7 @@ public class CustomersPageTVPPController {
     }
 
     @ModelAttribute
-    public void setPathsAttributes(Model model) {
+    public void setCommonAttributes(Model model) {
         commonEntityService.setPathsAttributes(model, controllerPath);
         model.addAttribute("personalDataPath", controllerPath + personalDataPath);
         model.addAttribute("addressPath", controllerPath + addressPath);
@@ -70,6 +69,7 @@ public class CustomersPageTVPPController {
         model.addAttribute("submitPath", controllerPath + overviewPath);
         model.addAttribute("overviewPath", overviewPath);
         model.addAttribute("basketPath", basketControllerPath);
+//        model.addAttribute("customerDTO", customerDTO);
     }
 
     private void setAllCustomersModel(Model model) {
@@ -93,7 +93,14 @@ public class CustomersPageTVPPController {
     }
 
     @GetMapping("${endpoints.tvpp.entity.path.new}")
+    public String getCreateNewCustomer(PersonalDataDTO personalDataDTO, Model model) {
+        //  return templateFolder + "new_personal_data";
+        return "redirect:" + controllerPath + personalDataPath;
+    }
+
+    @GetMapping("${endpoints.tvpp.customers.path.personal_data}")
     public String showNewCustomerPersonalDataPage(PersonalDataDTO personalDataDTO, Model model) {
+        model.addAttribute("customerDTO", customerDTO);
         return templateFolder + "new_personal_data";
     }
 
@@ -109,16 +116,21 @@ public class CustomersPageTVPPController {
     private void setPassportPageModel(Model model) {
         PassportType[] passportTypes = PassportType.values();
         model.addAttribute("passportTypes", passportTypes);
+
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.passport}")
     public String showPassportPage(PassportDTO passportDTO, Model model) {
+        System.out.println("start get passport");
         setPassportPageModel(model);
+        model.addAttribute("customerDTO", customerDTO);
         return templateFolder + "new_passport_page";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.passport}")
     public String postPassportData(@Valid PassportDTO passportDTO, BindingResult result, Model model) {
+        System.out.println("start post passport");
+
         if (result.hasErrors()) {
             setPassportPageModel(model);
             return templateFolder + "new_passport_page";
@@ -129,6 +141,8 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.address}")
     public String showAddressPage(AddressDTO addressDTO, Model model) {
+        model.addAttribute("customerDTO", customerDTO);
+
         return templateFolder + "new_address_page";
     }
 
@@ -143,6 +157,8 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.login}")
     public String showLoginDataPage(LoginDataDTO loginDataDTO, Model model) {
+        model.addAttribute("customerDTO", customerDTO);
+
         return templateFolder + "new_login_page";
     }
 
@@ -158,7 +174,7 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.overview}")
     public String showOverviewPage(Model model) {
         model.addAttribute("customerView", new CustomerView(customerDTO));
-  //      model.addAttribute("submitPath", controllerPath + overviewPath);
+        //      model.addAttribute("submitPath", controllerPath + overviewPath);
         return templateFolder + "overview_page";
     }
 
