@@ -8,7 +8,8 @@ import com.javaschool.microecare.catalogmanagement.repository.OptionsRepo;
 import com.javaschool.microecare.catalogmanagement.repository.TariffsRepo;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
-import com.javaschool.microecare.utils.EntityNotFoundInDBException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -81,7 +82,7 @@ public class TariffsService {
      *
      * @param tariffDTO the tariff dto
      * @return the tariff
-     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if tariffName provided in tariffDTO is not unique
+     * @throws EntityCannotBeSavedException if tariffName provided in tariffDTO is not unique
      */
     public Tariff saveNewTariff(TariffDTO tariffDTO) {
         Tariff tariff = new Tariff(tariffDTO);
@@ -97,7 +98,7 @@ public class TariffsService {
      *
      * @param tariffDTO the tariff dto
      * @return the tariff
-     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if tariffName provided in tariffDTO is not unique
+     * @throws EntityCannotBeSavedException if tariffName provided in tariffDTO is not unique
      */
     public Tariff updateTariff(long id, TariffDTO tariffDTO) {
         Tariff tariff = tariffRepo.getById(id);

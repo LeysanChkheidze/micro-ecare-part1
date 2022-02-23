@@ -1,12 +1,13 @@
 package com.javaschool.microecare.usermanagement.service;
 
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.usermanagement.dao.TvppUser;
 import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.repository.TVPPUserRepo;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
-import com.javaschool.microecare.utils.EntityNotFoundInDBException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -102,7 +103,7 @@ public class  TVPPUsersService {
      *
      * @param userDTO the user dto
      * @return the tvpp user
-     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if username provided in userDTO is not unique
+     * @throws EntityCannotBeSavedException if username provided in userDTO is not unique
      */
     public TvppUser registerUser(TvppUserDTO userDTO) {
         TvppUser user = new TvppUser(userDTO);
@@ -120,7 +121,7 @@ public class  TVPPUsersService {
      * @param id      the id
      * @param userDTO the user dto
      * @return the tvpp user
-     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if username provided in userDTO is not unique
+     * @throws EntityCannotBeSavedException if username provided in userDTO is not unique
      */
     public TvppUser updateUser(long id, TvppUserDTO userDTO) {
         TvppUser user = tvppUserRepo.getById(id);

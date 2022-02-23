@@ -6,7 +6,7 @@ import com.javaschool.microecare.usermanagement.dto.TVPPRoles;
 import com.javaschool.microecare.usermanagement.dto.TvppUserDTO;
 import com.javaschool.microecare.usermanagement.service.TVPPUsersService;
 import com.javaschool.microecare.usermanagement.viewmodel.TVPPUserView;
-import com.javaschool.microecare.utils.EntityCannotBeSavedException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

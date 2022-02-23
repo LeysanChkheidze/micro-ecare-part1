@@ -1,6 +1,6 @@
 package com.javaschool.microecare.utils;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

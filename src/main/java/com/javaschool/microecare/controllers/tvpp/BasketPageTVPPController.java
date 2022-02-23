@@ -4,7 +4,7 @@ import com.javaschool.microecare.commonentitymanagement.service.CommonEntityServ
 import com.javaschool.microecare.ordermanagement.AbstractOrder;
 import com.javaschool.microecare.ordermanagement.TVPPBasket;
 import com.javaschool.microecare.ordermanagement.service.BasketService;
-import com.javaschool.microecare.utils.EntityCannotBeSavedException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;

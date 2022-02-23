@@ -1,4 +1,4 @@
-package com.javaschool.microecare.utils;
+package com.javaschool.microecare.commonentitymanagement.dao;
 
 import javax.persistence.EntityNotFoundException;
 

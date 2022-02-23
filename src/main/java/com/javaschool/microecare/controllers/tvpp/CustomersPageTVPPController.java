@@ -13,9 +13,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 /**
@@ -41,6 +44,8 @@ public class CustomersPageTVPPController {
     private String overviewPath;
     @Value("${endpoints.tvpp.basket.controller_path}")
     private String basketControllerPath;
+    @Value("${general.field.not_date.msg}")
+    private String notDateErrorMessage;
 
 
     private boolean successfulAction = false;
@@ -114,12 +119,17 @@ public class CustomersPageTVPPController {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
             model.addAttribute("customerDTO", getCustomerDTO());
+            return templateFolder + "new_personal_data";
+        }
 
+        if (!CommonEntityService.validateDate(personalDataDTO.getBirthday())) {
+            result.addError(new FieldError("customerDTO", "birthday", notDateErrorMessage));
             return templateFolder + "new_personal_data";
         }
         getCustomerDTO().setPersonalDataDTO(personalDataDTO);
         return "redirect:" + controllerPath + passportPath;
     }
+
 
     private void setPassportPageModel(Model model) {
         PassportType[] passportTypes = PassportType.values();
@@ -138,8 +148,12 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.passport}")
     public String postPassportData(@Valid PassportDTO passportDTO, BindingResult result, Model model) {
         model.addAttribute("dataSubmitted", true);
-        if (result.hasErrors()) {
+        boolean issueDateValid = CommonEntityService.validateDate(passportDTO.getIssueDate());
+        if (result.hasErrors() || !issueDateValid) {
             setPassportPageModel(model);
+            if (!issueDateValid) {
+                result.addError(new FieldError("passportDTO", "issueDate", notDateErrorMessage));
+            }
             return templateFolder + "new_passport_page";
         }
         getCustomerDTO().setPassportDTO(passportDTO);

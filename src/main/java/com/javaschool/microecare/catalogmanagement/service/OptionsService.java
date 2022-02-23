@@ -8,7 +8,8 @@ import com.javaschool.microecare.catalogmanagement.repository.TariffsRepo;
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.catalogmanagement.viewmodel.ShortOptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
-import com.javaschool.microecare.utils.EntityNotFoundInDBException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -101,7 +102,7 @@ public class OptionsService {
      *
      * @param optionDTO the option dto
      * @return the option
-     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if optionName provided in OptionDTO is not unique
+     * @throws EntityCannotBeSavedException if optionName provided in OptionDTO is not unique
      */
     public Option saveNewOption(OptionDTO optionDTO) {
         Option option = new Option(optionDTO);
@@ -118,7 +119,7 @@ public class OptionsService {
      * @param id        the id
      * @param optionDTO the option dto
      * @return the option
-     * @throws com.javaschool.microecare.utils.EntityCannotBeSavedException if optionName provided in OptionDTO is not unique
+     * @throws EntityCannotBeSavedException if optionName provided in OptionDTO is not unique
      */
     public Option updateOption(long id, OptionDTO optionDTO) {
         Option option = optionsRepo.getById(id);

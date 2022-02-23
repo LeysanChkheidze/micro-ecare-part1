@@ -1,8 +1,7 @@
-package com.javaschool.microecare.utils;
+package com.javaschool.microecare.commonentitymanagement.dao;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
-//TODO: подумать, куда положить этот эксепшн
 
 /**
  * The type EntityCannotBeSavedException which extends DataIntegrityViolationException and additionally has a field to store entity name.

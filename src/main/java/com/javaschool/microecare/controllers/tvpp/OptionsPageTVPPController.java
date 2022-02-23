@@ -5,7 +5,7 @@ import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
 import com.javaschool.microecare.catalogmanagement.service.OptionsService;
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
-import com.javaschool.microecare.utils.EntityCannotBeSavedException;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;

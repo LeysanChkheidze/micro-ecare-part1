@@ -1,8 +1,8 @@
 package com.javaschool.microecare.commonentitymanagement.service;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.ordermanagement.TVPPBasket;
-import com.javaschool.microecare.utils.EntityCannotBeSavedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -14,7 +14,9 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -150,6 +152,20 @@ public class CommonEntityService {
         baseEntity.setUpdateTime(LocalDateTime.now());
         return jpaRepository.save(baseEntity);
 
+    }
+
+    /**
+     * Validates if provided string can be parsed as LocalDate
+     * @param dateString
+     * @return
+     */
+    public static boolean validateDate(String dateString) {
+        try {
+            LocalDate.parse(dateString);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 
 
