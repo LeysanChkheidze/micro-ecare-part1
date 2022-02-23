@@ -23,17 +23,12 @@
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" th:value="${customerDTO.loginDataDTO.email}" id="email" th:id="email" th:name="email"
-                   class="form-control">
+            <input type="text"
+                   th:value="${dataSubmitted == false} ? ${customerDTO?.loginDataDTO?.email} : ${loginDataDTO?.email}"
+                   id="email" th:id="email" th:name="email" class="form-control">
             <label for="email" class="form-label">Email</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
         </div>
-
-        <!--div class="form-outline mb-4">
-            <input type="text" th:field="*{password}" id="password" class="form-control">
-            <label for="password" class="form-label">Password</label>
-            <p class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
-        </div-->
 
         <div class="form-outline mb-4">
             <input class="btn btn-primary" type="submit" value="To overview"/>

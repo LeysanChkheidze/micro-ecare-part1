@@ -104,13 +104,17 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.personal_data}")
     public String showNewCustomerPersonalDataPage(PersonalDataDTO personalDataDTO, Model model) {
+        model.addAttribute("dataSubmitted", false);
         model.addAttribute("customerDTO", getCustomerDTO());
         return templateFolder + "new_personal_data";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.personal_data}")
     public String postPersonalData(@Valid PersonalDataDTO personalDataDTO, BindingResult result, Model model) {
+        model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
+            model.addAttribute("customerDTO", getCustomerDTO());
+
             return templateFolder + "new_personal_data";
         }
         getCustomerDTO().setPersonalDataDTO(personalDataDTO);
@@ -125,17 +129,15 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.passport}")
     public String showPassportPage(PassportDTO passportDTO, Model model) {
-        System.out.println("start get passport");
         setPassportPageModel(model);
+        model.addAttribute("dataSubmitted", false);
         model.addAttribute("customerDTO", getCustomerDTO());
-
         return templateFolder + "new_passport_page";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.passport}")
     public String postPassportData(@Valid PassportDTO passportDTO, BindingResult result, Model model) {
-        System.out.println("start post passport");
-
+        model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
             setPassportPageModel(model);
             return templateFolder + "new_passport_page";
@@ -147,14 +149,14 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.address}")
     public String showAddressPage(AddressDTO addressDTO, Model model) {
         model.addAttribute("customerDTO", getCustomerDTO());
-
-
+        model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_address_page";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.address}")
     public String postAddressData(@Valid AddressDTO addressDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("dataSubmitted", true);
             return templateFolder + "new_address_page";
         }
         getCustomerDTO().setAddressDTO(addressDTO);
@@ -164,13 +166,14 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.login}")
     public String showLoginDataPage(LoginDataDTO loginDataDTO, Model model) {
         model.addAttribute("customerDTO", getCustomerDTO());
-
+        model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_login_page";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.login}")
     public String postLoginData(@Valid LoginDataDTO loginDataDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("dataSubmitted", true);
             return templateFolder + "new_login_page";
         }
         getCustomerDTO().setLoginDataDTO(loginDataDTO);

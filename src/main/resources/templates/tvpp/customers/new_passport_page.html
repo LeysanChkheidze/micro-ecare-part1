@@ -25,8 +25,9 @@
 
         <div>
             <!--select class="form-control" th:field="*{passportType}" th:value = "${customerDTO.passportDTO.passportType}" id="dropPassport"-->
-            <select class="form-control"  th:value="${customerDTO?.passportDTO?.passportType?.name}" id="dropPassport"
-                    th:id="passportType" th:name="passportType">
+            <select class="form-control"
+                    th:value="${dataSubmitted == false} ? ${customerDTO?.passportDTO?.passportType} : ${passportDTO?.passportType}"
+                    id="dropPassport" th:id="passportType" th:name="passportType">
                 <option value="" selected disabled hidden>Select type</option>
                 <option th:each="type : ${passportTypes}" th:value="${type}"
                         th:text="${type.displayName}"></option>
@@ -37,16 +38,18 @@
         <div class="form-outline mb-4">
 
             <!--input type="text" th:field="*{documentID}" th:value = "${customerDTO.passportDTO.documentID}" id="documentID" class="form-control"-->
-            <input type="text" th:value="${customerDTO.passportDTO.documentID}" id="documentID" th:id="documentID"
-                   th:name="documentID" class="form-control">
+            <input type="text"
+                   th:value="${dataSubmitted == false} ? ${customerDTO?.passportDTO?.documentID} : ${passportDTO?.documentID}"
+                   id="documentID" th:id="documentID" th:name="documentID" class="form-control">
             <label for="documentID" class="form-label">Document ID</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('documentID')}" th:errors="*{documentID}">
         </div>
 
         <div class="form-outline mb-4">
             <!--input type="text" th:field="*{issueDate}"  th:value = "${customerDTO.passportDTO.issueDate}" id="issueDate" class="form-control"-->
-            <input type="text" th:value="${customerDTO.passportDTO.issueDate}" id="issueDate" th:id="issueDate"
-                   th:name="issueDate" class="form-control">
+            <input type="text"
+                   th:value="${dataSubmitted == false} ? ${customerDTO?.passportDTO?.issueDate} : ${passportDTO?.issueDate}"
+                   id="issueDate" th:id="issueDate" th:name="issueDate" class="form-control">
             <label for="issueDate" class="form-label">Issue date</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}">
         </div>
