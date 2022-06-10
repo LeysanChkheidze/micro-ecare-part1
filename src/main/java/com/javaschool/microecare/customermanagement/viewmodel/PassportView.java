@@ -1,25 +1,26 @@
 package com.javaschool.microecare.customermanagement.viewmodel;
 
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.customermanagement.dao.Passport;
 import com.javaschool.microecare.customermanagement.dto.PassportDTO;
 
 import java.time.LocalDate;
 
 public class PassportView {
-    String passportType;
+    private String passportType;
     private String documentID;
-    private LocalDate issueDate;
+    private String issueDate;
 
     public PassportView(Passport passport) {
         this.passportType = passport.getPassportType().getDisplayName();
         this.documentID = passport.getDocumentID();
-        this.issueDate = passport.getIssueDate();
+        this.issueDate = passport.getIssueDate().format(CommonEntityService.dateFormatter);
     }
 
     public PassportView(PassportDTO passportDTO) {
         this.passportType = passportDTO.getPassportType().getDisplayName();
         this.documentID = passportDTO.getDocumentID();
-        this.issueDate = LocalDate.parse(passportDTO.getIssueDate());
+        this.issueDate = passportDTO.getIssueDate();
     }
 
     public String getPassportType() {
@@ -38,11 +39,16 @@ public class PassportView {
         this.documentID = documentID;
     }
 
-    public LocalDate getIssueDate() {
+    public String getIssueDate() {
         return issueDate;
     }
 
-    public void setIssueDate(LocalDate issueDate) {
+    public void setIssueDate(String issueDate) {
         this.issueDate = issueDate;
+    }
+
+    @Override
+    public String toString() {
+        return passportType + " number: " + documentID + ", issued " + issueDate;
     }
 }

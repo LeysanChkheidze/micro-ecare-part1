@@ -25,8 +25,7 @@
         <div class="form-outline mb-4">
             <input type="text"
                    th:value="${dataSubmitted == false} ? ${customerDTO?.personalDataDTO?.firstName} : ${personalDataDTO?.firstName}"
-                   id="firstName" th:id="firstName"
-                   th:name="firstName" class="form-control">
+                   id="firstName" th:id="firstName" th:name="firstName" class="form-control">
             <label for="firstName" class="form-label">First name</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">
         </div>
@@ -35,8 +34,7 @@
 
             <input type="text"
                    th:value="${dataSubmitted == false} ? ${customerDTO?.personalDataDTO?.lastName} : ${personalDataDTO?.lastName}"
-                   id="lastName" th:id="lastName"
-                   th:name="lastName" class="form-control">
+                   id="lastName" th:id="lastName" th:name="lastName" class="form-control">
             <label for="lastName" class="form-label">Last name</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
         </div>
@@ -44,8 +42,7 @@
         <div class="form-outline mb-4">
             <input type="text"
                    th:value="${dataSubmitted == false} ? ${customerDTO?.personalDataDTO?.birthday} : ${personalDataDTO?.birthday}"
-                   id="birthday" th:id="birthday"
-                   th:name="birthday" class="form-control">
+                   id="birthday" th:id="birthday" th:name="birthday" class="form-control" placeholder="dd.mm.YYYY">
             <label for="birthday" class="form-label">Birthday</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}">
         </div>

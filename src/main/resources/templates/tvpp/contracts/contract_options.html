@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Update tariff</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">New contract: options</h1>
+
+    <form action="#" th:action="@{${contractOptionsPath}}" th:object="${optionListDTO}"
+          th:method="post">
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+        <div class="form-outline mb-4">Select options</div>
+
+        <div class="list-group">
+            <ul>
+                <li th:each="option : ${allOptions}">
+                    <input type="checkbox" th:field="*{optionIDs}" th:value="${option.id}"/>
+                    <label th:for="${#ids.prev('optionIDs')}"
+                           th:text="${option.optionName}"></label>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="To Contract Overview"/>
+        </div>
+        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+
+    </form>
+
+
+
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+</div>
+</body>
+</html>

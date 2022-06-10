@@ -49,7 +49,7 @@
             <!--input type="text" th:field="*{issueDate}"  th:value = "${customerDTO.passportDTO.issueDate}" id="issueDate" class="form-control"-->
             <input type="text"
                    th:value="${dataSubmitted == false} ? ${customerDTO?.passportDTO?.issueDate} : ${passportDTO?.issueDate}"
-                   id="issueDate" th:id="issueDate" th:name="issueDate" class="form-control">
+                   id="issueDate" th:id="issueDate" th:name="issueDate" class="form-control" placeholder="dd.mm.YYYY">
             <label for="issueDate" class="form-label">Issue date</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}">
         </div>

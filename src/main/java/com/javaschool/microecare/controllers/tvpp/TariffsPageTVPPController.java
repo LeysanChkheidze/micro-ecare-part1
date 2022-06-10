@@ -9,8 +9,11 @@ import com.javaschool.microecare.commonentitymanagement.service.CommonEntityServ
 import com.javaschool.microecare.catalogmanagement.service.TariffsService;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
+import com.javaschool.microecare.utils.EntityActions;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,10 +39,16 @@ public class TariffsPageTVPPController {
     private String pathEditOptions;
     @Value("${general.price.nonnumber.msg}")
     private String priceDigitsMessage;
+    @Value("${tariff.delete.in_contract.msg}")
+    private String tariffDeleteInContractMessage;
+
+    private final String ENTITY_NAME = "Tariff";
 
     private boolean successfulAction = false;
     private String successActionName;
     private long successId;
+    private String errorMessage;
+    private EntityActions action;
 
     final TariffsService tariffsService;
     final CommonEntityService commonEntityService;
@@ -79,8 +88,13 @@ public class TariffsPageTVPPController {
         if (successfulAction) {
             model.addAllAttributes(Map.of("successfulAction", true,
                     "successEntityName", "Tariff",
-                    "successAction", successActionName,
+                    "successAction", action.getText(),
                     "successId", successId));
+        }
+        if (errorMessage != null) {
+            model.addAttribute("errorEntity", ENTITY_NAME);
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("errorAction", action.getText());
         }
     }
 
@@ -95,11 +109,13 @@ public class TariffsPageTVPPController {
     public String getTariffsPage(Model model) {
         setAllTariffsModel(model);
         successfulAction = false;
+        errorMessage = null;
+        action = null;
         return templateFolder + "tariffs";
     }
 
 
-    private void setModelForTariffsPage(Model model) {
+    private void setModelForTariffCreationPage(Model model) {
         List<ShortOptionView> allExistingOptions = optionsService.getAllOptionsShortViews();
         model.addAttribute("allOptions", allExistingOptions);
     }
@@ -113,7 +129,7 @@ public class TariffsPageTVPPController {
      */
     @GetMapping("${endpoints.tvpp.entity.path.new}")
     public String showNewTariffPage(TariffDTO tariffDTO, Model model) {
-        setModelForTariffsPage(model);
+        setModelForTariffCreationPage(model);
         return templateFolder + "new_tariff";
     }
 
@@ -130,21 +146,24 @@ public class TariffsPageTVPPController {
      */
     @PostMapping
     public String createNewTariff(@Valid TariffDTO tariffDTO, BindingResult result, Model model) {
+        action = EntityActions.CREATE;
         if (result.hasErrors()) {
-            setModelForTariffsPage(model);
+            model.addAttribute("errorAction", action.getText());
+            setModelForTariffCreationPage(model);
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage), "java.lang.NumberFormatException");
             return templateFolder + "new_tariff";
         }
         try {
             Tariff newTariff = tariffsService.saveNewTariff(tariffDTO);
             successfulAction = true;
-            successActionName = "created";
+            // successActionName = "created";
             successId = newTariff.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             model.addAttribute("errorEntity", e.getEntityName());
             model.addAttribute("errorMessage", e.getMessage());
-            setModelForTariffsPage(model);
+            model.addAttribute("errorAction", action.getText());
+            setModelForTariffCreationPage(model);
             return templateFolder + "new_tariff";
         }
     }
@@ -161,7 +180,7 @@ public class TariffsPageTVPPController {
         Tariff tariff = tariffsService.getTariff(id);
         TariffDTO tariffDTO = new TariffDTO(tariff);
         TariffView tariffView = new TariffView(tariff);
-        setModelForTariffsPage(model);
+        setModelForTariffCreationPage(model);
 
         model.addAttribute("tariffDTO", tariffDTO);
         model.addAttribute("tariffView", tariffView);
@@ -183,8 +202,10 @@ public class TariffsPageTVPPController {
     @PatchMapping("/{id}")
     public String updateTariff(@PathVariable("id") int id, @Valid TariffDTO tariffDTO,
                                BindingResult result, Model model) {
+        action = EntityActions.UPDATE;
         if (result.hasErrors()) {
-            setModelForTariffsPage(model);
+            model.addAttribute("errorAction", action.getText());
+            setModelForTariffCreationPage(model);
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage), "java.lang.NumberFormatException");
             TariffView tariffView = new TariffView(tariffsService.getTariff(id));
             model.addAttribute("tariffView", tariffView);
@@ -194,14 +215,14 @@ public class TariffsPageTVPPController {
         try {
             Tariff updatedTariff = tariffsService.updateTariff(id, tariffDTO);
             successfulAction = true;
-            successActionName = "updated";
             successId = updatedTariff.getId();
             return "redirect:" + controllerPath;
 
         } catch (EntityCannotBeSavedException e) {
+            model.addAttribute("errorAction", action.getText());
             model.addAttribute("errorEntity", e.getEntityName());
             model.addAttribute("errorMessage", e.getMessage());
-            setModelForTariffsPage(model);
+            setModelForTariffCreationPage(model);
             TariffView tariffView = new TariffView(tariffsService.getTariff(id));
             model.addAttribute("tariffView", tariffView);
             return templateFolder + "edit_tariff";
@@ -250,7 +271,9 @@ public class TariffsPageTVPPController {
     @PatchMapping("${endpoints.tvpp.tariffs.path.edit_options}")
     public String updateTariffOptions(@PathVariable("id") int id, @Valid OptionListDTO optionListDTO,
                                       BindingResult result, Model model) {
+        action = EntityActions.UPDATE;
         if (result.hasErrors()) {
+            model.addAttribute("errorAction", action.getText());
             Tariff tariff = tariffsService.getTariff(id);
             setModelForUpdateTariffOptionsPage(model, tariff);
             return templateFolder + "edit_tariff_options";
@@ -259,15 +282,22 @@ public class TariffsPageTVPPController {
         try {
             Tariff updatedTariff = tariffsService.updateCompatibleOptionsInTariff(id, optionListDTO);
             successfulAction = true;
-            successActionName = "compatible options updated";
             successId = updatedTariff.getId();
             return "redirect:" + controllerPath;
 
-        } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
+        } catch (EntityCannotBeSavedException | JpaObjectRetrievalFailureException e) {
+            model.addAttribute("errorAction", action.getText());
             Tariff tariff = tariffsService.getTariff(id);
             setModelForUpdateTariffOptionsPage(model, tariff);
+            if (e instanceof EntityCannotBeSavedException) {
+                EntityCannotBeSavedException exception = (EntityCannotBeSavedException) e;
+                model.addAttribute("errorEntity", exception.getEntityName());
+                model.addAttribute("errorMessage", e.getMessage());
+            } else {
+                JpaObjectRetrievalFailureException exception = (JpaObjectRetrievalFailureException) e;
+                model.addAttribute("errorEntity", ENTITY_NAME);
+                model.addAttribute("errorMessage", commonEntityService.resolveJpaObjectRetrievalFailureExceptionMessage(exception));
+            }
             return templateFolder + "edit_tariff_options";
         }
     }
@@ -281,13 +311,19 @@ public class TariffsPageTVPPController {
      */
     @DeleteMapping("/{id}")
     public String deleteTariff(@PathVariable("id") int id, Model model) {
+        action = EntityActions.DELETE;
         try {
             tariffsService.deleteTariff(id);
             successfulAction = true;
-            successActionName = "deleted";
             successId = id;
         } catch (RuntimeException e) {
-            //todo: add error popup
+            e.printStackTrace();
+            if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contracts\"")) {
+                errorMessage = tariffDeleteInContractMessage;
+            } else {
+                errorMessage = e.getMessage();
+            }
+            return "redirect:" + controllerPath;
         }
         return "redirect:" + controllerPath;
     }

@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <title>Customer overview</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
 <br>
 <br>
 <br>
+<div th:switch="${errorMessage}">
+    <div th:case="null">
+    </div>
+    <div th:case="*">
+        <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+    </div>
+</div>
 <div class="container">
     <h1 class="mb-3">Customer overview</h1>
 
@@ -25,7 +33,11 @@
 
     <section id="personal_data">
         <div>
-            <h5 class="card-title">Personal data</h5>
+            <h5 class="card-title">
+                Personal data
+                <a class="text-reset me-3" th:href="@{${personalDataPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a></h5>
             <dl class="row">
                 <dt class="col-sm-3">First Name</dt>
                 <dd class="col-sm-9" th:text="${customerView.personalDataView.firstName}"></dd>
@@ -40,8 +52,13 @@
     <hr>
     <section id="passport_data">
         <div>
-            <h5 class="card-title">Passport data</h5>
+            <h5 class="card-title">Passport data
+                <a class="text-reset me-3" th:href="@{${passportPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a>
+            </h5>
             <dl class="row">
+
                 <dt class="col-sm-3">Document type</dt>
                 <dd class="col-sm-9" th:text="${customerView.passportView.passportType}"></dd>
                 <dt class="col-sm-3">Document ID</dt>
@@ -55,7 +72,11 @@
     <hr>
     <section id="address">
         <div>
-            <h5 class="card-title">Address</h5>
+            <h5 class="card-title">Address
+                <a class="text-reset me-3" th:href="@{${addressPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a>
+            </h5>
             <dl class="row">
                 <dt class="col-sm-3">Postcode</dt>
                 <dd class="col-sm-9" th:text="${customerView.addressView.postcode}"></dd>
@@ -76,7 +97,11 @@
     <hr>
     <section id="login">
         <div>
-            <h5 class="card-title">Login data</h5>
+            <h5 class="card-title">Login data
+                <a class="text-reset me-3" th:href="@{${loginPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a>
+            </h5>
             <dl class="row">
                 <dt class="col-sm-3">Email</dt>
                 <dd class="col-sm-9">
@@ -91,7 +116,7 @@
     <hr>
     <form action="#" th:action="@{${submitPath}}" method="post">
         <div class="form-outline mb-4">
-            <input class="btn btn-primary" type="submit" value="To Basket"/>
+            <input class="btn btn-primary" type="submit" value="Save customer"/>
         </div>
     </form>
     <a class="btn btn-primary" th:href=@{${loginPath}} role="button">Back</a>

@@ -6,8 +6,12 @@ import com.javaschool.microecare.catalogmanagement.service.OptionsService;
 import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
+import com.javaschool.microecare.contractmanagement.service.ContractsService;
+import com.javaschool.microecare.utils.EntityActions;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,13 +33,22 @@ public class OptionsPageTVPPController {
     private String controllerPath;
     @Value("${general.price.nonnumber.msg}")
     private String priceDigitsMessage;
+    @Value("${option.delete.in_contract.msg}")
+    private String optionDeleteInContractMessage;
+
+    private final String ENTITY_NAME = "Option";
 
     private boolean successfulAction = false;
-    private String successActionName;
     private long successId;
+    private boolean viewDetails = false;
+    private OptionView displayedOption;
+    private int numberOfContractsWithOption;
+    private String errorMessage;
+    private EntityActions action;
 
     final CommonEntityService commonEntityService;
     final OptionsService optionsService;
+    final ContractsService contractsService;
 
     /**
      * Instantiates a new Options page tvpp controller.
@@ -43,9 +56,10 @@ public class OptionsPageTVPPController {
      * @param commonEntityService the CommonEntityService service with methods relevant to any entity
      * @param optionsService      the OptionsService
      */
-    public OptionsPageTVPPController(CommonEntityService commonEntityService, OptionsService optionsService) {
+    public OptionsPageTVPPController(CommonEntityService commonEntityService, OptionsService optionsService, ContractsService contractsService) {
         this.commonEntityService = commonEntityService;
         this.optionsService = optionsService;
+        this.contractsService = contractsService;
     }
 
     /**
@@ -68,9 +82,20 @@ public class OptionsPageTVPPController {
         if (successfulAction) {
             model.addAllAttributes(Map.of("successfulAction", true,
                     "successEntityName", "Option",
-                    "successAction", successActionName,
+                    "successAction", action.getText(),
                     "successId", successId));
         }
+        if (viewDetails) {
+            model.addAttribute("viewOptionDetails", true);
+            model.addAttribute("displayedOption", displayedOption);
+            model.addAttribute("numberOfContractsWithOption", numberOfContractsWithOption);
+        }
+        if (errorMessage != null) {
+            model.addAttribute("errorEntity", ENTITY_NAME);
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("errorAction", action.getText());
+        }
+
     }
 
     /**
@@ -84,6 +109,9 @@ public class OptionsPageTVPPController {
     public String getOptionsPage(Model model) {
         setAllOptionsModel(model);
         successfulAction = false;
+        viewDetails = false;
+        errorMessage = null;
+        action = null;
         return templateFolder + "options";
     }
 
@@ -112,19 +140,23 @@ public class OptionsPageTVPPController {
      */
     @PostMapping
     public String createNewOption(@Valid OptionDTO optionDTO, BindingResult result, Model model) {
+        action = EntityActions.CREATE;
         if (result.hasErrors()) {
+            model.addAttribute("errorAction", action.getText());
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
             return templateFolder + "new_option";
         }
+        // todo: Боря, на лекции сказали, что не должно быть трай кетчев в контроллере!
+        //  , а нужно искользовать контроллер адвайз и эксепшн хендлер
         try {
             Option newOption = optionsService.saveNewOption(optionDTO);
             successfulAction = true;
-            successActionName = "created";
             successId = newOption.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             model.addAttribute("errorEntity", e.getEntityName());
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("errorAction", action.getText());
             return templateFolder + "new_option";
         }
     }
@@ -161,7 +193,9 @@ public class OptionsPageTVPPController {
     @PatchMapping("/{id}")
     public String updateOption(@PathVariable("id") int id, @Valid OptionDTO optionDTO,
                                BindingResult result, Model model) {
+        action = EntityActions.UPDATE;
         if (result.hasErrors()) {
+            model.addAttribute("errorAction", action.getText());
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
             OptionView optionView = new OptionView(optionsService.getOption(id));
             model.addAttribute("optionView", optionView);
@@ -171,11 +205,10 @@ public class OptionsPageTVPPController {
         try {
             Option updatedOption = optionsService.updateOption(id, optionDTO);
             successfulAction = true;
-            successActionName = "updated";
             successId = updatedOption.getId();
             return "redirect:" + controllerPath;
-
         } catch (EntityCannotBeSavedException e) {
+            model.addAttribute("errorAction", action.getText());
             model.addAttribute("errorEntity", e.getEntityName());
             model.addAttribute("errorMessage", e.getMessage());
             OptionView optionView = new OptionView(optionsService.getOption(id));
@@ -193,14 +226,39 @@ public class OptionsPageTVPPController {
      */
     @DeleteMapping("/{id}")
     public String deleteTariff(@PathVariable("id") int id, Model model) {
+        action = EntityActions.DELETE;
         try {
             optionsService.deleteOption(id);
             successfulAction = true;
-            successActionName = "deleted";
             successId = id;
-        } catch (RuntimeException e) {
-            //todo: add error popup
+        } catch (DataIntegrityViolationException e) {
+            if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contract_option\"")) {
+                errorMessage = optionDeleteInContractMessage;
+            } else {
+                errorMessage = e.getMessage();
+            }
+            return "redirect:" + controllerPath;
         }
         return "redirect:" + controllerPath;
     }
+
+    @GetMapping("/{id}")
+    public String getOptionDetails(@PathVariable("id") int id, Model model) {
+        action = EntityActions.READ;
+        try {
+            Option option = optionsService.getOption(id);
+            viewDetails = true;
+            displayedOption = new OptionView(option);
+            numberOfContractsWithOption = contractsService.getNumberOfContractsWithOption(id);
+
+        } catch (RuntimeException e) {
+            errorMessage = e.getMessage();
+            return "redirect:" + controllerPath;
+        }
+        //todo: do i need redirect here?
+        // https://stackoverflow.com/questions/68949567/pass-data-from-spring-boot-controller-to-boostrap-modal
+        return "redirect:" + controllerPath;
+    }
+
+
 }

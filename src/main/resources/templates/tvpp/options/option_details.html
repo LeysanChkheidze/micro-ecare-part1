@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:fragment="option_details">
+    <meta charset="UTF-8"/>
+</head>
+
+<body>
+
+<div th:fragment="option_details_modal" class="modal show" tabindex="-1" id="optionDetails" aria-modal="true" role="dialog" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Option details</h5>
+                <button type="button" class="btn-close" onclick="$('#optionDetails').modal('hide');"
+                        aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Name</dt>
+                    <dd class="col-sm-6" th:text="${displayedOption.optionName}"></dd>
+                    <dt class="col-sm-6">Description</dt>
+                    <dd class="col-sm-6" th:text="${displayedOption.optionDescription}"></dd>
+                    <dt class="col-sm-6">One time price</dt>
+                    <dd class="col-sm-6" th:text="${displayedOption.oneTimePrice}"></dd>
+                    <dt class="col-sm-6">Monthly price</dt>
+                    <dd class="col-sm-6" th:text="${displayedOption.monthlyPrice}"></dd>
+                    <dt class="col-sm-6">Number of contracts with this option</dt>
+                    <dd class="col-sm-6"
+                        th:text="${numberOfContractsWithOption != 0} ? ${numberOfContractsWithOption} : 'None'"></dd>
+
+                    <dt class="col-sm-6">Compatible tariffs</dt>
+                    <dd class="col-sm-6">
+                        <div th:if=="${#lists.size(displayedOption.compatibleTariffsNames)<1}">None</div>
+                        <ul class="list-group list-group-light"
+                            th:if=="${#lists.size(displayedOption.compatibleTariffsNames)>0}">
+                            <li th:each="tariffName : ${displayedOption.compatibleTariffsNames}"
+                                th:text="${tariffName}">
+                        </ul>
+
+                    </dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:fragment="option_details_script">
+    $(window).on('load', function () {
+        $('#optionDetails').modal('show');
+    });
+</script>
+
+</body>

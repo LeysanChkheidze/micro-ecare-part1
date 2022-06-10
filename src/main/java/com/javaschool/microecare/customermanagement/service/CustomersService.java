@@ -1,5 +1,9 @@
 package com.javaschool.microecare.customermanagement.service;
 
+import com.javaschool.microecare.catalogmanagement.dao.Tariff;
+import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBException;
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
 import com.javaschool.microecare.customermanagement.dto.*;
@@ -7,6 +11,7 @@ import com.javaschool.microecare.customermanagement.repository.CustomersRepo;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +24,20 @@ public class CustomersService {
 
     final CustomersRepo customersRepo;
     final PasswordEncoder encoder;
+    final CommonEntityService commonEntityService;
 
     @Value("${customer.email.not_unique.msg}")
     String nonUniqueEmailMessage;
 
-    public CustomersService(CustomersRepo customersRepo, PasswordEncoder encoder) {
+
+    public CustomersService(CustomersRepo customersRepo, PasswordEncoder encoder, CommonEntityService commonEntityService) {
         this.customersRepo = customersRepo;
         this.encoder = encoder;
+        this.commonEntityService = commonEntityService;
+    }
+
+    public Customer getCustomer(long id) {
+        return customersRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "Customer"));
     }
 
     /**
@@ -115,7 +127,18 @@ public class CustomersService {
 
     @Transactional
     public void deleteCustomer(long id) {
-        //  Customer customer = customersRepo.getById(id);
         customersRepo.deleteById(id);
+    }
+
+    public Customer saveNewCustomer(CustomerDTO customerDTO) {
+        Customer customer = new Customer(customerDTO);
+        setInitialLoginData(customer);
+        try {
+            return commonEntityService.saveWithUpdateTime(customer, customersRepo);
+        } catch (DataIntegrityViolationException e) {
+            throw commonEntityService.createSavingEntityException(e, "Customer", "Key (email)", nonUniqueEmailMessage);
+
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package com.javaschool.microecare.catalogmanagement.dao;
 
 import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.contractmanagement.dao.Contract;
 import lombok.Getter;
 
 import javax.persistence.Column;
@@ -40,6 +41,9 @@ public class Option extends BaseEntity {
 
     @ManyToMany(mappedBy = "compatibleOptions")
     Set<Tariff> compatibleTariffs;
+
+    @ManyToMany(mappedBy = "options")
+    Set<Contract> contracts;
 
 
     public Option() {

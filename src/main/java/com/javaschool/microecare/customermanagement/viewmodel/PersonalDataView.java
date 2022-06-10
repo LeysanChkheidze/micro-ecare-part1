@@ -1,16 +1,16 @@
 package com.javaschool.microecare.customermanagement.viewmodel;
 
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
 import com.javaschool.microecare.customermanagement.dto.PersonalDataDTO;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class PersonalDataView {
     private String firstName;
     private String lastName;
-    private LocalDate birthday;
+    private String birthday;
 
     public PersonalDataView() {
     }
@@ -18,13 +18,13 @@ public class PersonalDataView {
     public PersonalDataView(PersonalData personalData) {
         this.firstName = personalData.getFirstName();
         this.lastName = personalData.getLastName();
-        this.birthday = personalData.getBirthday();
+        this.birthday = personalData.getBirthday().format(CommonEntityService.dateFormatter);
     }
 
     public PersonalDataView(PersonalDataDTO personalDataDTO) {
         this.firstName = personalDataDTO.getFirstName();
         this.lastName = personalDataDTO.getLastName();
-        this.birthday = LocalDate.parse(personalDataDTO.getBirthday());
+        this.birthday = personalDataDTO.getBirthday();
     }
 
     public PersonalDataView(Customer customer) {
@@ -32,7 +32,7 @@ public class PersonalDataView {
         if (personalData != null) {
             this.firstName = personalData.getFirstName();
             this.lastName = personalData.getLastName();
-            this.birthday = personalData.getBirthday();
+            this.birthday = personalData.getBirthday().format(CommonEntityService.dateFormatter);
         }
     }
 
@@ -52,11 +52,11 @@ public class PersonalDataView {
         this.lastName = lastName;
     }
 
-    public LocalDate getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(LocalDate birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 }

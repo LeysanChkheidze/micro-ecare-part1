@@ -8,8 +8,9 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//todo: переделать в сервис?
 @Configuration
+// todo: почитать про proxyMode
 @Scope(value = WebApplicationContext.SCOPE_SESSION,
         proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TVPPBasket {

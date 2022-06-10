@@ -34,7 +34,9 @@
         <div class="form-outline mb-4">
             <input type="text"
                    th:value="${dataSubmitted == false} ? ${customerDTO?.addressDTO?.city} : ${addressDTO?.city}"
-                   id="city" th:id="city" th:name="city"
+                   id="city"
+                   th:id="city"
+                   th:name="city"
                    class="form-control">
             <label for="city" class="form-label">City</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">

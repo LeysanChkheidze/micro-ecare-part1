@@ -1,6 +1,7 @@
 package com.javaschool.microecare.customermanagement.dao;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.customermanagement.dto.PersonalDataDTO;
 
 import javax.persistence.Column;
@@ -37,7 +38,7 @@ public class PersonalData extends BaseEntity {
     public PersonalData(PersonalDataDTO personalDataDTO) {
         this.firstName = personalDataDTO.getFirstName();
         this.lastName = personalDataDTO.getLastName();
-        this.birthday = LocalDate.parse(personalDataDTO.getBirthday());
+        this.birthday = LocalDate.parse(personalDataDTO.getBirthday(), CommonEntityService.dateFormatter);
     }
 
     public String getFirstName() {

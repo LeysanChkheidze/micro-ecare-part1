@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Update tariff</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">New contract: mobile number and tariff</h1>
+
+    <form action="#" th:action="@{${tariffNumberPath}}" th:object="${tariffAndNumberDTO}" th:method="post">
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+
+
+        <div class="form-outline mb-4">
+            <!--input class="form-control"
+                   type="text"
+                   id="mobileNumberDisplay"
+                   th:id="mobileNumberDisplay"
+                   th:name="mobileNumberDisplay"
+                   th:value="${randomMobileNumber}"
+                   aria-label="disabled input"
+                   disabled
+            /-->
+            <input class="form-control"
+                   type="text"
+                   id="mobileNumber"
+                   th:id="mobileNumber"
+                   th:name="mobileNumber"
+                   th:value="${randomMobileNumber}"
+                   aria-label="disabled input"
+                   readonly
+            />
+            <label class="form-label" for="mobileNumber">Mobile number</label>
+        </div>
+        <!--input type="text" th:id="mobileNumber" name="mobileNumber" th:field="*{mobileNumber}" th:value="${randomMobileNumber}" style="display: none"-->
+
+        <div class="form-outline mb-4">Select tariff</div>
+        <ul>
+            <li th:each="tariff : ${allTariffs}">
+                <input class="form-check-input" type="radio"
+                       th:field="*{tariffID}"
+                       th:id="${tariff.id}"
+                       th:value="${tariff.id}"
+                       th:name="tariff"/>
+                <label th:for="${tariff.id}" th:text="${tariff.tariffName}"></label>
+
+            </li>
+        </ul>
+
+
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="Next"/>
+        </div>
+        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+
+    </form>
+
+
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+</div>
+</body>
+</html>

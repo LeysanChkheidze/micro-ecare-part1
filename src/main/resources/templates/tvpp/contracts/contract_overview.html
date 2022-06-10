@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Update tariff</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">New contract: overview</h1>
+
+    <hr>
+
+    <section id="customer">
+        <div>
+            <h5 class="card-title">
+                Customer
+                <a class="text-reset me-3" th:href="@{${contractCustomerPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a></h5>
+            <dl class="row">
+                <dt class="col-sm-3">Customer ID</dt>
+                <dd class="col-sm-9" th:text="${contractDTO.customerID}"></dd>
+                <dt class="col-sm-3">First Name</dt>
+                <dd class="col-sm-9" th:text="${customerPersonalData.firstName}"></dd>
+                <dt class="col-sm-3">Last Name</dt>
+                <dd class="col-sm-9" th:text="${customerPersonalData.lastName}"></dd>
+                <dt class="col-sm-3">Birthday</dt>
+                <dd class="col-sm-9" th:text="${customerPersonalData.birthday}"></dd>
+
+            </dl>
+        </div>
+    </section>
+    <hr>
+    <section id="mobile_number">
+        <div>
+            <h5 class="card-title">Mobile Number
+                <a class="text-reset me-3" th:href="@{${tariffNumberPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a>
+            </h5>
+            <dl class="row">
+
+                <dt class="col-sm-3">Mobile Number</dt>
+                <dd class="col-sm-9" th:text="${mobileNumberView.numberPresentation}"></dd>
+
+            </dl>
+        </div>
+    </section>
+    <hr>
+    <section id="tariff">
+        <div>
+            <h5 class="card-title">Tariff
+                <a class="text-reset me-3" th:href="@{${tariffNumberPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a>
+            </h5>
+            <dl class="row">
+                <dt class="col-sm-3">Tariff</dt>
+                <dd class="col-sm-9" th:text="${tariffName}"></dd>
+            </dl>
+        </div>
+    </section>
+
+    <hr>
+    <section id="login">
+        <div>
+            <h5 class="card-title">Options
+                <a class="text-reset me-3" th:href="@{${contractOptionsPath}}">
+                    <i class="far fa-edit fa-sm"></i>
+                </a>
+            </h5>
+            <dl class="row">
+                <dt class="col-sm-3">Contract Options</dt>
+                <dd class="col-sm-9">
+                    <ul>
+                        <li th:each="option : ${optionNames}" th:text="${option}"></li>
+                    </ul>
+                </dd>
+            </dl>
+
+        </div>
+    </section>
+
+    <hr>
+    <form action="#" th:action="@{${submitPath}}" method="post">
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="Save contract"/>
+        </div>
+    </form>
+
+
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+</div>
+</body>
+</html>

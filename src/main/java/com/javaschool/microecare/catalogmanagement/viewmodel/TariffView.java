@@ -48,7 +48,7 @@ public class TariffView implements Comparable<TariffView> {
         }
         return compatibleOptions.stream()
                 .map(Option::getOptionName)
-              //  .sorted()
+                //  .sorted()
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -95,5 +95,9 @@ public class TariffView implements Comparable<TariffView> {
     @Override
     public int compareTo(TariffView o) {
         return this.tariffName.compareTo(o.getTariffName());
+    }
+
+    public String getShortTariffView() {
+        return tariffName + ", " + monthlyPrice + "EUR per month\n" + tariffDescription;
     }
 }

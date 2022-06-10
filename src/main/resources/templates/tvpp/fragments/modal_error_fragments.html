@@ -15,7 +15,7 @@
                         aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p th:text="${errorEntity} + ' cannot be saved'"></p>
+                <p th:text="${errorEntity} + ' cannot be ' + ${errorAction}"></p>
                 <div th:text="'Reason: ' + ${errorMessage}"></div>
             </div>
             <div class="modal-footer">

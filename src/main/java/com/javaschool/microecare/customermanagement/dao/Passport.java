@@ -1,6 +1,7 @@
 package com.javaschool.microecare.customermanagement.dao;
 
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.customermanagement.dto.PassportDTO;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 
@@ -41,7 +42,7 @@ public class Passport extends BaseEntity {
         super();
         this.passportType = passportDTO.getPassportType();
         this.documentID = passportDTO.getDocumentID();
-        this.issueDate = LocalDate.parse(passportDTO.getIssueDate());
+        this.issueDate = LocalDate.parse(passportDTO.getIssueDate(), CommonEntityService.dateFormatter);
     }
 
     public PassportType getPassportType() {

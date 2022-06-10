@@ -84,4 +84,9 @@ public class AddressView {
     public void setFlatNr(Integer flatNr) {
         this.flatNr = flatNr;
     }
+
+    @Override
+    public String toString() {
+        return postcode + " " + city + ", \n" + street + " " + houseNr + " " + houseNrAddition + " " + flatNr;
+    }
 }

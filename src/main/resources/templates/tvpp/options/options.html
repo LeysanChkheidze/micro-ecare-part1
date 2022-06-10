@@ -5,6 +5,7 @@
     <title>Options</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
@@ -15,6 +16,18 @@
 
 <div th:if="${successfulAction == true}">
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+<div th:switch="${errorMessage}">
+    <div th:case="null">
+    </div>
+    <div th:case="*">
+        <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+    </div>
+</div>
+
+<div th:if="${viewOptionDetails == true}">
+    <div th:replace="tvpp/options/option_details.html :: option_details_modal"></div>
+    <div th:replace="tvpp/options/option_details.html :: option_details_script"></div>
 </div>
 
 <div th:if="${options.empty}">
@@ -30,6 +43,7 @@
             <th>One time price</th>
             <th>Monthly price</th>
             <th>Description</th>
+            <th>Details</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
         </tr>
@@ -41,7 +55,17 @@
             <td th:text="${option.oneTimePrice}"></td>
             <td th:text="${option.monthlyPrice}"></td>
             <td th:text="${option.optionDescription}"></td>
-            <td></td>
+            <td>
+                <button type="button"
+                        class="btn btn-primary"
+                        data-mdb-toggle="modal"
+                        data-mdb-target="#optionDetails"
+                        th:id="details_ + ${option.id}"
+                        th:href="@{${pathView}(id=${option.id})}"
+                        th:onclick="'location.href = \'' + @{${pathView}(id=${option.id})} + '\''">
+                    Details
+                </button>
+            </td>
             <td sec:authorize="hasRole('ROLE_ADMIN')"><a
                     th:href="@{${pathEdit}(id=${option.id})}">Edit</a></td>
             <td sec:authorize="hasRole('ROLE_ADMIN')">
@@ -51,6 +75,7 @@
                        th:onclick="|document.getElementById('${option.id}').submit(); return false;|">Delete</a>
                 </form>
             </td>
+
         </tr>
 
         </tbody>
@@ -61,7 +86,5 @@
 <p sec:authorize="hasRole('ROLE_ADMIN')">
     <a th:href="@{${pathNew}}">Add new option</a>
 </p>
-
-
 </body>
 </html>

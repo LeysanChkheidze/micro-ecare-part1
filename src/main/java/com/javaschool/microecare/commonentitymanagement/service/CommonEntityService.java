@@ -3,11 +3,14 @@ package com.javaschool.microecare.commonentitymanagement.service;
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.ordermanagement.TVPPBasket;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.asn1.cms.SCVPReqRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -16,6 +19,7 @@ import org.springframework.validation.FieldError;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +36,14 @@ public class CommonEntityService {
     private String editPath;
     @Value("${endpoints.tvpp.entity.path.view}")
     private String viewPath;
+    public static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     /**
      * The Constraint violation message, returned when an entity cannot be saved due to DB contraint violation of unknown source.
      */
     @Value("${general.unknown_field.constraint_violation.msg}")
     String constraintViolationMessage;
+    @Value("${general.unknown_field.retrieval_failure.msg}")
+    String retrievalFailureMessage;
 
     @Autowired
     TVPPBasket TVPPBasket;
@@ -155,17 +162,29 @@ public class CommonEntityService {
     }
 
     /**
-     * Validates if provided string can be parsed as LocalDate
+     * Validates if provided string can be parsed as LocalDate with format dd.mm.YYYY
+     *
      * @param dateString
      * @return
      */
     public static boolean validateDate(String dateString) {
+
         try {
-            LocalDate.parse(dateString);
+            LocalDate.parse(dateString, dateFormatter);
             return true;
         } catch (DateTimeParseException e) {
             return false;
         }
+    }
+
+    public String resolveJpaObjectRetrievalFailureExceptionMessage(JpaObjectRetrievalFailureException e) {
+        String specificMessage = e.getMostSpecificCause().getMessage();
+        //Unable to find com.javaschool.microecare.catalogmanagement.dao.Option with id 283
+        String entity = StringUtils.substringBetween(specificMessage, "dao.", " ");
+        String id = specificMessage.substring(specificMessage.indexOf("id ") + 3);
+        return String.format(retrievalFailureMessage, entity, id);
+
+
     }
 
 

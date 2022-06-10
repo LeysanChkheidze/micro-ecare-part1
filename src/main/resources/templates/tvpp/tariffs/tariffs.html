@@ -5,6 +5,7 @@
     <title>Tariffs</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
@@ -15,6 +16,13 @@
 
 <div th:if="${successfulAction == true}">
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+<div th:switch="${errorMessage}">
+    <div th:case="null">
+    </div>
+    <div th:case="*">
+        <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+    </div>
 </div>
 
 <div th:if="${tariffs.empty}">

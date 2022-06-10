@@ -18,6 +18,7 @@ public class OptionView implements Comparable<OptionView> {
     private String optionDescription;
     private SortedSet<String> compatibleTariffsNames;
 
+
     public OptionView(Option option) {
         this.id = option.getId();
         this.optionName = option.getOptionName();
@@ -38,12 +39,12 @@ public class OptionView implements Comparable<OptionView> {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    public SortedSet<String> getTariffsNames() {
-        return compatibleTariffsNames;
-    }
-
     public void setCompatibleTariffsNames(SortedSet<String> compatibleTariffsNames) {
         this.compatibleTariffsNames = compatibleTariffsNames;
+    }
+
+    public SortedSet<String> getCompatibleTariffsNames() {
+        return compatibleTariffsNames;
     }
 
     public long getId() {

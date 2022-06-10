@@ -1,6 +1,9 @@
 package com.javaschool.microecare.controllers.tvpp;
 
+import com.javaschool.microecare.catalogmanagement.dao.Option;
+import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
+import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
 import com.javaschool.microecare.customermanagement.service.PassportType;
@@ -17,8 +20,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 /**
@@ -200,17 +201,35 @@ public class CustomersPageTVPPController {
         return templateFolder + "overview_page";
     }
 
-    @PostMapping("${endpoints.tvpp.customers.path.overview}")
+    /*@PostMapping("${endpoints.tvpp.customers.path.overview}")
     public String postNewCustomerOrder(Model model) {
         NewCustomerOrder newCustomerOrder = new NewCustomerOrder(getCustomerDTO());
         getBasket().add(newCustomerOrder);
         customersService.resetCustomerDTO(getCustomerDTO());
         return "redirect:" + basketControllerPath;
+    }*/
+
+    @PostMapping("${endpoints.tvpp.customers.path.overview}")
+    public String saveNewCustomer(Model model) {
+
+        try {
+            Customer customer = customersService.saveNewCustomer(getCustomerDTO());
+            customersService.resetCustomerDTO(getCustomerDTO());
+            successfulAction = true;
+            successActionName = "created";
+            successId = customer.getId();
+            return "redirect:" + controllerPath;
+        } catch (EntityCannotBeSavedException e) {
+            model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+            model.addAttribute("errorEntity", e.getEntityName());
+            model.addAttribute("errorMessage", e.getMessage());
+            return templateFolder +  "overview_page";
+        }
     }
 
 
     @DeleteMapping("/{id}")
-    public String deleteTariff(@PathVariable("id") int id, Model model) {
+    public String deleteCustomer(@PathVariable("id") int id, Model model) {
         try {
             customersService.deleteCustomer(id);
             successfulAction = true;

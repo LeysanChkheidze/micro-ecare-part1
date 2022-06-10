@@ -35,7 +35,7 @@ public class Tariff extends BaseEntity {
     @ManyToMany
     @JoinTable(name = "tariff_option",
             joinColumns = @JoinColumn(name = "tariff_id"),
-            inverseJoinColumns = @JoinColumn(name = "option_id")    )
+            inverseJoinColumns = @JoinColumn(name = "option_id"))
     Set<Option> compatibleOptions;
 
     public Tariff() {
