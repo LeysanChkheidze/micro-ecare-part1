@@ -1,18 +1,21 @@
 package com.javaschool.microecare.controllers.tvpp;
 
-import com.javaschool.microecare.catalogmanagement.dao.Option;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
+import com.javaschool.microecare.contractmanagement.service.ContractsService;
+import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import com.javaschool.microecare.ordermanagement.TVPPBasket;
-import com.javaschool.microecare.ordermanagement.NewCustomerOrder;
+import com.javaschool.microecare.utils.EntityActions;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +23,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller for Customers page in TVPP.
@@ -47,18 +51,30 @@ public class CustomersPageTVPPController {
     private String basketControllerPath;
     @Value("${general.field.not_date.msg}")
     private String notDateErrorMessage;
+    @Value("${customer.delete.in_contract.msg}")
+    private String customerDeleteInContractMessage;
 
+    private final String ENTITY_NAME = "Customer";
 
     private boolean successfulAction = false;
-    private String successActionName;
+    // private String successActionName;
     private long successId;
+    private boolean viewDetails = false;
+    private CustomerView displayedCustomer;
+    private String errorMessage;
+    private EntityActions action;
+    private List<MobileNumberView> customersMobileNumbers;
+
+
 
     final CommonEntityService commonEntityService;
     final CustomersService customersService;
+    final ContractsService contractsService;
 
-    public CustomersPageTVPPController(CommonEntityService commonEntityService, CustomersService customersService) {
+    public CustomersPageTVPPController(CommonEntityService commonEntityService, CustomersService customersService, ContractsService contractsService) {
         this.commonEntityService = commonEntityService;
         this.customersService = customersService;
+        this.contractsService = contractsService;
     }
 
     @Lookup
@@ -86,10 +102,16 @@ public class CustomersPageTVPPController {
     private void setAllCustomersModel(Model model) {
         model.addAttribute("customers", customersService.getAllCustomerViews());
         if (successfulAction) {
-            model.addAllAttributes(Map.of("successfulAction", true,
-                    "successEntityName", "Customer",
-                    "successAction", successActionName,
-                    "successId", successId));
+            commonEntityService.setSuccessfulActionModel(model, ENTITY_NAME, action, successId);
+        }
+        if (viewDetails) {
+            model.addAttribute("viewCustomerDetails", true);
+            model.addAttribute("displayedCustomer", displayedCustomer);
+            model.addAttribute("customersMobileNumbers", customersMobileNumbers);
+            viewDetails = false;
+        }
+        if (errorMessage != null) {
+            commonEntityService.setErrorModel(model, ENTITY_NAME, errorMessage, action);
         }
     }
 
@@ -97,6 +119,10 @@ public class CustomersPageTVPPController {
     public String getCustomersPage(Model model, @RequestParam(required = false) Boolean cancel) {
         setAllCustomersModel(model);
         successfulAction = false;
+        errorMessage = null;
+        action = null;
+        viewDetails = false;
+        customersMobileNumbers = new ArrayList<>();
         if (cancel != null && cancel) {
             customersService.resetCustomerDTO(getCustomerDTO());
         }
@@ -201,43 +227,58 @@ public class CustomersPageTVPPController {
         return templateFolder + "overview_page";
     }
 
-    /*@PostMapping("${endpoints.tvpp.customers.path.overview}")
-    public String postNewCustomerOrder(Model model) {
-        NewCustomerOrder newCustomerOrder = new NewCustomerOrder(getCustomerDTO());
-        getBasket().add(newCustomerOrder);
-        customersService.resetCustomerDTO(getCustomerDTO());
-        return "redirect:" + basketControllerPath;
-    }*/
 
     @PostMapping("${endpoints.tvpp.customers.path.overview}")
     public String saveNewCustomer(Model model) {
-
+        action = EntityActions.CREATE;
+        System.out.println("");
         try {
             Customer customer = customersService.saveNewCustomer(getCustomerDTO());
             customersService.resetCustomerDTO(getCustomerDTO());
             successfulAction = true;
-            successActionName = "created";
             successId = customer.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
+            commonEntityService.setEntityCannotBeSavedModel(model, e, action);
             model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            return templateFolder +  "overview_page";
+            return templateFolder + "overview_page";
         }
     }
 
 
     @DeleteMapping("/{id}")
     public String deleteCustomer(@PathVariable("id") int id, Model model) {
+        action = EntityActions.DELETE;
         try {
             customersService.deleteCustomer(id);
             successfulAction = true;
-            successActionName = "deleted";
             successId = id;
-        } catch (RuntimeException e) {
-            //todo: add error popup
+        } catch (DataIntegrityViolationException e) {
+            if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contracts\"")) {
+                errorMessage = customerDeleteInContractMessage;
+            } else {
+                errorMessage = e.getMessage();
+            }
+            return "redirect:" + controllerPath;
         }
         return "redirect:" + controllerPath;
     }
+
+    @GetMapping("/{id}")
+    public String getCustomerDetails(@PathVariable("id") int id, Model model) {
+        action = EntityActions.READ;
+        try {
+            Customer customer = customersService.getCustomer(id);
+            displayedCustomer = new CustomerView(customer);
+            customersMobileNumbers = contractsService.getMobileNumbersOfCustomer(customer);
+            viewDetails = true;
+
+        } catch (RuntimeException e) {
+            errorMessage = e.getMessage();
+            return "redirect:" + controllerPath;
+        }
+         return "redirect:" + controllerPath;
+    }
+
+
 }

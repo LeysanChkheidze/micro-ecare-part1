@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:fragment="customer_details">
+    <meta charset="UTF-8"/>
+</head>
+
+<body>
+
+<div th:fragment="customer_details_modal" class="modal show" tabindex="-1" id="customerDetails" aria-modal="true"
+     role="dialog" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Customer details</h5>
+                <button type="button" class="btn-close" onclick="$('#customerDetails').modal('hide');"
+                        aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Customer name</dt>
+                    <dd class="col-sm-6"
+                        th:text="${displayedCustomer.personalDataView.firstName} + ' ' + ${displayedCustomer.personalDataView.lastName}"></dd>
+
+                    <dt class="col-sm-6">Birthday</dt>
+                    <dd class="col-sm-6" th:text="${displayedCustomer.personalDataView.birthday}"></dd>
+
+                    <dt class="col-sm-6">Passport data</dt>
+                    <dd class="col-sm-6">
+                        <div th:text="${displayedCustomer.passportView.passportType}"></div>
+                        <div th:text="'number ' + ${displayedCustomer.passportView.documentID}"></div>
+                        <div th:text="'issued ' + ${displayedCustomer.passportView.issueDate}"></div>
+
+                    </dd>
+                    <dt class="col-sm-6">Address</dt>
+                    <dd class="col-sm-6">
+                        <div th:text="${displayedCustomer.addressView.postcode} + ' ' + ${displayedCustomer.addressView.city}"></div>
+                        <div th:text="${displayedCustomer.addressView.street} + ' ' + ${displayedCustomer.addressView.houseNr}"></div>
+                        <div>
+                            <span th:text="${displayedCustomer.addressView.houseNrAddition != null} ?  ${displayedCustomer.addressView.houseNrAddition}"></span>
+                            <span th:if="${displayedCustomer.addressView.houseNrAddition != null}"> </span>
+                            <span th:text="${displayedCustomer.addressView.flatNr != null} ? ${displayedCustomer.addressView.flatNr}"></span>
+                        </div>
+
+                    </dd>
+
+
+                    <dt class="col-sm-6">Login</dt>
+                    <dd class="col-sm-6" th:text="${displayedCustomer.loginDataView.email}"></dd>
+
+                    <dt class="col-sm-6">Customers contracts</dt>
+                    <dd class="col-sm-6">
+                        <div th:if=="${#lists.size(customersMobileNumbers)<1}">None</div>
+                        <ul class="list-group list-group-light"
+                            th:if=="${#lists.size(customersMobileNumbers)>0}">
+                            <li th:each="numberView : ${customersMobileNumbers}"
+                                th:text="${numberView.numberPresentation}">
+                        </ul>
+
+                    </dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:fragment="customer_details_script">
+    $(window).on('load', function () {
+        $('#customerDetails').modal('show');
+    });
+</script>
+
+</body>

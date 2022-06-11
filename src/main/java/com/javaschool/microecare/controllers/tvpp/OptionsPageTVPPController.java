@@ -14,7 +14,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -83,20 +85,16 @@ public class OptionsPageTVPPController {
     private void setAllOptionsModel(Model model) {
         model.addAttribute("options", optionsService.getAllOptionViews());
         if (successfulAction) {
-            model.addAllAttributes(Map.of("successfulAction", true,
-                    "successEntityName", "Option",
-                    "successAction", action.getText(),
-                    "successId", successId));
+            commonEntityService.setSuccessfulActionModel(model, ENTITY_NAME, action, successId);
         }
         if (viewDetails) {
             model.addAttribute("viewOptionDetails", true);
             model.addAttribute("displayedOption", displayedOption);
             model.addAttribute("numberOfContractsWithOption", numberOfContractsWithOption);
+            viewDetails = false;
         }
         if (errorMessage != null) {
-            model.addAttribute("errorEntity", ENTITY_NAME);
-            model.addAttribute("errorMessage", errorMessage);
-            model.addAttribute("errorAction", action.getText());
+            commonEntityService.setErrorModel(model, ENTITY_NAME, errorMessage, action);
         }
 
     }
@@ -112,9 +110,9 @@ public class OptionsPageTVPPController {
     public String getOptionsPage(Model model) {
         setAllOptionsModel(model);
         successfulAction = false;
-
         errorMessage = null;
         action = null;
+        viewDetails = false;
         return templateFolder + "options";
     }
 
@@ -126,7 +124,7 @@ public class OptionsPageTVPPController {
      * @return new option page template
      */
     @GetMapping("${endpoints.tvpp.entity.path.new}")
-    public String showNewOptionPage(OptionDTO optionDTO, Model model) {
+    public String showNewOptionPage(OptionDTO optionDTO, BindingResult result, Model model) {
         return templateFolder + "new_option";
     }
 
@@ -145,13 +143,24 @@ public class OptionsPageTVPPController {
     public String createNewOption(@Valid OptionDTO optionDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         action = EntityActions.CREATE;
         if (result.hasErrors()) {
-            //todo: сделать, чтобы после ошибки валидации оставался урл страницы создания опции
+
             model.addAttribute("errorAction", action.getText());
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
             redirectAttributes.addFlashAttribute("errorAction", action.getText());
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.optionDTO", result);
+            //todo: сделать, чтобы после ошибки валидации оставался урл страницы создания опции
+            //вот тут ошибки не передаются в резалте:
+            BindingResult newResult = new BeanPropertyBindingResult(result.getTarget(), result.getObjectName());
+
+            for (FieldError error : result.getFieldErrors()) {
+                newResult.addError(error);
+            }
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.optionDTO", newResult);
+            redirectAttributes.addFlashAttribute("kokoko", "kekeke");
+
+
             System.out.println();
-            return templateFolder + "new_option";
+            return "redirect:" + controllerPath + newOptionPath;
+            // return templateFolder + "new_option";
         }
         // todo: Боря, на лекции сказали, что не должно быть трай кетчев в контроллере!
         //  , а нужно искользовать контроллер адвайз и эксепшн хендлер
@@ -161,9 +170,7 @@ public class OptionsPageTVPPController {
             successId = newOption.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("errorAction", action.getText());
+            commonEntityService.setEntityCannotBeSavedModel(model, e, action);
             return templateFolder + "new_option";
         }
     }
@@ -215,9 +222,7 @@ public class OptionsPageTVPPController {
             successId = updatedOption.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorAction", action.getText());
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
+            commonEntityService.setEntityCannotBeSavedModel(model, e, action);
             OptionView optionView = new OptionView(optionsService.getOption(id));
             model.addAttribute("optionView", optionView);
             return templateFolder + "edit_option";
@@ -254,9 +259,9 @@ public class OptionsPageTVPPController {
         action = EntityActions.READ;
         try {
             Option option = optionsService.getOption(id);
-            viewDetails = true;
             displayedOption = new OptionView(option);
             numberOfContractsWithOption = contractsService.getNumberOfContractsWithOption(option);
+            viewDetails = true;
 
         } catch (RuntimeException e) {
             errorMessage = e.getMessage();
@@ -266,6 +271,4 @@ public class OptionsPageTVPPController {
         // https://stackoverflow.com/questions/68949567/pass-data-from-spring-boot-controller-to-boostrap-modal
         return "redirect:" + controllerPath;
     }
-
-
 }

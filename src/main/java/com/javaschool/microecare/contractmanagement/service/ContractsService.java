@@ -63,6 +63,10 @@ public class ContractsService {
                 .collect(Collectors.toList());
     }
 
+    private List<Contract> getAllContracts() {
+        return contractsRepo.findAll();
+    }
+
     public Contract getContract(long id) {
         return contractsRepo.findById(id).orElseThrow(() -> new EntityNotFoundInDBException(id, "Contract"));
     }
@@ -146,6 +150,27 @@ public class ContractsService {
 
     public int getNumberOfContractsWithTariff(Tariff tariff) {
         return getContractsWithTariff(tariff).size();
+    }
+
+    private List<Contract> getContractsOfCustomer(Customer customer) {
+        List<Contract> customersContracts = new ArrayList<>();
+        for (Contract contract: getAllContracts()) {
+            if (customer.equals(contract.getCustomer())) {
+                customersContracts.add(contract);
+            }
+        }
+        return customersContracts;
+    }
+
+    public List<MobileNumberView> getMobileNumbersOfCustomer(Customer customer) {
+        List<Contract> customersContracts = getContractsOfCustomer(customer);
+        List<MobileNumberView> mobileNumbersOfCustomer = new ArrayList<>();
+        for (Contract contract : customersContracts) {
+            MobileNumberView mobileNumberView = new MobileNumberView(contract.getPhoneNumber());
+            mobileNumbersOfCustomer.add(mobileNumberView);
+        }
+        Collections.sort(mobileNumbersOfCustomer);
+        return mobileNumbersOfCustomer;
     }
 
     /*public int getNumberOfContractsWithTariff(long tariffID) {

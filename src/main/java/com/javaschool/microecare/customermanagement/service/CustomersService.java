@@ -1,9 +1,9 @@
 package com.javaschool.microecare.customermanagement.service;
 
-import com.javaschool.microecare.catalogmanagement.dao.Tariff;
-import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
+import com.javaschool.microecare.contractmanagement.service.ContractsService;
+import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dao.PersonalData;
 import com.javaschool.microecare.customermanagement.dto.*;
@@ -139,6 +139,6 @@ public class CustomersService {
             throw commonEntityService.createSavingEntityException(e, "Customer", "Key (email)", nonUniqueEmailMessage);
 
         }
-
     }
+
 }

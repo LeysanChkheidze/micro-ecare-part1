@@ -5,6 +5,7 @@
     <title>Customers</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
@@ -15,6 +16,17 @@
 
 <div th:if="${successfulAction == true}">
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
+</div>
+<div th:switch="${errorMessage}">
+    <div th:case="null">
+    </div>
+    <div th:case="*">
+        <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+    </div>
+</div>
+<div th:if="${viewCustomerDetails == true}">
+    <div th:replace="tvpp/customers/customer_details.html :: customer_details_modal"></div>
+    <div th:replace="tvpp/customers/customer_details.html :: customer_details_script"></div>
 </div>
 
 <div th:if="${customers.empty}">
@@ -29,8 +41,7 @@
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
-            <th>Contracts</th>
-            <th sec:authorize="hasRole('ROLE_ADMIN')">View details</th>
+            <th>View details</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Create a contract</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
         </tr>
@@ -41,11 +52,20 @@
             <td th:text="${customer.personalDataView.firstName}"></td>
             <td th:text="${customer.personalDataView.lastName}"></td>
             <td th:text="${customer.loginDataView.email}"></td>
-            <td>here contracts</td>
-            <td sec:authorize="hasRole('ROLE_ADMIN')">
-                <a th:href="@{${pathView}(id=${customer.id})}">Details</a>
+
+            <td>
+                <button type="button"
+                        class="btn btn-primary"
+                        data-mdb-toggle="modal"
+                        data-mdb-target="#customerDetails"
+                        th:id="details_ + ${customer.id}"
+                        th:onclick="'location.href = \'' + @{${pathView}(id=${customer.id})} + '\''">
+                    Details
+                </button>
             </td>
+
             <td>here create contract link</td>
+
             <td sec:authorize="hasRole('ROLE_ADMIN')">
                 <form action="#" th:action="@{${pathDeleteUpdate}(id=${customer.id})}" th:method="delete"
                       th:id="${customer.id}">

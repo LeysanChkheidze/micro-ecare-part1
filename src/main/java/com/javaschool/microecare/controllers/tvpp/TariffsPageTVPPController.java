@@ -94,21 +94,16 @@ public class TariffsPageTVPPController {
     private void setAllTariffsModel(Model model) {
         model.addAttribute("tariffs", tariffsService.getAllTariffViews());
         if (successfulAction) {
-            model.addAllAttributes(Map.of("successfulAction", true,
-                    "successEntityName", "Tariff",
-                    "successAction", action.getText(),
-                    "successId", successId));
+            commonEntityService.setSuccessfulActionModel(model, ENTITY_NAME, action, successId);
         }
         if (errorMessage != null) {
-            model.addAttribute("errorEntity", ENTITY_NAME);
-            model.addAttribute("errorMessage", errorMessage);
-            model.addAttribute("errorAction", action.getText());
+            commonEntityService.setErrorModel(model, ENTITY_NAME, errorMessage, action);
         }
-
         if (viewDetails) {
             model.addAttribute("viewTariffDetails", true);
             model.addAttribute("displayedTariff", displayedTariff);
             model.addAttribute("numberOfContractsWithTariff", numberOfContractsWithTariff);
+            viewDetails = false;
         }
     }
 
@@ -125,8 +120,7 @@ public class TariffsPageTVPPController {
         successfulAction = false;
         errorMessage = null;
         action = null;
-        viewDetails = false;
-        return templateFolder + "tariffs";
+        viewDetails = false;        return templateFolder + "tariffs";
     }
 
 
@@ -160,13 +154,7 @@ public class TariffsPageTVPPController {
      * @return all tariffs or new tariff page template depending on result of saving of the new tariff
      */
     @PostMapping
-    //todo: add description like "Java supports Regular Expressions, but they're kind of cumbersome if you actually want to use them to extract matches. I think the easiest way to get at the string you want in your example is to just use the Regular Expression support in the String class's replaceAll method:
-    //This simply deletes everything up-to-and-including the first (, and the same for the ) and everything thereafter. This just leaves the stuff between the parenthesis.
-    //
-    //However, the result of this is still a String. If you want an integer result instead then you need to do another conversion:"
-    // and it fails with Reason: Duplicate key value violates unique constraint
-
-    public String createNewTariff(@Valid TariffDTO tariffDTO, BindingResult result, Model model) {
+     public String createNewTariff(@Valid TariffDTO tariffDTO, BindingResult result, Model model) {
         action = EntityActions.CREATE;
         if (result.hasErrors()) {
             model.addAttribute("errorAction", action.getText());
@@ -180,9 +168,7 @@ public class TariffsPageTVPPController {
             successId = newTariff.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("errorAction", action.getText());
+            commonEntityService.setEntityCannotBeSavedModel(model, e, action);
             setModelForTariffCreationPage(model);
             return templateFolder + "new_tariff";
         }
@@ -239,9 +225,10 @@ public class TariffsPageTVPPController {
             return "redirect:" + controllerPath;
 
         } catch (EntityCannotBeSavedException e) {
-            model.addAttribute("errorAction", action.getText());
+            commonEntityService.setEntityCannotBeSavedModel(model, e, action);
+            /*model.addAttribute("errorAction", action.getText());
             model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());*/
             setModelForTariffCreationPage(model);
             TariffView tariffView = new TariffView(tariffsService.getTariff(id));
             model.addAttribute("tariffView", tariffView);
@@ -255,7 +242,6 @@ public class TariffsPageTVPPController {
         model.addAttribute("allOptions", allExistingOptions);
         Set<ShortOptionView> compatibleOptions = optionsService.getShortViews(tariff.getCompatibleOptions());
         model.addAttribute("compatibleOptions", compatibleOptions);
-        model.addAttribute("tariffView", tariffView);
         model.addAttribute("tariffView", tariffView);
     }
 

@@ -3,8 +3,10 @@ package com.javaschool.microecare.commonentitymanagement.service;
 import com.javaschool.microecare.commonentitymanagement.dao.BaseEntity;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.ordermanagement.TVPPBasket;
+import com.javaschool.microecare.utils.EntityActions;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.asn1.cms.SCVPReqRes;
+import org.hibernate.action.internal.EntityAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -184,9 +186,25 @@ public class CommonEntityService {
         String entity = StringUtils.substringBetween(specificMessage, "dao.", " ");
         String id = specificMessage.substring(specificMessage.indexOf("id ") + 3);
         return String.format(retrievalFailureMessage, entity, id);
-
-
     }
 
+    public void setSuccessfulActionModel(Model model, String ENTITY_NAME, EntityActions action, long successId) {
+        model.addAllAttributes(Map.of("successfulAction", true,
+                "successEntityName", ENTITY_NAME,
+                "successAction", action.getText(),
+                "successId", successId));
+    }
+
+    public void setErrorModel(Model model, String ENTITY_NAME, String errorMessage, EntityActions action) {
+        model.addAttribute("errorEntity", ENTITY_NAME);
+        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errorAction", action.getText());
+    }
+
+    public void setEntityCannotBeSavedModel(Model model, EntityCannotBeSavedException e, EntityActions action) {
+        model.addAttribute("errorEntity", e.getEntityName());
+        model.addAttribute("errorMessage", e.getMessage());
+        model.addAttribute("errorAction", action.getText());
+    }
 
 }
