@@ -1,14 +1,17 @@
 package com.javaschool.microecare.controllers.tvpp;
 
+import com.javaschool.microecare.catalogmanagement.dao.Option;
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 import com.javaschool.microecare.catalogmanagement.dto.OptionListDTO;
 import com.javaschool.microecare.catalogmanagement.dto.TariffDTO;
 import com.javaschool.microecare.catalogmanagement.service.OptionsService;
+import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.catalogmanagement.viewmodel.ShortOptionView;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.catalogmanagement.service.TariffsService;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
+import com.javaschool.microecare.contractmanagement.service.ContractsService;
 import com.javaschool.microecare.utils.EntityActions;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,14 +48,18 @@ public class TariffsPageTVPPController {
     private final String ENTITY_NAME = "Tariff";
 
     private boolean successfulAction = false;
-    private String successActionName;
     private long successId;
     private String errorMessage;
     private EntityActions action;
 
+    private boolean viewDetails = false;
+    private TariffView displayedTariff;
+    private int numberOfContractsWithTariff;
+
     final TariffsService tariffsService;
     final CommonEntityService commonEntityService;
     final OptionsService optionsService;
+    final ContractsService contractsService;
 
     /**
      * Instantiates a new Tariffs page tvpp controller.
@@ -61,10 +68,11 @@ public class TariffsPageTVPPController {
      * @param tariffsService      the TariffsService
      */
     public TariffsPageTVPPController(TariffsService tariffsService, CommonEntityService commonEntityService,
-                                     OptionsService optionsService) {
+                                     OptionsService optionsService, ContractsService contractsService) {
         this.tariffsService = tariffsService;
         this.commonEntityService = commonEntityService;
         this.optionsService = optionsService;
+        this.contractsService = contractsService;
     }
 
     /**
@@ -96,6 +104,12 @@ public class TariffsPageTVPPController {
             model.addAttribute("errorMessage", errorMessage);
             model.addAttribute("errorAction", action.getText());
         }
+
+        if (viewDetails) {
+            model.addAttribute("viewTariffDetails", true);
+            model.addAttribute("displayedTariff", displayedTariff);
+            model.addAttribute("numberOfContractsWithTariff", numberOfContractsWithTariff);
+        }
     }
 
     /**
@@ -111,6 +125,7 @@ public class TariffsPageTVPPController {
         successfulAction = false;
         errorMessage = null;
         action = null;
+        viewDetails = false;
         return templateFolder + "tariffs";
     }
 
@@ -145,6 +160,12 @@ public class TariffsPageTVPPController {
      * @return all tariffs or new tariff page template depending on result of saving of the new tariff
      */
     @PostMapping
+    //todo: add description like "Java supports Regular Expressions, but they're kind of cumbersome if you actually want to use them to extract matches. I think the easiest way to get at the string you want in your example is to just use the Regular Expression support in the String class's replaceAll method:
+    //This simply deletes everything up-to-and-including the first (, and the same for the ) and everything thereafter. This just leaves the stuff between the parenthesis.
+    //
+    //However, the result of this is still a String. If you want an integer result instead then you need to do another conversion:"
+    // and it fails with Reason: Duplicate key value violates unique constraint
+
     public String createNewTariff(@Valid TariffDTO tariffDTO, BindingResult result, Model model) {
         action = EntityActions.CREATE;
         if (result.hasErrors()) {
@@ -156,7 +177,6 @@ public class TariffsPageTVPPController {
         try {
             Tariff newTariff = tariffsService.saveNewTariff(tariffDTO);
             successfulAction = true;
-            // successActionName = "created";
             successId = newTariff.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
@@ -325,6 +345,24 @@ public class TariffsPageTVPPController {
             }
             return "redirect:" + controllerPath;
         }
+        return "redirect:" + controllerPath;
+    }
+
+    @GetMapping("/{id}")
+    public String getTariffDetails(@PathVariable("id") int id, Model model) {
+        action = EntityActions.READ;
+        try {
+            Tariff tariff = tariffsService.getTariff(id);
+            viewDetails = true;
+            displayedTariff = new TariffView(tariff);
+            numberOfContractsWithTariff = contractsService.getNumberOfContractsWithTariff(tariff);
+
+        } catch (RuntimeException e) {
+            errorMessage = e.getMessage();
+            return "redirect:" + controllerPath;
+        }
+        //todo: do i need redirect here?
+        // https://stackoverflow.com/questions/68949567/pass-data-from-spring-boot-controller-to-boostrap-modal
         return "redirect:" + controllerPath;
     }
 

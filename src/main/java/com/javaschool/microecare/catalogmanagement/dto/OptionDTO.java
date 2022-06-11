@@ -26,6 +26,7 @@ public class OptionDTO {
     @NotNull(message = "{field.mandatory.msg}")
     private BigDecimal oneTimePrice;
 
+    @Size(max = 255, message = "{option.description.size.msg}")
     private String optionDescription;
 
     private Set<Long> compatibleTariffsIDs;

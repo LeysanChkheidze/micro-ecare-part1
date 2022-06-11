@@ -125,14 +125,33 @@ public class ContractsService {
         return contractsWithOption;
     }
 
-    private int getNumberOfContractsWithOption(Option option) {
+    public int getNumberOfContractsWithOption(Option option) {
         return getContractsWithOption(option).size();
     }
 
-    public int getNumberOfContractsWithOption(long optionID) {
+    /*public int getNumberOfContractsWithOption(long optionID) {
         Option option = optionsService.getOption(optionID);
         return getNumberOfContractsWithOption(option);
+    }*/
+
+    private List<ContractView> getContractsWithTariff(Tariff tariff) {
+        List<ContractView> contractsWithOption = new ArrayList<>();
+        for (ContractView contractView : getAllContractViews()) {
+            if (contractView.getTariffName().equals(tariff.getTariffName())) {
+                contractsWithOption.add(contractView);
+            }
+        }
+        return contractsWithOption;
     }
 
+    public int getNumberOfContractsWithTariff(Tariff tariff) {
+        return getContractsWithTariff(tariff).size();
+    }
+
+    /*public int getNumberOfContractsWithTariff(long tariffID) {
+        Tariff tariff = tariffsService.getTariff(tariffID);
+        return getNumberOfTariffsWithTariff(tariff);
+    }
+*/
 
 }

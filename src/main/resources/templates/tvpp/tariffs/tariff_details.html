@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:fragment="tariff_details">
+    <meta charset="UTF-8"/>
+</head>
+
+<body>
+
+<div th:fragment="tariff_details_modal" class="modal show" tabindex="-1" id="tariffDetails" aria-modal="true"
+     role="dialog" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Option details</h5>
+                <button type="button" class="btn-close" onclick="$('#tariffDetails').modal('hide');"
+                        aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Name</dt>
+                    <dd class="col-sm-6" th:text="${displayedTariff.tariffName}"></dd>
+
+                    <dt class="col-sm-6">Description</dt>
+                    <dd class="col-sm-6" th:text="${displayedTariff.tariffDescription}"></dd>
+
+                    <dt class="col-sm-6">Monthly price</dt>
+                    <dd class="col-sm-6" th:text="${displayedTariff.monthlyPrice}"></dd>
+
+                    <dt class="col-sm-6">Number of contracts with this tariff</dt>
+                    <dd class="col-sm-6"
+                        th:text="${numberOfContractsWithTariff != 0} ? ${numberOfContractsWithTariff} : 'None'"></dd>
+
+                    <dt class="col-sm-6">Compatible options</dt>
+                    <dd class="col-sm-6">
+                        <div th:if=="${#lists.size(displayedTariff.compatibleOptionViews)<1}">None</div>
+                        <ul th:if=="${#lists.size(displayedTariff.compatibleOptionViews)>0}">
+                            <li th:each="optionView : ${displayedTariff.compatibleOptionViews}"
+                                th:text="${optionView.optionName}"></li>
+                        </ul>
+
+                    </dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:fragment="tariff_details_script">
+    $(window).on('load', function () {
+        $('#tariffDetails').modal('show');
+    });
+
+
+</script>
+
+</body>

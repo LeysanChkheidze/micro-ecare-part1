@@ -25,6 +25,11 @@
     </div>
 </div>
 
+<div th:if="${viewTariffDetails == true}">
+    <div th:replace="tvpp/tariffs/tariff_details.html :: tariff_details_modal"></div>
+    <div th:replace="tvpp/tariffs/tariff_details.html :: tariff_details_script"></div>
+</div>
+
 <div th:if="${tariffs.empty}">
     <h2>No tariffs yet!</h2>
 </div>
@@ -37,7 +42,7 @@
             <th>Name</th>
             <th>Monthly price</th>
             <th>Description</th>
-            <th>Compatible options</th>
+            <th>Tariff details</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Edit options</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
@@ -49,11 +54,15 @@
             <td th:text="${tariff.tariffName}"></td>
             <td th:text="${tariff.monthlyPrice}"></td>
             <td th:text="${tariff.tariffDescription}"></td>
-            <!--td th:text="${tariff.compatibleOptionsNames}"></td-->
-            <td>
-                <ul>
-                    <li th:each="optionView : ${tariff.compatibleOptionViews}" th:text = "${optionView.optionName}"></li>
-                </ul>
+             <td>
+                <button type="button"
+                        class="btn btn-primary"
+                        data-mdb-toggle="modal"
+                        data-mdb-target="#tariffDetails"
+                        th:id="details_ + ${tariff.id}"
+                        th:onclick="'location.href = \'' + @{${pathView}(id=${tariff.id})} + '\''">
+                    Details
+                </button>
             </td>
             <td sec:authorize="hasRole('ROLE_ADMIN')"><a
                     th:href="@{${pathEdit}(id=${tariff.id})}">Edit</a></td>

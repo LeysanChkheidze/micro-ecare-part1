@@ -22,6 +22,7 @@ public class TariffDTO {
     @NotNull(message = "{field.mandatory.msg}")
     private BigDecimal monthlyPrice;
 
+    @Size(max = 255, message = "{tariff.description.size.msg}")
     private String tariffDescription;
 
     private Set<Long> compatibleOptionIDs;

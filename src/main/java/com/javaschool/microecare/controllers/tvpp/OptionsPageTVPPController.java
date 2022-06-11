@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -35,6 +36,8 @@ public class OptionsPageTVPPController {
     private String priceDigitsMessage;
     @Value("${option.delete.in_contract.msg}")
     private String optionDeleteInContractMessage;
+    @Value("${endpoints.tvpp.entity.path.new}")
+    private String newOptionPath;
 
     private final String ENTITY_NAME = "Option";
 
@@ -109,7 +112,7 @@ public class OptionsPageTVPPController {
     public String getOptionsPage(Model model) {
         setAllOptionsModel(model);
         successfulAction = false;
-        viewDetails = false;
+
         errorMessage = null;
         action = null;
         return templateFolder + "options";
@@ -139,11 +142,15 @@ public class OptionsPageTVPPController {
      * @return all options or new option page template depending on result of saving of the new option
      */
     @PostMapping
-    public String createNewOption(@Valid OptionDTO optionDTO, BindingResult result, Model model) {
+    public String createNewOption(@Valid OptionDTO optionDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         action = EntityActions.CREATE;
         if (result.hasErrors()) {
+            //todo: сделать, чтобы после ошибки валидации оставался урл страницы создания опции
             model.addAttribute("errorAction", action.getText());
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
+            redirectAttributes.addFlashAttribute("errorAction", action.getText());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.optionDTO", result);
+            System.out.println();
             return templateFolder + "new_option";
         }
         // todo: Боря, на лекции сказали, что не должно быть трай кетчев в контроллере!
@@ -249,7 +256,7 @@ public class OptionsPageTVPPController {
             Option option = optionsService.getOption(id);
             viewDetails = true;
             displayedOption = new OptionView(option);
-            numberOfContractsWithOption = contractsService.getNumberOfContractsWithOption(id);
+            numberOfContractsWithOption = contractsService.getNumberOfContractsWithOption(option);
 
         } catch (RuntimeException e) {
             errorMessage = e.getMessage();

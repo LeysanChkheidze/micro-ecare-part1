@@ -37,7 +37,7 @@
         <div class="form-outline mb-4">
             <textarea id="tariffDescription" th:field="*{tariffDescription}" rows="4" class="form-control"></textarea>
             <label class="form-label" for="tariffDescription">Description</label>
-            <span th:if="${#fields.hasErrors('tariffDescription')}" th:errors="*{tariffDescription}"></span>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('tariffDescription')}" th:errors="*{tariffDescription}">
         </div>
 
         <div class="form-outline mb-4">

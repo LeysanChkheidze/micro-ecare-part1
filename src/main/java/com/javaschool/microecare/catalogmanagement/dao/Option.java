@@ -37,6 +37,7 @@ public class Option extends BaseEntity {
     private BigDecimal oneTimePrice;
 
     @Column(name = "DESCRIPTION")
+    @Size(max = 255, message = "{option.description.size.msg}")
     private String optionDescription;
 
     @ManyToMany(mappedBy = "compatibleOptions")

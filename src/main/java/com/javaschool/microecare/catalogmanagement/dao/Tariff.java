@@ -30,6 +30,7 @@ public class Tariff extends BaseEntity {
     private BigDecimal monthlyPrice;
 
     @Column(name = "DESCRIPTION")
+    @Size(max = 255)
     private String tariffDescription;
 
     @ManyToMany
