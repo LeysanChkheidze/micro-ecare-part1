@@ -16,6 +16,7 @@ import com.javaschool.microecare.utils.EntityActions;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -120,7 +121,8 @@ public class TariffsPageTVPPController {
         successfulAction = false;
         errorMessage = null;
         action = null;
-        viewDetails = false;        return templateFolder + "tariffs";
+        viewDetails = false;
+        return templateFolder + "tariffs";
     }
 
 
@@ -154,7 +156,7 @@ public class TariffsPageTVPPController {
      * @return all tariffs or new tariff page template depending on result of saving of the new tariff
      */
     @PostMapping
-     public String createNewTariff(@Valid TariffDTO tariffDTO, BindingResult result, Model model) {
+    public String createNewTariff(@Valid TariffDTO tariffDTO, BindingResult result, Model model) {
         action = EntityActions.CREATE;
         if (result.hasErrors()) {
             model.addAttribute("errorAction", action.getText());
@@ -187,7 +189,6 @@ public class TariffsPageTVPPController {
         TariffDTO tariffDTO = new TariffDTO(tariff);
         TariffView tariffView = new TariffView(tariff);
         setModelForTariffCreationPage(model);
-
         model.addAttribute("tariffDTO", tariffDTO);
         model.addAttribute("tariffView", tariffView);
         return templateFolder + "edit_tariff";
@@ -226,9 +227,6 @@ public class TariffsPageTVPPController {
 
         } catch (EntityCannotBeSavedException e) {
             commonEntityService.setEntityCannotBeSavedModel(model, e, action);
-            /*model.addAttribute("errorAction", action.getText());
-            model.addAttribute("errorEntity", e.getEntityName());
-            model.addAttribute("errorMessage", e.getMessage());*/
             setModelForTariffCreationPage(model);
             TariffView tariffView = new TariffView(tariffsService.getTariff(id));
             model.addAttribute("tariffView", tariffView);
@@ -318,39 +316,36 @@ public class TariffsPageTVPPController {
     @DeleteMapping("/{id}")
     public String deleteTariff(@PathVariable("id") int id, Model model) {
         action = EntityActions.DELETE;
-        try {
-            tariffsService.deleteTariff(id);
-            successfulAction = true;
-            successId = id;
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contracts\"")) {
-                errorMessage = tariffDeleteInContractMessage;
-            } else {
-                errorMessage = e.getMessage();
-            }
-            return "redirect:" + controllerPath;
-        }
+        tariffsService.deleteTariff(id);
+        successfulAction = true;
+        successId = id;
         return "redirect:" + controllerPath;
     }
 
     @GetMapping("/{id}")
     public String getTariffDetails(@PathVariable("id") int id, Model model) {
         action = EntityActions.READ;
-        try {
-            Tariff tariff = tariffsService.getTariff(id);
-            viewDetails = true;
-            displayedTariff = new TariffView(tariff);
-            numberOfContractsWithTariff = contractsService.getNumberOfContractsWithTariff(tariff);
-
-        } catch (RuntimeException e) {
-            errorMessage = e.getMessage();
-            return "redirect:" + controllerPath;
-        }
-        //todo: do i need redirect here?
-        // https://stackoverflow.com/questions/68949567/pass-data-from-spring-boot-controller-to-boostrap-modal
+        Tariff tariff = tariffsService.getTariff(id);
+        viewDetails = true;
+        displayedTariff = new TariffView(tariff);
+        numberOfContractsWithTariff = contractsService.getNumberOfContractsWithTariff(tariff);
         return "redirect:" + controllerPath;
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contracts\"")) {
+            errorMessage = tariffDeleteInContractMessage;
+        } else {
+            errorMessage = e.getMessage();
+        }
+        return "redirect:" + controllerPath;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public String handleRuntimeException(RuntimeException e) {
+        errorMessage = e.getMessage();
+        return "redirect:" + controllerPath;
+    }
 
 }

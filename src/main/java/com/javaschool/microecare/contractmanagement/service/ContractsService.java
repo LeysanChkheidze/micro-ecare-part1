@@ -153,24 +153,18 @@ public class ContractsService {
     }
 
     private List<Contract> getContractsOfCustomer(Customer customer) {
-        List<Contract> customersContracts = new ArrayList<>();
-        for (Contract contract: getAllContracts()) {
-            if (customer.equals(contract.getCustomer())) {
-                customersContracts.add(contract);
-            }
-        }
-        return customersContracts;
+        return  getAllContracts()
+                .stream()
+                .filter(contract -> customer.equals(contract.getCustomer()))
+                .collect(Collectors.toList());
     }
 
     public List<MobileNumberView> getMobileNumbersOfCustomer(Customer customer) {
-        List<Contract> customersContracts = getContractsOfCustomer(customer);
-        List<MobileNumberView> mobileNumbersOfCustomer = new ArrayList<>();
-        for (Contract contract : customersContracts) {
-            MobileNumberView mobileNumberView = new MobileNumberView(contract.getPhoneNumber());
-            mobileNumbersOfCustomer.add(mobileNumberView);
-        }
-        Collections.sort(mobileNumbersOfCustomer);
-        return mobileNumbersOfCustomer;
+        return getContractsOfCustomer(customer)
+                .stream()
+                .map(c -> new MobileNumberView(c.getPhoneNumber()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     /*public int getNumberOfContractsWithTariff(long tariffID) {

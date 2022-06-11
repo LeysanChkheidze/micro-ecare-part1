@@ -156,14 +156,10 @@ public class OptionsPageTVPPController {
             }
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.optionDTO", newResult);
             redirectAttributes.addFlashAttribute("kokoko", "kekeke");
-
-
             System.out.println();
             return "redirect:" + controllerPath + newOptionPath;
             // return templateFolder + "new_option";
         }
-        // todo: Боря, на лекции сказали, что не должно быть трай кетчев в контроллере!
-        //  , а нужно искользовать контроллер адвайз и эксепшн хендлер
         try {
             Option newOption = optionsService.saveNewOption(optionDTO);
             successfulAction = true;
@@ -173,6 +169,7 @@ public class OptionsPageTVPPController {
             commonEntityService.setEntityCannotBeSavedModel(model, e, action);
             return templateFolder + "new_option";
         }
+
     }
 
     /**
@@ -239,36 +236,37 @@ public class OptionsPageTVPPController {
     @DeleteMapping("/{id}")
     public String deleteTariff(@PathVariable("id") int id, Model model) {
         action = EntityActions.DELETE;
-        try {
-            optionsService.deleteOption(id);
-            successfulAction = true;
-            successId = id;
-        } catch (DataIntegrityViolationException e) {
-            if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contract_option\"")) {
-                errorMessage = optionDeleteInContractMessage;
-            } else {
-                errorMessage = e.getMessage();
-            }
-            return "redirect:" + controllerPath;
-        }
+        optionsService.deleteOption(id);
+        successfulAction = true;
+        successId = id;
         return "redirect:" + controllerPath;
     }
 
     @GetMapping("/{id}")
     public String getOptionDetails(@PathVariable("id") int id, Model model) {
         action = EntityActions.READ;
-        try {
-            Option option = optionsService.getOption(id);
-            displayedOption = new OptionView(option);
-            numberOfContractsWithOption = contractsService.getNumberOfContractsWithOption(option);
-            viewDetails = true;
-
-        } catch (RuntimeException e) {
-            errorMessage = e.getMessage();
-            return "redirect:" + controllerPath;
-        }
+        Option option = optionsService.getOption(id);
+        displayedOption = new OptionView(option);
+        numberOfContractsWithOption = contractsService.getNumberOfContractsWithOption(option);
+        viewDetails = true;
         //todo: do i need redirect here?
         // https://stackoverflow.com/questions/68949567/pass-data-from-spring-boot-controller-to-boostrap-modal
+        return "redirect:" + controllerPath;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contract_option\"")) {
+            errorMessage = optionDeleteInContractMessage;
+        } else {
+            errorMessage = e.getMessage();
+        }
+        return "redirect:" + controllerPath;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public String handleRuntimeException(RuntimeException e) {
+        errorMessage = e.getMessage();
         return "redirect:" + controllerPath;
     }
 }

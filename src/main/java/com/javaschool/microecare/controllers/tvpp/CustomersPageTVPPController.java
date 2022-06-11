@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,14 +58,12 @@ public class CustomersPageTVPPController {
     private final String ENTITY_NAME = "Customer";
 
     private boolean successfulAction = false;
-    // private String successActionName;
     private long successId;
     private boolean viewDetails = false;
     private CustomerView displayedCustomer;
     private String errorMessage;
     private EntityActions action;
     private List<MobileNumberView> customersMobileNumbers;
-
 
 
     final CommonEntityService commonEntityService;
@@ -231,7 +230,6 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.overview}")
     public String saveNewCustomer(Model model) {
         action = EntityActions.CREATE;
-        System.out.println("");
         try {
             Customer customer = customersService.saveNewCustomer(getCustomerDTO());
             customersService.resetCustomerDTO(getCustomerDTO());
@@ -249,35 +247,36 @@ public class CustomersPageTVPPController {
     @DeleteMapping("/{id}")
     public String deleteCustomer(@PathVariable("id") int id, Model model) {
         action = EntityActions.DELETE;
-        try {
-            customersService.deleteCustomer(id);
-            successfulAction = true;
-            successId = id;
-        } catch (DataIntegrityViolationException e) {
-            if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contracts\"")) {
-                errorMessage = customerDeleteInContractMessage;
-            } else {
-                errorMessage = e.getMessage();
-            }
-            return "redirect:" + controllerPath;
-        }
+        customersService.deleteCustomer(id);
+        successfulAction = true;
+        successId = id;
         return "redirect:" + controllerPath;
     }
 
     @GetMapping("/{id}")
     public String getCustomerDetails(@PathVariable("id") int id, Model model) {
         action = EntityActions.READ;
-        try {
-            Customer customer = customersService.getCustomer(id);
-            displayedCustomer = new CustomerView(customer);
-            customersMobileNumbers = contractsService.getMobileNumbersOfCustomer(customer);
-            viewDetails = true;
+        Customer customer = customersService.getCustomer(id);
+        displayedCustomer = new CustomerView(customer);
+        customersMobileNumbers = contractsService.getMobileNumbersOfCustomer(customer);
+        viewDetails = true;
+        return "redirect:" + controllerPath;
+    }
 
-        } catch (RuntimeException e) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        if (ExceptionUtils.getRootCauseMessage(e).contains("table \"contracts\"")) {
+            errorMessage = customerDeleteInContractMessage;
+        } else {
             errorMessage = e.getMessage();
-            return "redirect:" + controllerPath;
         }
-         return "redirect:" + controllerPath;
+        return "redirect:" + controllerPath;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public String handleRuntimeException(RuntimeException e) {
+        errorMessage = e.getMessage();
+        return "redirect:" + controllerPath;
     }
 
 

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+    //TODO: нахуя это???
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
@@ -31,7 +32,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-
+    //TODO: нахуя это???
     @ExceptionHandler(value = {EntityCannotBeSavedException.class})
     protected ResponseEntity<Object> handleEntityCannotBeSaved(EntityCannotBeSavedException ex, WebRequest request) {
         return handleExceptionInternal(ex, Map.of(ex.getEntityName(), resolveMessage(ex)),
@@ -42,6 +43,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return e.getMessage() != null ? e.getMessage() : e.getClass().getName();
     }
 
+    //TODO: нахуя это???
     @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
                                                                HttpStatus status, WebRequest request) {
