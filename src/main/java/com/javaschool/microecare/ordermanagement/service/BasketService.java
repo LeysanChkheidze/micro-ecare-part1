@@ -41,10 +41,10 @@ public class BasketService {
         for (AbstractOrder abstractOrder : tvppBasket.getOrdersInBasket()) {
             // todo: add order type enum
             if (abstractOrder instanceof NewCustomerOrder) {
+                //todo: я не юзаю баскет для твпп, выпилить
                 NewCustomerOrder orderToSave = (NewCustomerOrder) abstractOrder;
                 CustomerDTO customerDTO = orderToSave.getCustomerDTO();
-                Customer newCustomer = new Customer(customerDTO);
-                //  customersService.setInitialPassword(newCustomer);
+                Customer newCustomer = new Customer(customerDTO, true);
                 customersService.setInitialLoginData(newCustomer);
                 //todo: encode password
                 try {

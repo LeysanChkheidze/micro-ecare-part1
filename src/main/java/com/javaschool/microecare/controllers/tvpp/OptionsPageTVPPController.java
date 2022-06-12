@@ -202,7 +202,7 @@ public class OptionsPageTVPPController {
      * @return all options or update option template depending on result of saving of the new option
      */
     @PatchMapping("/{id}")
-    public String updateOption(@PathVariable("id") int id, @Valid OptionDTO optionDTO,
+    public String updateOption(@PathVariable("id") long id, @Valid OptionDTO optionDTO,
                                BindingResult result, Model model) {
         action = EntityActions.UPDATE;
         if (result.hasErrors()) {

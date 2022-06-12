@@ -38,9 +38,9 @@ public class LoginData extends BaseEntity {
         this.enabled = true;
     }
 
-    public LoginData(LoginDataDTO loginDataDTO) {
+    public LoginData(LoginDataDTO loginDataDTO, boolean newlyCreated) {
         super();
-        this.initialPassword = true;
+        this.initialPassword = newlyCreated;
         this.enabled = true;
         this.email = loginDataDTO.getEmail();
     }

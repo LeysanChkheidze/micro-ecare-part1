@@ -24,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -94,6 +95,7 @@ public class CustomersPageTVPPController {
         return null;
     }
 
+    //todo: зачем это???
     @Lookup
     public CustomerDTO getCustomerDTO() {
         return null;
@@ -285,10 +287,11 @@ public class CustomersPageTVPPController {
 
 
     @GetMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
-    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+    public String showUpdateForm(@PathVariable("id") long id, Model model) {
         model.addAttribute("dataSubmitted", false);
         Customer customer = customersService.getCustomer(id);
-        CustomerDTO customerDTO = new CustomerDTO(customer);
+        CustomerDTO customerDTO = getCustomerDTO();
+        //CustomerDTO customerDTO = new CustomerDTO(customer);
         CustomerView customerView = new CustomerView(customer);
         model.addAttribute("customerDTO", customerDTO);
         model.addAttribute("customerView", customerView);
@@ -296,6 +299,138 @@ public class CustomersPageTVPPController {
         return templateFolder + "edit_personal_data";
     }
 
+    @PostMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
+    public String postUpdatePersonalData(@PathVariable("id") long id, @Valid PersonalDataDTO personalDataDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+        model.addAttribute("dataSubmitted", true);
+        if (result.hasErrors()) {
+            CustomerDTO dto = getCustomerDTO();
+            model.addAttribute("customerDTO", dto);
+
+            Customer customer = customersService.getCustomer(id);
+            CustomerView customerView = new CustomerView(customer);
+            //CustomerView customerView = new CustomerView(getCustomerDTO());
+
+            model.addAttribute("customerView", customerView);
+            return templateFolder + "edit_personal_data";
+        }
+
+        if (!CommonEntityService.validateDate(personalDataDTO.getBirthday())) {
+            result.addError(new FieldError("customerDTO", "birthday", notDateErrorMessage));
+            return templateFolder + "edit_personal_data";
+        }
+        getCustomerDTO().setPersonalDataDTO(personalDataDTO);
+        model.addAttribute("kokoko", getCustomerDTO());
+        redirectAttributes.addFlashAttribute("flashDTO", getCustomerDTO());
+        return "redirect:" + controllerPath + passportEditPath;
+    }
+
+    @GetMapping("${endpoints.tvpp.customers.path.passport.edit}")
+    public String showUpdatePassportPage(@PathVariable("id") long id, Model model) {
+        setPassportPageModel(model);
+        model.addAttribute("dataSubmitted", false);
+        model.addAttribute("customerDTO", getCustomerDTO());
+        // model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+        Customer customer = customersService.getCustomer(id);
+        CustomerView customerView = new CustomerView(customer);
+        model.addAttribute("customerView", customerView);
+        return templateFolder + "edit_passport_page";
+    }
+
+    @PostMapping("${endpoints.tvpp.customers.path.passport.edit}")
+    public String postUpdatePassportData(@Valid PassportDTO passportDTO, BindingResult result, Model model) {
+        model.addAttribute("dataSubmitted", true);
+        boolean issueDateValid = CommonEntityService.validateDate(passportDTO.getIssueDate());
+
+        if (result.hasErrors() || !issueDateValid) {
+            setPassportPageModel(model);
+            model.addAttribute("customerDTO", getCustomerDTO());
+            model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+
+            if (!issueDateValid) {
+                result.addError(new FieldError("passportDTO", "issueDate", notDateErrorMessage));
+            }
+            return templateFolder + "edit_passport_page";
+        }
+        getCustomerDTO().setPassportDTO(passportDTO);
+        return "redirect:" + controllerPath + addressEditPath;
+    }
+
+
+    @GetMapping("${endpoints.tvpp.customers.path.address.edit}")
+    public String showUpdateAddressForm(@PathVariable("id") long id, Model model) {
+        model.addAttribute("dataSubmitted", false);
+        //Customer customer = customersService.getCustomer(id);
+        CustomerDTO customerDTO = getCustomerDTO();
+        //CustomerDTO customerDTO = new CustomerDTO(customer);
+        //todo: наверное не надо на каждом шаге создавать заново кастомера???
+        // CustomerView customerView = new CustomerView(customer);
+
+
+        CustomerView customerView = new CustomerView(customersService.getCustomer(id));
+        model.addAttribute("customerDTO", customerDTO);
+        model.addAttribute("customerView", customerView);
+
+        return templateFolder + "edit_address_page";
+    }
+
+
+    @PostMapping("${endpoints.tvpp.customers.path.address.edit}")
+    public String postUpdateAddressData(@PathVariable("id") long id, @Valid AddressDTO addressDTO, BindingResult result, Model model) {
+        model.addAttribute("dataSubmitted", true);
+        if (result.hasErrors()) {
+            model.addAttribute("customerDTO", getCustomerDTO());
+            CustomerView customerView = new CustomerView(customersService.getCustomer(id));
+            model.addAttribute("customerView", customerView);
+            return templateFolder + "edit_address_page";
+        }
+        getCustomerDTO().setAddressDTO(addressDTO);
+        return "redirect:" + controllerPath + loginEditPath;
+    }
+
+
+
+    @GetMapping("${endpoints.tvpp.customers.path.login.edit}")
+    public String showEditLoginDataPage(@PathVariable("id") long id, LoginDataDTO loginDataDTO, Model model) {
+        model.addAttribute("customerDTO", getCustomerDTO());
+        model.addAttribute("customerView", new CustomerView(customersService.getCustomer(id)));
+        model.addAttribute("dataSubmitted", false);
+        return templateFolder + "edit_login_page";
+    }
+
+    @PostMapping("${endpoints.tvpp.customers.path.login.edit}")
+    public String postEditLoginData(@PathVariable("id") long id, @Valid LoginDataDTO loginDataDTO, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("dataSubmitted", true);
+            model.addAttribute("customerDTO", getCustomerDTO());
+            model.addAttribute("customerView", new CustomerView(customersService.getCustomer(id)));
+            return templateFolder + "edit_login_page";
+        }
+        getCustomerDTO().setLoginDataDTO(loginDataDTO);
+        return "redirect:" + controllerPath + overviewEditPath;
+    }
+
+    @GetMapping("${endpoints.tvpp.customers.path.overview.edit}")
+    public String showOverviewPage(@PathVariable("id") long id, Model model) {
+        model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+        return templateFolder + "edit_overview_page";
+    }
+
+
+    @PostMapping("${endpoints.tvpp.customers.path.overview.edit}")
+    public String saveUpdatedCustomer(@PathVariable("id") long id, Model model) {
+        action = EntityActions.UPDATE;
+        try {
+            Customer customer = customersService.updateCustomer(id, getCustomerDTO());
+            customersService.resetCustomerDTO(getCustomerDTO());
+            successfulAction = true;
+            successId = id;
+            return "redirect:" + controllerPath;
+        } catch (EntityCannotBeSavedException e) {
+            commonEntityService.setEntityCannotBeSavedModel(model, e, action);
+            model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+            return templateFolder + "edit_overview_page";
+        }
+    }
 
 
     @ExceptionHandler(DataIntegrityViolationException.class)

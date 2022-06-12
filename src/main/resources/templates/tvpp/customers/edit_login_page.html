@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Login data</title>
+    <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
+</head>
+<body>
+<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1 class="mb-3">Edit customer: Login data</h1>
+    <form action="#" th:action="@{${loginEditPath}(id=${customerView.id})}" th:object="${customerDTO.loginDataDTO}" method="post">
+        <div th:switch="${errorMessage}">
+            <div th:case="null">
+            </div>
+            <div th:case="*">
+                <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+            </div>
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text"
+                   th:value="${dataSubmitted == false} ? ${customerView?.loginDataView?.email} : ${loginDataDTO?.email}"
+                   id="email" th:id="email" th:name="email" class="form-control">
+            <label for="email" class="form-label">Email</label>
+            <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+        </div>
+
+        <div class="form-outline mb-4">
+            <input class="btn btn-primary" type="submit" value="To overview"/>
+        </div>
+        <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${addressEditPath}(id=${customerView.id})} role="button">Back</a>
+    </form>
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+    </form>
+</div>
+</body>
+</html>

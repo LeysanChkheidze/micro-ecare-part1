@@ -4,8 +4,7 @@ import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBEx
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.contractmanagement.service.ContractsService;
 import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
-import com.javaschool.microecare.customermanagement.dao.Customer;
-import com.javaschool.microecare.customermanagement.dao.PersonalData;
+import com.javaschool.microecare.customermanagement.dao.*;
 import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.repository.CustomersRepo;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
@@ -131,13 +130,27 @@ public class CustomersService {
     }
 
     public Customer saveNewCustomer(CustomerDTO customerDTO) {
-        Customer customer = new Customer(customerDTO);
+        Customer customer = new Customer(customerDTO, true);
         setInitialLoginData(customer);
         try {
             return commonEntityService.saveWithUpdateTime(customer, customersRepo);
         } catch (DataIntegrityViolationException e) {
             throw commonEntityService.createSavingEntityException(e, "Customer", "Key (email)", nonUniqueEmailMessage);
 
+        }
+    }
+
+    public Customer updateCustomer(long id, CustomerDTO customerDTO) {
+        Customer customer = getCustomer(id);
+        customer.setPersonalData(new PersonalData(customerDTO.getPersonalDataDTO()));
+        customer.setPassport(new Passport(customerDTO.getPassportDTO()));
+        customer.setAddress(new Address(customerDTO.getAddressDTO()));
+        customer.setLoginData(new LoginData(customerDTO.getLoginDataDTO(), false));
+
+        try {
+            return commonEntityService.saveWithUpdateTime(customer, customersRepo);
+        } catch (DataIntegrityViolationException e) {
+            throw commonEntityService.createSavingEntityException(e, "Customer", "Key (option_name)", "nonUniqueNameMessage");
         }
     }
 

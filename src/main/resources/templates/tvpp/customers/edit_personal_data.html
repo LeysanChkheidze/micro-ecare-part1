@@ -13,7 +13,7 @@
 <br>
 <div class="container">
     <h1 class="mb-3">Update customer: Personal data</h1>
-    <form action="#" th:action="@{${personalDataPath}}" th:object="${customerDTO.personalDataDTO}" method="patch">
+    <form action="#" th:action="@{${personalDataEditPath}(id=${customerView.id})}" th:object="${customerDTO.personalDataDTO}" method="post">
         <div th:switch="${errorMessage}">
             <div th:case="null">
             </div>

@@ -36,7 +36,7 @@ public class Customer extends BaseEntity {
         blocked = false;
     }
 
-    public Customer(CustomerDTO customerDTO) {
+    public Customer(CustomerDTO customerDTO, boolean newlyCreated) {
         super();
         blocked = false;
         PersonalDataDTO personalDataDTO = customerDTO.getPersonalDataDTO();
@@ -55,7 +55,8 @@ public class Customer extends BaseEntity {
 
         LoginDataDTO loginDataDTO = customerDTO.getLoginDataDTO();
         if (loginDataDTO != null) {
-            this.loginData = new LoginData(loginDataDTO);
+            //todo: а тут точно всегда newlyCreated???
+            this.loginData = new LoginData(loginDataDTO, newlyCreated);
         }
 
     }
