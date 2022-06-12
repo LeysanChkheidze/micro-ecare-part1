@@ -1,5 +1,7 @@
 package com.javaschool.microecare.customermanagement.dto;
 
+import com.javaschool.microecare.customermanagement.dao.LoginData;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -13,6 +15,10 @@ public class LoginDataDTO {
     private String password;*/
 
     public LoginDataDTO() {
+    }
+
+    public LoginDataDTO(LoginData loginData) {
+        this.email = loginData.getEmail();
     }
 
     public String getEmail() {

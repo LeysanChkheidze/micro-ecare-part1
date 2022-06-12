@@ -1,5 +1,8 @@
 package com.javaschool.microecare.controllers.tvpp;
 
+import com.javaschool.microecare.catalogmanagement.dao.Option;
+import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
+import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.contractmanagement.service.ContractsService;
@@ -48,6 +51,16 @@ public class CustomersPageTVPPController {
     private String loginPath;
     @Value("${endpoints.tvpp.customers.path.overview}")
     private String overviewPath;
+    @Value("${endpoints.tvpp.customers.path.personal_data.edit}")
+    private String personalDataEditPath;
+    @Value("${endpoints.tvpp.customers.path.address.edit}")
+    private String addressEditPath;
+    @Value("${endpoints.tvpp.customers.path.passport.edit}")
+    private String passportEditPath;
+    @Value("${endpoints.tvpp.customers.path.login.edit}")
+    private String loginEditPath;
+    @Value("${endpoints.tvpp.customers.path.overview.edit}")
+    private String overviewEditPath;
     @Value("${endpoints.tvpp.basket.controller_path}")
     private String basketControllerPath;
     @Value("${general.field.not_date.msg}")
@@ -95,7 +108,14 @@ public class CustomersPageTVPPController {
         model.addAttribute("loginPath", controllerPath + loginPath);
         model.addAttribute("submitPath", controllerPath + overviewPath);
         model.addAttribute("overviewPath", overviewPath);
+        //todo: do I need basket here?
         model.addAttribute("basketPath", basketControllerPath);
+
+        model.addAttribute("personalDataEditPath", controllerPath + personalDataEditPath);
+        model.addAttribute("addressEditPath", controllerPath + addressEditPath);
+        model.addAttribute("passportEditPath", controllerPath + passportEditPath);
+        model.addAttribute("loginEditPath", controllerPath + loginEditPath);
+        model.addAttribute("overviewEditPath", controllerPath + overviewEditPath);
     }
 
     private void setAllCustomersModel(Model model) {
@@ -262,6 +282,21 @@ public class CustomersPageTVPPController {
         viewDetails = true;
         return "redirect:" + controllerPath;
     }
+
+
+    @GetMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
+    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+        model.addAttribute("dataSubmitted", false);
+        Customer customer = customersService.getCustomer(id);
+        CustomerDTO customerDTO = new CustomerDTO(customer);
+        CustomerView customerView = new CustomerView(customer);
+        model.addAttribute("customerDTO", customerDTO);
+        model.addAttribute("customerView", customerView);
+
+        return templateFolder + "edit_personal_data";
+    }
+
+
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String handleDataIntegrityViolationException(DataIntegrityViolationException e) {

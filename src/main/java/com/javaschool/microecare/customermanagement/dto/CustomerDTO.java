@@ -1,5 +1,6 @@
 package com.javaschool.microecare.customermanagement.dto;
 
+import com.javaschool.microecare.customermanagement.dao.Customer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -18,6 +19,14 @@ public class CustomerDTO {
 
     public CustomerDTO() {
     }
+
+    public CustomerDTO(Customer customer) {
+        this.personalDataDTO = new PersonalDataDTO(customer.getPersonalData());
+        this.passportDTO = new PassportDTO(customer.getPassport());
+        this.addressDTO = new AddressDTO(customer.getAddress());
+        this.loginDataDTO = new LoginDataDTO(customer.getLoginData());
+    }
+
 
     public PersonalDataDTO getPersonalDataDTO() {
         return personalDataDTO;

@@ -1,5 +1,7 @@
 package com.javaschool.microecare.customermanagement.dto;
 
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
+import com.javaschool.microecare.customermanagement.dao.Passport;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 
 import javax.validation.constraints.NotBlank;
@@ -24,6 +26,12 @@ public class PassportDTO {
         this.passportType = passportType;
         this.documentID = documentID;
         this.issueDate = issueDate;
+    }
+
+    public PassportDTO(Passport passport) {
+        this.passportType = passport.getPassportType();
+        this.documentID = passport.getDocumentID();
+        this.issueDate = passport.getIssueDate().format(CommonEntityService.dateFormatter);
     }
 
     public PassportType getPassportType() {

@@ -43,6 +43,7 @@
             <th>Email</th>
             <th>View details</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Create a contract</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Update</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
         </tr>
         </thead>
@@ -64,7 +65,9 @@
                 </button>
             </td>
 
-            <td>here create contract link</td>
+            <td>todo</td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')"><a
+                    th:href="@{${personalDataEditPath}(id=${customer.id})}">Edit</a></td>
 
             <td sec:authorize="hasRole('ROLE_ADMIN')">
                 <form action="#" th:action="@{${pathDeleteUpdate}(id=${customer.id})}" th:method="delete"

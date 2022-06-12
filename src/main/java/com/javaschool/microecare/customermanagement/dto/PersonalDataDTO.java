@@ -1,6 +1,9 @@
 package com.javaschool.microecare.customermanagement.dto;
 
 
+import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
+import com.javaschool.microecare.customermanagement.dao.PersonalData;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -21,6 +24,12 @@ public class PersonalDataDTO {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthday = birthday;
+    }
+
+    public PersonalDataDTO(PersonalData personalData) {
+        this.firstName = personalData.getFirstName();
+        this.lastName = personalData.getLastName();
+        this.birthday = personalData.getBirthday().format(CommonEntityService.dateFormatter);
     }
 
     public String getFirstName() {
