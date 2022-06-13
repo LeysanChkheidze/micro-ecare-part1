@@ -26,6 +26,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,9 @@ import java.util.List;
 @RequestMapping("${endpoints.tvpp.customers.controller_path}")
 @PropertySource("messages.properties")
 public class CustomersPageTVPPController {
+    @Resource(name = "sessionScopedCustomerDTO")
+    CustomerDTO sessionScopedCustomerDTO;
+
     @Value("${directory.templates.tvpp.customers}")
     private String templateFolder;
     @Value("${endpoints.tvpp.customers.controller_path}")
@@ -90,34 +94,28 @@ public class CustomersPageTVPPController {
         this.contractsService = contractsService;
     }
 
-    @Lookup
-    public TVPPBasket getBasket() {
-        return null;
-    }
-
-    //todo: зачем это???
-    @Lookup
-    public CustomerDTO getCustomerDTO() {
-        return null;
-    }
 
     @ModelAttribute
     public void setCommonAttributes(Model model) {
         commonEntityService.setPathsAttributes(model, controllerPath);
+        //paths for new customer process
         model.addAttribute("personalDataPath", controllerPath + personalDataPath);
         model.addAttribute("addressPath", controllerPath + addressPath);
         model.addAttribute("passportPath", controllerPath + passportPath);
         model.addAttribute("loginPath", controllerPath + loginPath);
         model.addAttribute("submitPath", controllerPath + overviewPath);
         model.addAttribute("overviewPath", overviewPath);
-        //todo: do I need basket here?
-        model.addAttribute("basketPath", basketControllerPath);
 
+        //paths for edit customer process
         model.addAttribute("personalDataEditPath", controllerPath + personalDataEditPath);
         model.addAttribute("addressEditPath", controllerPath + addressEditPath);
         model.addAttribute("passportEditPath", controllerPath + passportEditPath);
         model.addAttribute("loginEditPath", controllerPath + loginEditPath);
         model.addAttribute("overviewEditPath", controllerPath + overviewEditPath);
+
+        //session customer dto to use in new and update customer processes
+        model.addAttribute("customerDTO", sessionScopedCustomerDTO);
+
     }
 
     private void setAllCustomersModel(Model model) {
@@ -145,7 +143,7 @@ public class CustomersPageTVPPController {
         viewDetails = false;
         customersMobileNumbers = new ArrayList<>();
         if (cancel != null && cancel) {
-            customersService.resetCustomerDTO(getCustomerDTO());
+            customersService.resetCustomerDTO(sessionScopedCustomerDTO);
         }
         return templateFolder + "customers";
     }
@@ -158,7 +156,6 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.personal_data}")
     public String showNewCustomerPersonalDataPage(PersonalDataDTO personalDataDTO, Model model) {
         model.addAttribute("dataSubmitted", false);
-        model.addAttribute("customerDTO", getCustomerDTO());
         return templateFolder + "new_personal_data";
     }
 
@@ -166,7 +163,6 @@ public class CustomersPageTVPPController {
     public String postPersonalData(@Valid PersonalDataDTO personalDataDTO, BindingResult result, Model model) {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
-            model.addAttribute("customerDTO", getCustomerDTO());
             return templateFolder + "new_personal_data";
         }
 
@@ -174,7 +170,7 @@ public class CustomersPageTVPPController {
             result.addError(new FieldError("customerDTO", "birthday", notDateErrorMessage));
             return templateFolder + "new_personal_data";
         }
-        getCustomerDTO().setPersonalDataDTO(personalDataDTO);
+        sessionScopedCustomerDTO.setPersonalDataDTO(personalDataDTO);
         return "redirect:" + controllerPath + passportPath;
     }
 
@@ -189,7 +185,6 @@ public class CustomersPageTVPPController {
     public String showPassportPage(PassportDTO passportDTO, Model model) {
         setPassportPageModel(model);
         model.addAttribute("dataSubmitted", false);
-        model.addAttribute("customerDTO", getCustomerDTO());
         return templateFolder + "new_passport_page";
     }
 
@@ -204,13 +199,12 @@ public class CustomersPageTVPPController {
             }
             return templateFolder + "new_passport_page";
         }
-        getCustomerDTO().setPassportDTO(passportDTO);
+        sessionScopedCustomerDTO.setPassportDTO(passportDTO);
         return "redirect:" + controllerPath + addressPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.address}")
     public String showAddressPage(AddressDTO addressDTO, Model model) {
-        model.addAttribute("customerDTO", getCustomerDTO());
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_address_page";
     }
@@ -221,13 +215,12 @@ public class CustomersPageTVPPController {
             model.addAttribute("dataSubmitted", true);
             return templateFolder + "new_address_page";
         }
-        getCustomerDTO().setAddressDTO(addressDTO);
+        sessionScopedCustomerDTO.setAddressDTO(addressDTO);
         return "redirect:" + controllerPath + loginPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.login}")
     public String showLoginDataPage(LoginDataDTO loginDataDTO, Model model) {
-        model.addAttribute("customerDTO", getCustomerDTO());
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_login_page";
     }
@@ -238,13 +231,13 @@ public class CustomersPageTVPPController {
             model.addAttribute("dataSubmitted", true);
             return templateFolder + "new_login_page";
         }
-        getCustomerDTO().setLoginDataDTO(loginDataDTO);
+        sessionScopedCustomerDTO.setLoginDataDTO(loginDataDTO);
         return "redirect:" + controllerPath + overviewPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.overview}")
     public String showOverviewPage(Model model) {
-        model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+        model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
         return templateFolder + "overview_page";
     }
 
@@ -253,14 +246,14 @@ public class CustomersPageTVPPController {
     public String saveNewCustomer(Model model) {
         action = EntityActions.CREATE;
         try {
-            Customer customer = customersService.saveNewCustomer(getCustomerDTO());
-            customersService.resetCustomerDTO(getCustomerDTO());
+            Customer customer = customersService.saveNewCustomer(sessionScopedCustomerDTO);
+            customersService.resetCustomerDTO(sessionScopedCustomerDTO);
             successfulAction = true;
             successId = customer.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             commonEntityService.setEntityCannotBeSavedModel(model, e, action);
-            model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+            model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
             return templateFolder + "overview_page";
         }
     }
@@ -289,11 +282,7 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         model.addAttribute("dataSubmitted", false);
-        Customer customer = customersService.getCustomer(id);
-        CustomerDTO customerDTO = getCustomerDTO();
-        //CustomerDTO customerDTO = new CustomerDTO(customer);
-        CustomerView customerView = new CustomerView(customer);
-        model.addAttribute("customerDTO", customerDTO);
+        CustomerView customerView = new CustomerView(customersService.getCustomer(id));
         model.addAttribute("customerView", customerView);
 
         return templateFolder + "edit_personal_data";
@@ -303,12 +292,8 @@ public class CustomersPageTVPPController {
     public String postUpdatePersonalData(@PathVariable("id") long id, @Valid PersonalDataDTO personalDataDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
-            CustomerDTO dto = getCustomerDTO();
-            model.addAttribute("customerDTO", dto);
-
             Customer customer = customersService.getCustomer(id);
             CustomerView customerView = new CustomerView(customer);
-            //CustomerView customerView = new CustomerView(getCustomerDTO());
 
             model.addAttribute("customerView", customerView);
             return templateFolder + "edit_personal_data";
@@ -318,9 +303,7 @@ public class CustomersPageTVPPController {
             result.addError(new FieldError("customerDTO", "birthday", notDateErrorMessage));
             return templateFolder + "edit_personal_data";
         }
-        getCustomerDTO().setPersonalDataDTO(personalDataDTO);
-        model.addAttribute("kokoko", getCustomerDTO());
-        redirectAttributes.addFlashAttribute("flashDTO", getCustomerDTO());
+        sessionScopedCustomerDTO.setPersonalDataDTO(personalDataDTO);
         return "redirect:" + controllerPath + passportEditPath;
     }
 
@@ -328,8 +311,6 @@ public class CustomersPageTVPPController {
     public String showUpdatePassportPage(@PathVariable("id") long id, Model model) {
         setPassportPageModel(model);
         model.addAttribute("dataSubmitted", false);
-        model.addAttribute("customerDTO", getCustomerDTO());
-        // model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
         Customer customer = customersService.getCustomer(id);
         CustomerView customerView = new CustomerView(customer);
         model.addAttribute("customerView", customerView);
@@ -343,15 +324,14 @@ public class CustomersPageTVPPController {
 
         if (result.hasErrors() || !issueDateValid) {
             setPassportPageModel(model);
-            model.addAttribute("customerDTO", getCustomerDTO());
-            model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+            model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
 
             if (!issueDateValid) {
                 result.addError(new FieldError("passportDTO", "issueDate", notDateErrorMessage));
             }
             return templateFolder + "edit_passport_page";
         }
-        getCustomerDTO().setPassportDTO(passportDTO);
+        sessionScopedCustomerDTO.setPassportDTO(passportDTO);
         return "redirect:" + controllerPath + addressEditPath;
     }
 
@@ -359,15 +339,12 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.address.edit}")
     public String showUpdateAddressForm(@PathVariable("id") long id, Model model) {
         model.addAttribute("dataSubmitted", false);
-        //Customer customer = customersService.getCustomer(id);
-        CustomerDTO customerDTO = getCustomerDTO();
-        //CustomerDTO customerDTO = new CustomerDTO(customer);
         //todo: наверное не надо на каждом шаге создавать заново кастомера???
         // CustomerView customerView = new CustomerView(customer);
 
 
         CustomerView customerView = new CustomerView(customersService.getCustomer(id));
-        model.addAttribute("customerDTO", customerDTO);
+      //  model.addAttribute("customerDTO", sessionScopedCustomerDTO);
         model.addAttribute("customerView", customerView);
 
         return templateFolder + "edit_address_page";
@@ -377,21 +354,19 @@ public class CustomersPageTVPPController {
     @PostMapping("${endpoints.tvpp.customers.path.address.edit}")
     public String postUpdateAddressData(@PathVariable("id") long id, @Valid AddressDTO addressDTO, BindingResult result, Model model) {
         model.addAttribute("dataSubmitted", true);
+        //todo: enter string housenr, error Failed to convert property value of type java.lang.String to required type java.lang.Integer for property houseNr; nested exception is java.lang.NumberFormatException: For input string: "session1"
         if (result.hasErrors()) {
-            model.addAttribute("customerDTO", getCustomerDTO());
             CustomerView customerView = new CustomerView(customersService.getCustomer(id));
             model.addAttribute("customerView", customerView);
             return templateFolder + "edit_address_page";
         }
-        getCustomerDTO().setAddressDTO(addressDTO);
+        sessionScopedCustomerDTO.setAddressDTO(addressDTO);
         return "redirect:" + controllerPath + loginEditPath;
     }
 
 
-
     @GetMapping("${endpoints.tvpp.customers.path.login.edit}")
     public String showEditLoginDataPage(@PathVariable("id") long id, LoginDataDTO loginDataDTO, Model model) {
-        model.addAttribute("customerDTO", getCustomerDTO());
         model.addAttribute("customerView", new CustomerView(customersService.getCustomer(id)));
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "edit_login_page";
@@ -401,17 +376,16 @@ public class CustomersPageTVPPController {
     public String postEditLoginData(@PathVariable("id") long id, @Valid LoginDataDTO loginDataDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("dataSubmitted", true);
-            model.addAttribute("customerDTO", getCustomerDTO());
             model.addAttribute("customerView", new CustomerView(customersService.getCustomer(id)));
             return templateFolder + "edit_login_page";
         }
-        getCustomerDTO().setLoginDataDTO(loginDataDTO);
+        sessionScopedCustomerDTO.setLoginDataDTO(loginDataDTO);
         return "redirect:" + controllerPath + overviewEditPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.overview.edit}")
     public String showOverviewPage(@PathVariable("id") long id, Model model) {
-        model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+        model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
         return templateFolder + "edit_overview_page";
     }
 
@@ -420,14 +394,14 @@ public class CustomersPageTVPPController {
     public String saveUpdatedCustomer(@PathVariable("id") long id, Model model) {
         action = EntityActions.UPDATE;
         try {
-            Customer customer = customersService.updateCustomer(id, getCustomerDTO());
-            customersService.resetCustomerDTO(getCustomerDTO());
+            customersService.updateCustomer(id, sessionScopedCustomerDTO);
+            customersService.resetCustomerDTO(sessionScopedCustomerDTO);
             successfulAction = true;
             successId = id;
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
             commonEntityService.setEntityCannotBeSavedModel(model, e, action);
-            model.addAttribute("customerView", new CustomerView(getCustomerDTO()));
+            model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
             return templateFolder + "edit_overview_page";
         }
     }
@@ -445,7 +419,9 @@ public class CustomersPageTVPPController {
 
     @ExceptionHandler(RuntimeException.class)
     public String handleRuntimeException(RuntimeException e) {
+        e.printStackTrace();
         errorMessage = e.getMessage();
+        System.out.println("errorMessage = " + errorMessage);
         return "redirect:" + controllerPath;
     }
 

@@ -92,4 +92,12 @@ public class Customer extends BaseEntity {
     public void setLoginData(LoginData loginData) {
         this.loginData = loginData;
     }
+
+    public void setLoginEmail(LoginData loginData) {
+        this.loginData.setEmail(loginData.getEmail());
+    }
+
+    public void setLoginEmail(String email) {
+        this.loginData.setEmail(email);
+    }
 }

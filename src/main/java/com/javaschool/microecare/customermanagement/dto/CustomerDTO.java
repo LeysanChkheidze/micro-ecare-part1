@@ -1,10 +1,12 @@
 package com.javaschool.microecare.customermanagement.dto;
 
 import com.javaschool.microecare.customermanagement.dao.Customer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.annotation.SessionScope;
 
 //todo: переделать в сервис?
 @Configuration
@@ -25,6 +27,12 @@ public class CustomerDTO {
         this.passportDTO = new PassportDTO(customer.getPassport());
         this.addressDTO = new AddressDTO(customer.getAddress());
         this.loginDataDTO = new LoginDataDTO(customer.getLoginData());
+    }
+
+    @Bean
+    @SessionScope
+    public CustomerDTO sessionScopedCustomerDTO() {
+        return new CustomerDTO();
     }
 
 

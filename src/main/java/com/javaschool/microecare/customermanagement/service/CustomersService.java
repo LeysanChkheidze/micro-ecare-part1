@@ -145,7 +145,10 @@ public class CustomersService {
         customer.setPersonalData(new PersonalData(customerDTO.getPersonalDataDTO()));
         customer.setPassport(new Passport(customerDTO.getPassportDTO()));
         customer.setAddress(new Address(customerDTO.getAddressDTO()));
-        customer.setLoginData(new LoginData(customerDTO.getLoginDataDTO(), false));
+        //todo: только апдейтить имейл
+       // LoginDataDTO updatedLoginDTO = customerDTO.getLoginDataDTO();
+      //  LoginData updatedLoginData = new LoginData(updatedLoginDTO, false);
+        customer.setLoginEmail(customerDTO.getLoginDataDTO().getEmail());
 
         try {
             return commonEntityService.saveWithUpdateTime(customer, customersRepo);

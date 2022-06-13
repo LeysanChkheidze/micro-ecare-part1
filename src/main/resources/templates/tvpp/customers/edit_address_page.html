@@ -79,7 +79,7 @@
             <input class="btn btn-primary" type="submit" value="Next"/>
         </div>
         <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
-        <a class="btn btn-primary" th:href=@{${passportPath}} role="button">Back</a>
+        <a class="btn btn-primary" th:href=@{${passportEditPath}(id=${customerView.id})} role="button">Back</a>
     </form>
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
     </form>
