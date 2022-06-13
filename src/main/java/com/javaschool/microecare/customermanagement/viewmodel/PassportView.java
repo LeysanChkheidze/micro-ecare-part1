@@ -11,6 +11,9 @@ public class PassportView {
     private String documentID;
     private String issueDate;
 
+    public PassportView() {
+    }
+
     public PassportView(Passport passport) {
         this.passportType = passport.getPassportType().getDisplayName();
         this.documentID = passport.getDocumentID();

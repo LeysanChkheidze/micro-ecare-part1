@@ -7,7 +7,7 @@ import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
 import com.javaschool.microecare.customermanagement.dao.*;
 import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.repository.CustomersRepo;
-import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
+import com.javaschool.microecare.customermanagement.viewmodel.*;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -56,6 +56,14 @@ public class CustomersService {
         customerDTO.setPassportDTO(new PassportDTO());
         customerDTO.setAddressDTO(new AddressDTO());
         customerDTO.setLoginDataDTO(new LoginDataDTO());
+    }
+
+    public void resetCustomerView(CustomerView customerView) {
+        customerView.setId(0);
+        customerView.setPersonalDataView(new PersonalDataView());
+        customerView.setPassportView(new PassportView());
+        customerView.setAddressView(new AddressView());
+        customerView.setLoginDataView(new LoginDataView());
     }
 
     public void setPersonalDataToCustomerDTO(CustomerDTO customerDTO, PersonalDataDTO personalDataDTO) {

@@ -3,9 +3,18 @@ package com.javaschool.microecare.customermanagement.viewmodel;
 import com.javaschool.microecare.customermanagement.dao.*;
 import com.javaschool.microecare.customermanagement.dto.*;
 import org.apache.logging.log4j.util.PropertySource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.Comparator;
 
+@Configuration
+@Scope(value = WebApplicationContext.SCOPE_SESSION,
+        proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerView implements Comparable<CustomerView> {
     private long id;
     private PersonalDataView personalDataView;
@@ -55,6 +64,27 @@ public class CustomerView implements Comparable<CustomerView> {
             this.loginDataView = new LoginDataView(loginDataDTO);
         }
 
+    }
+
+    @Bean
+    @SessionScope
+    public CustomerView sessionScopedCustomerView() {
+        return new CustomerView();
+    }
+
+    public void setCustomerViewFields(CustomerView newView) {
+        id = newView.getId();
+        personalDataView = newView.getPersonalDataView();
+        passportView = newView.getPassportView();
+        addressView = newView.getAddressView();
+        loginDataView = newView.getLoginDataView();
+        /*CustomerView customerView = new CustomerView();
+        customerView.setId(newView.getId());
+        customerView.setPersonalDataView(newView.getPersonalDataView());
+        customerView.setPassportView(newView.getPassportView());
+        customerView.setAddressView(newView.getAddressView());
+        customerView.setLoginDataView(newView.getLoginDataView());
+        return customerView;*/
     }
 
     public PassportView getPassportView() {

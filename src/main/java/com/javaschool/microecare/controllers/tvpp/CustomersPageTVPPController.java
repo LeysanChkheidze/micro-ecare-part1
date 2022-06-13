@@ -1,8 +1,6 @@
 package com.javaschool.microecare.controllers.tvpp;
 
-import com.javaschool.microecare.catalogmanagement.dao.Option;
-import com.javaschool.microecare.catalogmanagement.dto.OptionDTO;
-import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
+
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.contractmanagement.service.ContractsService;
@@ -12,10 +10,8 @@ import com.javaschool.microecare.customermanagement.dto.*;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
 import com.javaschool.microecare.customermanagement.service.PassportType;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
-import com.javaschool.microecare.ordermanagement.TVPPBasket;
 import com.javaschool.microecare.utils.EntityActions;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,6 +37,9 @@ import java.util.List;
 public class CustomersPageTVPPController {
     @Resource(name = "sessionScopedCustomerDTO")
     CustomerDTO sessionScopedCustomerDTO;
+
+    @Resource(name = "sessionScopedCustomerView")
+    CustomerView sessionScopedCustomerView;
 
     @Value("${directory.templates.tvpp.customers}")
     private String templateFolder;
@@ -283,7 +282,8 @@ public class CustomersPageTVPPController {
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         model.addAttribute("dataSubmitted", false);
         CustomerView customerView = new CustomerView(customersService.getCustomer(id));
-        model.addAttribute("customerView", customerView);
+        sessionScopedCustomerView.setCustomerViewFields(customerView);
+        model.addAttribute("customerView", sessionScopedCustomerView);
 
         return templateFolder + "edit_personal_data";
     }
@@ -292,10 +292,7 @@ public class CustomersPageTVPPController {
     public String postUpdatePersonalData(@PathVariable("id") long id, @Valid PersonalDataDTO personalDataDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
-            Customer customer = customersService.getCustomer(id);
-            CustomerView customerView = new CustomerView(customer);
-
-            model.addAttribute("customerView", customerView);
+            model.addAttribute("customerView", sessionScopedCustomerView);
             return templateFolder + "edit_personal_data";
         }
 
@@ -311,9 +308,8 @@ public class CustomersPageTVPPController {
     public String showUpdatePassportPage(@PathVariable("id") long id, Model model) {
         setPassportPageModel(model);
         model.addAttribute("dataSubmitted", false);
-        Customer customer = customersService.getCustomer(id);
-        CustomerView customerView = new CustomerView(customer);
-        model.addAttribute("customerView", customerView);
+        model.addAttribute("customerView", sessionScopedCustomerView);
+
         return templateFolder + "edit_passport_page";
     }
 
@@ -339,13 +335,8 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.address.edit}")
     public String showUpdateAddressForm(@PathVariable("id") long id, Model model) {
         model.addAttribute("dataSubmitted", false);
-        //todo: наверное не надо на каждом шаге создавать заново кастомера???
-        // CustomerView customerView = new CustomerView(customer);
+        model.addAttribute("customerView", sessionScopedCustomerView);
 
-
-        CustomerView customerView = new CustomerView(customersService.getCustomer(id));
-      //  model.addAttribute("customerDTO", sessionScopedCustomerDTO);
-        model.addAttribute("customerView", customerView);
 
         return templateFolder + "edit_address_page";
     }
@@ -356,8 +347,8 @@ public class CustomersPageTVPPController {
         model.addAttribute("dataSubmitted", true);
         //todo: enter string housenr, error Failed to convert property value of type java.lang.String to required type java.lang.Integer for property houseNr; nested exception is java.lang.NumberFormatException: For input string: "session1"
         if (result.hasErrors()) {
-            CustomerView customerView = new CustomerView(customersService.getCustomer(id));
-            model.addAttribute("customerView", customerView);
+            model.addAttribute("customerView", sessionScopedCustomerView);
+
             return templateFolder + "edit_address_page";
         }
         sessionScopedCustomerDTO.setAddressDTO(addressDTO);
@@ -367,7 +358,7 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.login.edit}")
     public String showEditLoginDataPage(@PathVariable("id") long id, LoginDataDTO loginDataDTO, Model model) {
-        model.addAttribute("customerView", new CustomerView(customersService.getCustomer(id)));
+        model.addAttribute("customerView", sessionScopedCustomerView);
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "edit_login_page";
     }
@@ -376,7 +367,7 @@ public class CustomersPageTVPPController {
     public String postEditLoginData(@PathVariable("id") long id, @Valid LoginDataDTO loginDataDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("dataSubmitted", true);
-            model.addAttribute("customerView", new CustomerView(customersService.getCustomer(id)));
+            model.addAttribute("customerView", sessionScopedCustomerView);
             return templateFolder + "edit_login_page";
         }
         sessionScopedCustomerDTO.setLoginDataDTO(loginDataDTO);
@@ -396,6 +387,8 @@ public class CustomersPageTVPPController {
         try {
             customersService.updateCustomer(id, sessionScopedCustomerDTO);
             customersService.resetCustomerDTO(sessionScopedCustomerDTO);
+            customersService.resetCustomerView(sessionScopedCustomerView);
+
             successfulAction = true;
             successId = id;
             return "redirect:" + controllerPath;
