@@ -1,10 +1,13 @@
 package com.javaschool.microecare.contractmanagement.dto;
 
 import com.javaschool.microecare.contractmanagement.dao.MobileNumber;
+import com.javaschool.microecare.customermanagement.dto.CustomerDTO;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.Set;
 
@@ -27,6 +30,12 @@ public class ContractDTO {
         this.mobileNumber = mobileNumber;
         this.tariffID = tariffID;
         this.optionIDs = optionIDs;
+    }
+
+    @Bean
+    @SessionScope
+    public ContractDTO sessionScopedContractDTO() {
+        return new ContractDTO();
     }
 
     public Long getCustomerID() {

@@ -13,7 +13,7 @@
 <br>
 <div class="container">
     <h1 class="mb-3">Edit customer: Passport data</h1>
-    <form action="#" th:action="@{${passportEditPath}(id=${customerView.id})}" th:object="${customerDTO.passportDTO}" method="post">
+    <form action="#" th:action="@{${passportEditPath}(id=${customerView.id})}" th:object="${passportDTO}" method="post">
         <div th:switch="${errorMessage}">
             <div th:case="null">
             </div>
@@ -23,23 +23,19 @@
         </div>
 
 
-        <div>
-            <!--select class="form-control" th:field="*{passportType}" th:value = "${customerDTO.passportDTO.passportType}" id="dropPassport"-->
-            <select class="form-control"
-                    th:value="${dataSubmitted == false} ? ${customerView?.passportView?.passportType} : ${passportDTO?.passportType}"
-                    id="dropPassport" th:id="passportType" th:name="passportType">
-                <option value="" selected disabled hidden>Select type</option>
-                <option th:each="type : ${passportTypes}" th:value="${type}"
-                        th:text="${type.displayName}"></option>
+        <div class="mb-4">
+            <select id="passportType" name="passportType" class="form-control">
+                <option th:each="type : ${passportTypes}" th:value="${type}" th:text="${type.displayName}"
+                        th:selected="${passportDTO.passportType != null} ? ${passportDTO?.passportType.displayName} : ${customerView?.passportView?.passportType}"></option>
             </select>
-            <p class="alert alert-danger" th:if="${#fields.hasErrors('passportType')}" th:errors="*{passportType}">
         </div>
+        <p class="alert alert-danger" th:if="${#fields.hasErrors('passportType')}" th:errors="*{passportType}">
+
 
         <div class="form-outline mb-4">
 
-            <!--input type="text" th:field="*{documentID}" th:value = "${customerDTO.passportDTO.documentID}" id="documentID" class="form-control"-->
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.passportView?.documentID} : ${passportDTO?.documentID}"
+                   th:value="${passportDTO.documentID != null} ? ${passportDTO?.documentID} : ${customerView?.passportView?.documentID}"
                    id="documentID" th:id="documentID" th:name="documentID" class="form-control">
             <label for="documentID" class="form-label">Document ID</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('documentID')}" th:errors="*{documentID}">
@@ -48,7 +44,7 @@
         <div class="form-outline mb-4">
             <!--input type="text" th:field="*{issueDate}"  th:value = "${customerDTO.passportDTO.issueDate}" id="issueDate" class="form-control"-->
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.passportView?.issueDate} : ${passportDTO?.issueDate}"
+                   th:value="${passportDTO.issueDate != null} ? ${passportDTO?.issueDate} : ${customerView?.passportView?.issueDate}"
                    id="issueDate" th:id="issueDate" th:name="issueDate" class="form-control" placeholder="dd.mm.YYYY">
             <label for="issueDate" class="form-label">Issue date</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}">

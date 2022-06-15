@@ -6,10 +6,19 @@ import com.javaschool.microecare.contractmanagement.dao.Contract;
 import com.javaschool.microecare.contractmanagement.dao.MobileNumber;
 import com.javaschool.microecare.contractmanagement.dto.ContractDTO;
 import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Service
+@Scope(value = WebApplicationContext.SCOPE_SESSION,
+        proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ContractView implements Comparable<ContractView> {
     private long id;
     private CustomerView customerView;
@@ -28,6 +37,12 @@ public class ContractView implements Comparable<ContractView> {
         this.optionNames = contract.getOptions().stream()
                 .map(Option::getOptionName)
                 .collect(Collectors.toSet());
+    }
+
+    @Bean
+    @SessionScope
+    public ContractView sessionScopedContractView() {
+        return new ContractView();
     }
 
 

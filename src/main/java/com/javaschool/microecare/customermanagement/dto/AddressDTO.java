@@ -82,4 +82,9 @@ public class AddressDTO {
     public void setFlatNr(Integer flatNr) {
         this.flatNr = flatNr;
     }
+
+    @Override
+    public String toString() {
+        return "AddressDTO: [postcode = " + postcode + ", city = " + city + ", street = " + street + ", houseNr = " + houseNr + ", houseNrAddition = " + houseNrAddition + ", flatNr = " + flatNr + "]";
+    }
 }

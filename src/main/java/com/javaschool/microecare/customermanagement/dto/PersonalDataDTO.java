@@ -55,4 +55,9 @@ public class PersonalDataDTO {
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
+    @Override
+    public String toString() {
+        return "PersonalDataDTO: [firstName = " + firstName + ", lastName = " + lastName + ", birthday = " + birthday + "]";
+    }
 }

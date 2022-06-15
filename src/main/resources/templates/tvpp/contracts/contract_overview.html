@@ -94,6 +94,9 @@
         </div>
     </form>
 
+    <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+    <a class="btn btn-primary" th:href=@{${contractOptionsPath}} role="button">Back</a>
+
 
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
 </div>

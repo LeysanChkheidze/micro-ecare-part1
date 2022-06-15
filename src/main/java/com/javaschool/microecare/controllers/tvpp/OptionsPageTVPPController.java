@@ -55,6 +55,8 @@ public class OptionsPageTVPPController {
     final OptionsService optionsService;
     final ContractsService contractsService;
 
+    //TODO: сделать везде лейаут дропдаунов так же, как в редактировании кастомера в паспортных данных
+
     /**
      * Instantiates a new Options page tvpp controller.
      *
@@ -141,24 +143,24 @@ public class OptionsPageTVPPController {
      */
     @PostMapping
     public String createNewOption(@Valid OptionDTO optionDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+        //todo: если фейлится валидация на странице, то все поля пустые. а в редактировании ок
         action = EntityActions.CREATE;
         if (result.hasErrors()) {
-
             model.addAttribute("errorAction", action.getText());
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage, "oneTimePrice", priceDigitsMessage), "java.lang.NumberFormatException");
-            redirectAttributes.addFlashAttribute("errorAction", action.getText());
+
             //todo: сделать, чтобы после ошибки валидации оставался урл страницы создания опции
             //вот тут ошибки не передаются в резалте:
-            BindingResult newResult = new BeanPropertyBindingResult(result.getTarget(), result.getObjectName());
+            /*BindingResult newResult = new BeanPropertyBindingResult(result.getTarget(), result.getObjectName());
 
             for (FieldError error : result.getFieldErrors()) {
                 newResult.addError(error);
             }
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.optionDTO", newResult);
             redirectAttributes.addFlashAttribute("kokoko", "kekeke");
-            System.out.println();
-            return "redirect:" + controllerPath + newOptionPath;
-            // return templateFolder + "new_option";
+            System.out.println();*/
+           // return "redirect:" + controllerPath + newOptionPath;
+             return templateFolder + "new_option";
         }
         try {
             Option newOption = optionsService.saveNewOption(optionDTO);

@@ -13,6 +13,11 @@
 <br>
 <div class="container">
     <h1 class="mb-3">New contract: mobile number and tariff</h1>
+    <div class="form-outline mb-4"  th:id="mobileNumberDisplay" th:name="mobileNumberDisplay">Your mobile number will be:
+        <b th:text="${mobileNumberView}"></b>
+    </div>
+
+
 
     <form action="#" th:action="@{${tariffNumberPath}}" th:object="${tariffAndNumberDTO}" th:method="post">
         <div th:switch="${errorMessage}">
@@ -25,17 +30,8 @@
 
 
         <div class="form-outline mb-4">
-            <!--input class="form-control"
-                   type="text"
-                   id="mobileNumberDisplay"
-                   th:id="mobileNumberDisplay"
-                   th:name="mobileNumberDisplay"
-                   th:value="${randomMobileNumber}"
-                   aria-label="disabled input"
-                   disabled
-            /-->
             <input class="form-control"
-                   type="text"
+                   type="hidden"
                    id="mobileNumber"
                    th:id="mobileNumber"
                    th:name="mobileNumber"
@@ -43,9 +39,7 @@
                    aria-label="disabled input"
                    readonly
             />
-            <label class="form-label" for="mobileNumber">Mobile number</label>
         </div>
-        <!--input type="text" th:id="mobileNumber" name="mobileNumber" th:field="*{mobileNumber}" th:value="${randomMobileNumber}" style="display: none"-->
 
         <div class="form-outline mb-4">Select tariff</div>
         <ul>
@@ -64,7 +58,8 @@
         <div class="form-outline mb-4">
             <input class="btn btn-primary" type="submit" value="Next"/>
         </div>
-        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${contractCustomerPath}} role="button">Back</a>
 
     </form>
 

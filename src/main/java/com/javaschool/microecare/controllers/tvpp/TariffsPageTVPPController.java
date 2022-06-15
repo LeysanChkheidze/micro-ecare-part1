@@ -211,7 +211,7 @@ public class TariffsPageTVPPController {
                                BindingResult result, Model model) {
         action = EntityActions.UPDATE;
         if (result.hasErrors()) {
-            model.addAttribute("errorAction", action.getText());
+            //model.addAttribute("errorAction", action.getText());
             setModelForTariffCreationPage(model);
             commonEntityService.setNiceValidationMessages(model, result, Map.of("monthlyPrice", priceDigitsMessage), "java.lang.NumberFormatException");
             TariffView tariffView = new TariffView(tariffsService.getTariff(id));

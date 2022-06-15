@@ -39,7 +39,8 @@
         <div class="form-outline mb-4">
             <input class="btn btn-primary" type="submit" value="To Contract Overview"/>
         </div>
-        <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${controllerPath}(cancel=true)} role="button">Cancel</a>
+        <a class="btn btn-primary" th:href=@{${tariffNumberPath}} role="button">Back</a>
 
     </form>
 

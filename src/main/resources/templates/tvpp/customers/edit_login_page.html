@@ -13,7 +13,7 @@
 <br>
 <div class="container">
     <h1 class="mb-3">Edit customer: Login data</h1>
-    <form action="#" th:action="@{${loginEditPath}(id=${customerView.id})}" th:object="${customerDTO.loginDataDTO}" method="post">
+    <form action="#" th:action="@{${loginEditPath}(id=${customerView.id})}" th:object="${loginDataDTO}" method="post">
         <div th:switch="${errorMessage}">
             <div th:case="null">
             </div>
@@ -24,7 +24,7 @@
 
         <div class="form-outline mb-4">
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.loginDataView?.email} : ${loginDataDTO?.email}"
+                   th:value="${loginDataDTO.email != null} ? ${loginDataDTO?.email} : ${customerView?.loginDataView?.email}"
                    id="email" th:id="email" th:name="email" class="form-control">
             <label for="email" class="form-label">Email</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">

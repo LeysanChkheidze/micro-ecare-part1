@@ -18,6 +18,11 @@ public class MobileNumberView implements Comparable<MobileNumberView>{
         this.numberPresentation = MobileNumberDTO.countryCode + " " + MobileNumberDTO.operatorCode + " " + numberString;
     }
 
+    public MobileNumberView(int number) {
+        String numberString = String.format("%07d", number);
+        this.numberPresentation = MobileNumberDTO.countryCode + " " + MobileNumberDTO.operatorCode + " " + numberString;
+    }
+
     public String getNumberPresentation() {
         return numberPresentation;
     }

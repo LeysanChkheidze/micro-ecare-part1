@@ -2,7 +2,6 @@ package com.javaschool.microecare.customermanagement.viewmodel;
 
 import com.javaschool.microecare.customermanagement.dao.*;
 import com.javaschool.microecare.customermanagement.dto.*;
-import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -10,7 +9,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.util.Comparator;
 
 @Configuration
 @Scope(value = WebApplicationContext.SCOPE_SESSION,
@@ -78,13 +76,6 @@ public class CustomerView implements Comparable<CustomerView> {
         passportView = newView.getPassportView();
         addressView = newView.getAddressView();
         loginDataView = newView.getLoginDataView();
-        /*CustomerView customerView = new CustomerView();
-        customerView.setId(newView.getId());
-        customerView.setPersonalDataView(newView.getPersonalDataView());
-        customerView.setPassportView(newView.getPassportView());
-        customerView.setAddressView(newView.getAddressView());
-        customerView.setLoginDataView(newView.getLoginDataView());
-        return customerView;*/
     }
 
     public PassportView getPassportView() {

@@ -16,7 +16,9 @@ import com.javaschool.microecare.contractmanagement.dto.TariffAndNumberDTO;
 import com.javaschool.microecare.contractmanagement.service.ContractsService;
 import com.javaschool.microecare.contractmanagement.service.MobileNumbersService;
 import com.javaschool.microecare.contractmanagement.viewmodel.ContractView;
+import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
 import com.javaschool.microecare.customermanagement.dao.Customer;
+import com.javaschool.microecare.customermanagement.dto.CustomerDTO;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
 import com.javaschool.microecare.utils.EntityActions;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -27,6 +29,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.Set;
@@ -48,12 +51,20 @@ public class ContractsPageTVPPController {
     @Value("${endpoints.tvpp.contracts.path.overview}")
     private String contractOverviewPagePath;
 
+    @Resource(name = "sessionScopedContractDTO")
+    ContractDTO sessionScopedContractDTO;
+
+    @Resource(name = "sessionScopedContractView")
+    ContractView sessionScopedContractView;
+
     private final String ENTITY_NAME = "Contract";
 
     private boolean successfulAction = false;
-    private String successActionName;
     private long successId;
     private EntityActions action;
+    private boolean viewDetails = false;
+    private String errorMessage;
+
 
     private final ContractsService contractsService;
     private final CommonEntityService commonEntityService;
@@ -61,6 +72,7 @@ public class ContractsPageTVPPController {
     private final TariffsService tariffsService;
     private final OptionsService optionsService;
     private final CustomersService customersService;
+
 
     public ContractsPageTVPPController(ContractsService contractsService, CommonEntityService commonEntityService, MobileNumbersService mobileNumbersService, TariffsService tariffsService, OptionsService optionsService, CustomersService customersService) {
         this.contractsService = contractsService;
@@ -71,10 +83,6 @@ public class ContractsPageTVPPController {
         this.customersService = customersService;
     }
 
-    @Lookup
-    public ContractDTO getContractDTO() {
-        return null;
-    }
 
     @ModelAttribute
     public void setCommonAttributes(Model model) {
@@ -84,7 +92,7 @@ public class ContractsPageTVPPController {
         model.addAttribute("contractOptionsPath", controllerPath + contractOptionsPagePath);
         model.addAttribute("contractOverviewPath", controllerPath + contractOverviewPagePath);
         model.addAttribute("submitPath", controllerPath + contractOverviewPagePath);
-        model.addAttribute("contractDTO", getContractDTO());
+        model.addAttribute("contractDTO", sessionScopedContractDTO);
 
 
     }
@@ -92,17 +100,29 @@ public class ContractsPageTVPPController {
     private void setAllContractsModel(Model model) {
         model.addAttribute("contracts", contractsService.getAllContractViews());
         if (successfulAction) {
-            model.addAllAttributes(Map.of("successfulAction", true,
-                    "successEntityName", "Contract",
-                    "successAction", successActionName,
-                    "successId", successId));
+            commonEntityService.setSuccessfulActionModel(model, ENTITY_NAME, action, successId);
         }
+        if (viewDetails) {
+            model.addAttribute("viewContractDetails", true);
+            model.addAttribute("displayedContract", sessionScopedContractView);
+            viewDetails = false;
+        }
+        if (errorMessage != null) {
+            commonEntityService.setErrorModel(model, ENTITY_NAME, errorMessage, action);
+        }
+
     }
 
     @GetMapping
-    public String getContractsPage(Model model) {
+    public String getContractsPage(Model model, @RequestParam(required = false) Boolean cancel) {
         setAllContractsModel(model);
         successfulAction = false;
+        errorMessage = null;
+        action = null;
+        viewDetails = false;
+        if (cancel != null && cancel) {
+            contractsService.resetContractDTO(sessionScopedContractDTO);
+        }
         return templateFolder + "contracts";
     }
 
@@ -122,17 +142,21 @@ public class ContractsPageTVPPController {
     public String postCustomerData(@Valid ContractCustomerDTO contractCustomerDTO, BindingResult result, Model model) {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
-            model.addAttribute("contractDTO", getContractDTO());
+            model.addAttribute("contractDTO", sessionScopedContractDTO);
             return templateFolder + "contract_customer";
         }
-        getContractDTO().setCustomerID(contractCustomerDTO.getCustomerID());
+        sessionScopedContractDTO.setCustomerID(contractCustomerDTO.getCustomerID());
         return "redirect:" + controllerPath + contractTariffPagePath;
     }
 
     @GetMapping("${endpoints.tvpp.contracts.path.tariff_number}")
     public String showTariffAndNumberPage(TariffAndNumberDTO tariffAndNumberDTO, Model model) {
         model.addAttribute("dataSubmitted", false);
-        model.addAttribute("randomMobileNumber", mobileNumbersService.getRandomNumber());
+        int randomNumber = mobileNumbersService.getRandomNumber();
+        MobileNumber mobileNumber = new MobileNumber(randomNumber);
+        //todo: проверить что конструктор работает:
+        model.addAttribute("mobileNumberView", new MobileNumberView(randomNumber));
+        model.addAttribute("randomMobileNumber", randomNumber);
         model.addAttribute("allTariffs", tariffsService.getAllTariffViews());
         return templateFolder + "tariff_number";
     }
@@ -142,12 +166,12 @@ public class ContractsPageTVPPController {
     public String postTariffAndNumberData(@Valid TariffAndNumberDTO tariffAndNumberDTO, BindingResult result, Model model) {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
-            model.addAttribute("contractDTO", getContractDTO());
+            model.addAttribute("contractDTO", sessionScopedContractDTO);
+
             return templateFolder + "tariff_number";
         }
-
-        getContractDTO().setTariffID(tariffAndNumberDTO.getTariffID());
-        getContractDTO().setMobileNumber(tariffAndNumberDTO.getMobileNumber());
+        sessionScopedContractDTO.setTariffID(tariffAndNumberDTO.getTariffID());
+        sessionScopedContractDTO.setMobileNumber(tariffAndNumberDTO.getMobileNumber());
         return "redirect:" + controllerPath + contractOptionsPagePath;
 
 
@@ -155,8 +179,6 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.options}")
     public String showContractOptionsPage(OptionListDTO optionListDTO, Model model) {
-        //  model.addAttribute("dataSubmitted", false);
-        //    model.addAttribute("contractDTO", getContractDTO());
         model.addAttribute("allOptions", optionsService.getAllOptionViews());
         model.addAttribute("overviewPath", contractOverviewPagePath);
 
@@ -167,11 +189,10 @@ public class ContractsPageTVPPController {
     public String postContractOptions(@Valid OptionListDTO optionListDTO, BindingResult result, Model model) {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
-            model.addAttribute("contractDTO", getContractDTO());
+            model.addAttribute("contractDTO", sessionScopedContractDTO);
             return templateFolder + "contract_options";
         }
-
-        getContractDTO().setOptionIDs(optionListDTO.getOptionIDs());
+        sessionScopedContractDTO.setOptionIDs(optionListDTO.getOptionIDs());
         return "redirect:" + controllerPath + contractOverviewPagePath;
 
 
@@ -179,8 +200,8 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.overview}")
     public String showContractOverviewPage(Model model) {
+        ContractView contractView = contractsService.getContractViewFromDTO(sessionScopedContractDTO);
 
-        ContractView contractView = contractsService.getContractViewFromDTO(getContractDTO());
         model.addAttribute("customerFirstName", contractView.getCustomerView().getPersonalDataView().getFirstName());
         model.addAttribute("customerLastName", contractView.getCustomerView().getPersonalDataView().getLastName());
         model.addAttribute("customerPersonalData", contractView.getCustomerView().getPersonalDataView());
@@ -193,16 +214,15 @@ public class ContractsPageTVPPController {
 
     @PostMapping("${endpoints.tvpp.contracts.path.overview}")
     public String saveNewCustomer(Model model) {
-
+        action = EntityActions.CREATE;
         try {
-            Contract contract = contractsService.saveNewContract(getContractDTO());
-            contractsService.resetContractDTO(getContractDTO());
+            Contract contract = contractsService.saveNewContract(sessionScopedContractDTO);
+            contractsService.resetContractDTO(sessionScopedContractDTO);
             successfulAction = true;
-            successActionName = "created";
+           // successActionName = "created";
             successId = contract.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
-            //   model.addAttribute("customerView", new ContractView(getContractDTO()));
             model.addAttribute("errorEntity", e.getEntityName());
             model.addAttribute("errorMessage", e.getMessage());
             return templateFolder + "contract_overview";
@@ -211,10 +231,11 @@ public class ContractsPageTVPPController {
 
     @DeleteMapping("/{id}")
     public String deleteContract(@PathVariable("id") int id, Model model) {
+        action = EntityActions.DELETE;
         try {
             contractsService.deleteContract(id);
             successfulAction = true;
-            successActionName = "deleted";
+           // successActionName = "deleted";
             successId = id;
         } catch (RuntimeException e) {
             //todo: add error popup

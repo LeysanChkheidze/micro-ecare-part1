@@ -13,7 +13,14 @@
 <br>
 <div class="container">
     <h1 class="mb-3">Edit customer: Address</h1>
-    <form action="#" th:action="@{${addressEditPath}(id=${customerView.id})}" th:object="${customerDTO.addressDTO}" method="post">
+    <div th:text="${addressDTO == null} ? 'addressDTO is NULL' : ${addressDTO}" id="addressDTO">
+
+    </div>
+    <div th:text="${addressDTO == null} ? 'addressDTO is NULL' : ${addressDTO.postcode}" id="addressDTO.postcode">
+
+    </div>
+
+    <form action="#" th:action="@{${addressEditPath}(id=${customerView.id})}" th:object="${addressDTO}" method="post">
         <div th:switch="${errorMessage}">
             <div th:case="null">
             </div>
@@ -25,26 +32,23 @@
         <div class="form-outline mb-4">
 
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.addressView?.postcode} : ${addressDTO?.postcode}"
-                   id="postcode" th:name="postcode" th:id="postcode" class="form-control">
+                   th:value="${addressDTO.postcode == null} ? ${customerView?.addressView?.postcode} : ${addressDTO.postcode}"
+                   id="postcode" th:id="postcode" th:name="postcode" class="form-control">
             <label for="postcode" class="form-label">Postcode</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('postcode')}" th:errors="*{postcode}">
         </div>
 
         <div class="form-outline mb-4">
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.addressView?.city} : ${addressDTO?.city}"
-                   id="city"
-                   th:id="city"
-                   th:name="city"
-                   class="form-control">
+                   th:value="${addressDTO.city != null} ? ${addressDTO?.city} : ${customerView?.addressView?.city}"
+                   id="city" th:id="city" th:name="city" class="form-control">
             <label for="city" class="form-label">City</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">
         </div>
 
         <div class="form-outline mb-4">
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.addressView?.street} : ${addressDTO?.street}"
+                   th:value="${addressDTO.street != null} ? ${addressDTO?.street} : ${customerView?.addressView?.street}"
                    id="street" th:id="street" th:name="street" class="form-control">
             <label for="street" class="form-label">Street</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('street')}" th:errors="*{street}">
@@ -52,7 +56,7 @@
 
         <div class="form-outline mb-4">
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.addressView?.houseNr} : ${addressDTO?.houseNr}"
+                   th:value="${addressDTO.houseNr != null} ? ${addressDTO?.houseNr} : ${customerView?.addressView?.houseNr}"
                    id="houseNr" th:id="houseNr" th:name="houseNr" class="form-control">
             <label for="houseNr" class="form-label">House Nr</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('houseNr')}" th:errors="*{houseNr}">
@@ -60,7 +64,7 @@
 
         <div class="form-outline mb-4">
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.addressView?.houseNrAddition} : ${addressDTO?.houseNrAddition}"
+                   th:value="${addressDTO.houseNrAddition != null} ? ${addressDTO?.houseNrAddition} : ${customerView?.addressView?.houseNrAddition}"
                    id="houseNrAddition" th:id="houseNrAddition" th:name="houseNrAddition" class="form-control">
             <label for="houseNrAddition" class="form-label">House Nr Addition</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('houseNrAddition')}"
@@ -69,7 +73,7 @@
 
         <div class="form-outline mb-4">
             <input type="text"
-                   th:value="${dataSubmitted == false} ? ${customerView?.addressView?.flatNr} : ${addressDTO?.flatNr}"
+                   th:value="${addressDTO.flatNr != null} ? ${addressDTO?.flatNr} : ${customerView?.addressView?.flatNr}"
                    id="flatNr" th:id="flatNr" th:name="flatNr" class="form-control">
             <label for="flatNr" class="form-label">Flat Nr</label>
             <p class="alert alert-danger" th:if="${#fields.hasErrors('flatNr')}" th:errors="*{flatNr}">

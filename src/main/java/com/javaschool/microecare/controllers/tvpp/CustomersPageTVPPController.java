@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for Customers page in TVPP.
@@ -71,6 +72,8 @@ public class CustomersPageTVPPController {
     private String notDateErrorMessage;
     @Value("${customer.delete.in_contract.msg}")
     private String customerDeleteInContractMessage;
+    @Value("${general.field.not_int.msg}")
+    private String fieldNotIntMessage;
 
     private final String ENTITY_NAME = "Customer";
 
@@ -141,9 +144,13 @@ public class CustomersPageTVPPController {
         action = null;
         viewDetails = false;
         customersMobileNumbers = new ArrayList<>();
+        //подумать, нужен ли мне кэнсел, или можно всегда ресетать сессию
+        /*
         if (cancel != null && cancel) {
             customersService.resetCustomerDTO(sessionScopedCustomerDTO);
-        }
+        }*/
+        customersService.resetCustomerDTO(sessionScopedCustomerDTO);
+        customersService.resetCustomerView(sessionScopedCustomerView);
         return templateFolder + "customers";
     }
 
@@ -177,7 +184,6 @@ public class CustomersPageTVPPController {
     private void setPassportPageModel(Model model) {
         PassportType[] passportTypes = PassportType.values();
         model.addAttribute("passportTypes", passportTypes);
-
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.passport}")
@@ -212,6 +218,7 @@ public class CustomersPageTVPPController {
     public String postAddressData(@Valid AddressDTO addressDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("dataSubmitted", true);
+            commonEntityService.setNiceValidationMessages(model, result, Map.of("houseNr", fieldNotIntMessage, "postcode", fieldNotIntMessage, "flatNr", fieldNotIntMessage), "java.lang.NumberFormatException");
             return templateFolder + "new_address_page";
         }
         sessionScopedCustomerDTO.setAddressDTO(addressDTO);
@@ -246,7 +253,6 @@ public class CustomersPageTVPPController {
         action = EntityActions.CREATE;
         try {
             Customer customer = customersService.saveNewCustomer(sessionScopedCustomerDTO);
-            customersService.resetCustomerDTO(sessionScopedCustomerDTO);
             successfulAction = true;
             successId = customer.getId();
             return "redirect:" + controllerPath;
@@ -279,25 +285,21 @@ public class CustomersPageTVPPController {
 
 
     @GetMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
-    public String showUpdateForm(@PathVariable("id") long id, Model model) {
-        model.addAttribute("dataSubmitted", false);
+    public String showUpdateForm(@PathVariable("id") long id, @RequestParam(required = false) Boolean back, Model model, PersonalDataDTO personalDataDTO) {
+        model.addAttribute("personalDataDTO", sessionScopedCustomerDTO.getPersonalDataDTO());
         CustomerView customerView = new CustomerView(customersService.getCustomer(id));
         sessionScopedCustomerView.setCustomerViewFields(customerView);
         model.addAttribute("customerView", sessionScopedCustomerView);
-
         return templateFolder + "edit_personal_data";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
     public String postUpdatePersonalData(@PathVariable("id") long id, @Valid PersonalDataDTO personalDataDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
-        model.addAttribute("dataSubmitted", true);
-        if (result.hasErrors()) {
+        if (result.hasErrors() || !CommonEntityService.validateDate(personalDataDTO.getBirthday())) {
             model.addAttribute("customerView", sessionScopedCustomerView);
-            return templateFolder + "edit_personal_data";
-        }
-
-        if (!CommonEntityService.validateDate(personalDataDTO.getBirthday())) {
-            result.addError(new FieldError("customerDTO", "birthday", notDateErrorMessage));
+            if (!CommonEntityService.validateDate(personalDataDTO.getBirthday())) {
+                result.addError(new FieldError("customerDTO", "birthday", notDateErrorMessage));
+            }
             return templateFolder + "edit_personal_data";
         }
         sessionScopedCustomerDTO.setPersonalDataDTO(personalDataDTO);
@@ -305,23 +307,20 @@ public class CustomersPageTVPPController {
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.passport.edit}")
-    public String showUpdatePassportPage(@PathVariable("id") long id, Model model) {
+    public String showUpdatePassportPage(@PathVariable("id") long id, Model model, PassportDTO passportDTO) {
         setPassportPageModel(model);
-        model.addAttribute("dataSubmitted", false);
+        model.addAttribute("passportDTO", sessionScopedCustomerDTO.getPassportDTO());
         model.addAttribute("customerView", sessionScopedCustomerView);
-
         return templateFolder + "edit_passport_page";
     }
 
     @PostMapping("${endpoints.tvpp.customers.path.passport.edit}")
     public String postUpdatePassportData(@Valid PassportDTO passportDTO, BindingResult result, Model model) {
-        model.addAttribute("dataSubmitted", true);
         boolean issueDateValid = CommonEntityService.validateDate(passportDTO.getIssueDate());
 
         if (result.hasErrors() || !issueDateValid) {
             setPassportPageModel(model);
-            model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
-
+            model.addAttribute("customerView", sessionScopedCustomerView);
             if (!issueDateValid) {
                 result.addError(new FieldError("passportDTO", "issueDate", notDateErrorMessage));
             }
@@ -333,22 +332,21 @@ public class CustomersPageTVPPController {
 
 
     @GetMapping("${endpoints.tvpp.customers.path.address.edit}")
-    public String showUpdateAddressForm(@PathVariable("id") long id, Model model) {
-        model.addAttribute("dataSubmitted", false);
+    public String showUpdateAddressForm(@PathVariable("id") long id, Model model, AddressDTO addressDTO) {
         model.addAttribute("customerView", sessionScopedCustomerView);
-
-
+        model.addAttribute("addressDTO", sessionScopedCustomerDTO.getAddressDTO());
         return templateFolder + "edit_address_page";
     }
 
 
     @PostMapping("${endpoints.tvpp.customers.path.address.edit}")
     public String postUpdateAddressData(@PathVariable("id") long id, @Valid AddressDTO addressDTO, BindingResult result, Model model) {
-        model.addAttribute("dataSubmitted", true);
-        //todo: enter string housenr, error Failed to convert property value of type java.lang.String to required type java.lang.Integer for property houseNr; nested exception is java.lang.NumberFormatException: For input string: "session1"
         if (result.hasErrors()) {
             model.addAttribute("customerView", sessionScopedCustomerView);
+            //todo: если валидационные сообщения заменяются в setNiceValidationMessages, то на странице после валидации поля пустые. то же самое в создании кастомера
+            //todo: а тут нужна мапа, или у всех полей будут одинаковые сообщения?
 
+            commonEntityService.setNiceValidationMessages(model, result, Map.of("houseNr", fieldNotIntMessage, "postcode", fieldNotIntMessage, "flatNr", fieldNotIntMessage), "java.lang.NumberFormatException");
             return templateFolder + "edit_address_page";
         }
         sessionScopedCustomerDTO.setAddressDTO(addressDTO);
@@ -359,14 +357,14 @@ public class CustomersPageTVPPController {
     @GetMapping("${endpoints.tvpp.customers.path.login.edit}")
     public String showEditLoginDataPage(@PathVariable("id") long id, LoginDataDTO loginDataDTO, Model model) {
         model.addAttribute("customerView", sessionScopedCustomerView);
-        model.addAttribute("dataSubmitted", false);
+        model.addAttribute("loginDataDTO", sessionScopedCustomerDTO.getLoginDataDTO());
         return templateFolder + "edit_login_page";
     }
+
 
     @PostMapping("${endpoints.tvpp.customers.path.login.edit}")
     public String postEditLoginData(@PathVariable("id") long id, @Valid LoginDataDTO loginDataDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("dataSubmitted", true);
             model.addAttribute("customerView", sessionScopedCustomerView);
             return templateFolder + "edit_login_page";
         }
@@ -386,9 +384,6 @@ public class CustomersPageTVPPController {
         action = EntityActions.UPDATE;
         try {
             customersService.updateCustomer(id, sessionScopedCustomerDTO);
-            customersService.resetCustomerDTO(sessionScopedCustomerDTO);
-            customersService.resetCustomerView(sessionScopedCustomerView);
-
             successfulAction = true;
             successId = id;
             return "redirect:" + controllerPath;

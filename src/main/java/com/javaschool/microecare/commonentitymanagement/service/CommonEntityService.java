@@ -144,7 +144,10 @@ public class CommonEntityService {
         String fieldName = originalError.getField();
         if (fieldsMessagesMap.containsKey(fieldName)) {
             if (originalError.getDefaultMessage() != null && originalError.getDefaultMessage().contains(replacedMessage)) {
-                return new FieldError(objectName, originalError.getField(), fieldsMessagesMap.get(fieldName));
+                // = new FieldError(objectName, originalError.getField(), fieldsMessagesMap.get(fieldName));
+                FieldError newError = new FieldError(objectName, originalError.getField(), originalError.getRejectedValue(), false, null, null, fieldsMessagesMap.get(fieldName));
+                return newError;
+                // return new FieldError(objectName, originalError.getField(), fieldsMessagesMap.get(fieldName));
             }
         }
         return originalError;
