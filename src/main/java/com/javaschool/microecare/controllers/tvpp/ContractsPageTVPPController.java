@@ -106,7 +106,7 @@ public class ContractsPageTVPPController {
         }
         if (viewDetails) {
             model.addAttribute("viewContractDetails", true);
-            model.addAttribute("displayedContract", sessionScopedContractView);
+            model.addAttribute("displayedContract", displayedContract);
             viewDetails = false;
         }
         if (errorMessage != null) {
@@ -249,13 +249,13 @@ public class ContractsPageTVPPController {
 
         Contract contract = contractsService.getContract(id);
         displayedContract = new ContractView(contract);
-        TariffView tariffView = new TariffView(contract.getTariff());
-        Set<String> optionViews = optionsService.getOptionDescriptions(contract.getOptions());
-        model.addAttribute("id", id);
+        // TariffView tariffView = new TariffView(contract.getTariff());
+       // Set<String> optionViews = optionsService.getOptionDescriptions(contract.getOptions());
+       /* model.addAttribute("id", id);
         model.addAttribute("customerData", displayedContract.getCustomerView());
         model.addAttribute("mobileNumber", displayedContract.getNumberView());
         model.addAttribute("tariffView", tariffView.getShortTariffView());
-        model.addAttribute("optionViews", optionViews);
+        model.addAttribute("optionViews", optionViews);*/
 
         viewDetails = true;
 

@@ -52,6 +52,6 @@ public class PassportView {
 
     @Override
     public String toString() {
-        return passportType + " number: " + documentID + ", issued " + issueDate;
+        return passportType + ", number: " + documentID + ", issued " + issueDate;
     }
 }

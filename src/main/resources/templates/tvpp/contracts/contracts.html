@@ -5,7 +5,9 @@
     <title>Contracts</title>
     <div th:replace="tvpp/fragments/general_fragments.html :: headLinks"></div>
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
+    <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
+
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
 <br>
@@ -17,9 +19,17 @@
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
 </div>
 
+<div th:switch="${errorMessage}">
+    <div th:case="null">
+    </div>
+    <div th:case="*">
+        <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
+    </div>
+</div>
+
 <div th:if="${viewContractDetails == true}">
     <div th:replace="tvpp/contracts/contract_details.html :: contract_details_modal"></div>
-    <div th:replace="tvpp/customers/contract_details.html :: contract_details_script"></div>
+    <div th:replace="tvpp/contracts/contract_details.html :: contract_details_script"></div>
 </div>
 
 <div th:if="${contracts.empty}">
@@ -60,7 +70,6 @@
                         th:onclick="'location.href = \'' + @{${pathView}(id=${contract.id})} + '\''">
                     Details
                 </button>
-                <!--a th:href="@{${pathView}(id=${contract.id})}">Details</a-->
             </td>
             <td>Edit link</td>
             <td sec:authorize="hasRole('ROLE_ADMIN')">
@@ -77,6 +86,7 @@
 
 
 </div>
+
 <p sec:authorize="hasRole('ROLE_ADMIN')">
     <a th:href="@{${pathNew}}">Add new contract</a>
 </p>

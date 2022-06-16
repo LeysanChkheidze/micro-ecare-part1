@@ -7,6 +7,7 @@
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalScript"></div>
     <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
+
 <body>
 <div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
 <br>
@@ -17,6 +18,7 @@
 <div th:if="${successfulAction == true}">
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
 </div>
+
 <div th:switch="${errorMessage}">
     <div th:case="null">
     </div>
@@ -24,6 +26,7 @@
         <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalFragment"></div>
     </div>
 </div>
+
 <div th:if="${viewCustomerDetails == true}">
     <div th:replace="tvpp/customers/customer_details.html :: customer_details_modal"></div>
     <div th:replace="tvpp/customers/customer_details.html :: customer_details_script"></div>
