@@ -3,13 +3,9 @@ package com.javaschool.microecare.controllers.tvpp;
 import com.javaschool.microecare.catalogmanagement.dto.OptionListDTO;
 import com.javaschool.microecare.catalogmanagement.service.OptionsService;
 import com.javaschool.microecare.catalogmanagement.service.TariffsService;
-import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
-import com.javaschool.microecare.catalogmanagement.viewmodel.ShortOptionView;
-import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityCannotBeSavedException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.contractmanagement.dao.Contract;
-import com.javaschool.microecare.contractmanagement.dao.MobileNumber;
 import com.javaschool.microecare.contractmanagement.dto.ContractCustomerDTO;
 import com.javaschool.microecare.contractmanagement.dto.ContractDTO;
 import com.javaschool.microecare.contractmanagement.dto.TariffAndNumberDTO;
@@ -17,12 +13,8 @@ import com.javaschool.microecare.contractmanagement.service.ContractsService;
 import com.javaschool.microecare.contractmanagement.service.MobileNumbersService;
 import com.javaschool.microecare.contractmanagement.viewmodel.ContractView;
 import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
-import com.javaschool.microecare.customermanagement.dao.Customer;
-import com.javaschool.microecare.customermanagement.dto.CustomerDTO;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
-import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import com.javaschool.microecare.utils.EntityActions;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
@@ -32,12 +24,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequestMapping("${endpoints.tvpp.contracts.controller_path}")
 @PropertySource("messages.properties")
+@SessionAttributes("processProgress")
 public class ContractsPageTVPPController {
     @Value("${directory.templates.tvpp.contracts}")
     private String templateFolder;
@@ -125,16 +116,39 @@ public class ContractsPageTVPPController {
         if (cancel != null && cancel) {
             contractsService.resetContractDTO(sessionScopedContractDTO);
         }
+        model.addAttribute("processProgress", false);
         return templateFolder + "contracts";
     }
 
+    // TODO: BUG: data isn't prefilled when you navigate back in new contract process
     @GetMapping("${endpoints.tvpp.entity.path.new}")
     public String startNewContractFlow(TariffAndNumberDTO tariffAndNumberDTO, Model model) {
+        model.addAttribute("processProgress", true);
         return "redirect:" + controllerPath + contractCustomerPagePath;
+    }
+
+
+    //TODO: move to some util class and use in all controllers
+    private Boolean legalProcessEntry(Model model) {
+        if (model.containsAttribute("processProgress")) {
+            if (model.getAttribute("processProgress") != null) {
+                try {
+                    return (Boolean) model.getAttribute("processProgress");
+                } catch (NullPointerException | ClassCastException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     @GetMapping("${endpoints.tvpp.contracts.path.customer}")
     public String showContractCustomerPage(ContractCustomerDTO contractCustomerDTO, Model model) {
+        if (!legalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
+
         model.addAttribute("dataSubmitted", false);
         model.addAttribute("allCustomers", customersService.getAllCustomerViews());
         return templateFolder + "contract_customer";
@@ -153,6 +167,9 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.tariff_number}")
     public String showTariffAndNumberPage(TariffAndNumberDTO tariffAndNumberDTO, Model model) {
+        if (!legalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("dataSubmitted", false);
         int randomNumber = mobileNumbersService.getRandomNumber();
         model.addAttribute("mobileNumberView", new MobileNumberView(randomNumber));
@@ -167,7 +184,6 @@ public class ContractsPageTVPPController {
         model.addAttribute("dataSubmitted", true);
         if (result.hasErrors()) {
             model.addAttribute("contractDTO", sessionScopedContractDTO);
-
             return templateFolder + "tariff_number";
         }
         sessionScopedContractDTO.setTariffID(tariffAndNumberDTO.getTariffID());
@@ -179,9 +195,11 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.options}")
     public String showContractOptionsPage(OptionListDTO optionListDTO, Model model) {
+        if (!legalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("allOptions", optionsService.getAllOptionViews());
         model.addAttribute("overviewPath", contractOverviewPagePath);
-
         return templateFolder + "contract_options";
     }
 
@@ -200,15 +218,16 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.overview}")
     public String showContractOverviewPage(Model model) {
+        if (!legalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         ContractView contractView = contractsService.getContractViewFromDTO(sessionScopedContractDTO);
-
         model.addAttribute("customerFirstName", contractView.getCustomerView().getPersonalDataView().getFirstName());
         model.addAttribute("customerLastName", contractView.getCustomerView().getPersonalDataView().getLastName());
         model.addAttribute("customerPersonalData", contractView.getCustomerView().getPersonalDataView());
         model.addAttribute("tariffName", contractView.getTariffView().getTariffName());
         model.addAttribute("optionNames", contractsService.getContractOptionNames(contractView));
         model.addAttribute("mobileNumberView", contractView.getNumberView());
-
         return templateFolder + "contract_overview";
     }
 
@@ -219,7 +238,6 @@ public class ContractsPageTVPPController {
             Contract contract = contractsService.saveNewContract(sessionScopedContractDTO);
             contractsService.resetContractDTO(sessionScopedContractDTO);
             successfulAction = true;
-           // successActionName = "created";
             successId = contract.getId();
             return "redirect:" + controllerPath;
         } catch (EntityCannotBeSavedException e) {
@@ -235,7 +253,6 @@ public class ContractsPageTVPPController {
         try {
             contractsService.deleteContract(id);
             successfulAction = true;
-           // successActionName = "deleted";
             successId = id;
         } catch (RuntimeException e) {
             //todo: add error popup
@@ -246,32 +263,10 @@ public class ContractsPageTVPPController {
     @GetMapping("/{id}")
     public String showDetails(@PathVariable("id") int id, Model model) {
         action = EntityActions.READ;
-
         Contract contract = contractsService.getContract(id);
         displayedContract = new ContractView(contract);
-        // TariffView tariffView = new TariffView(contract.getTariff());
-       // Set<String> optionViews = optionsService.getOptionDescriptions(contract.getOptions());
-       /* model.addAttribute("id", id);
-        model.addAttribute("customerData", displayedContract.getCustomerView());
-        model.addAttribute("mobileNumber", displayedContract.getNumberView());
-        model.addAttribute("tariffView", tariffView.getShortTariffView());
-        model.addAttribute("optionViews", optionViews);*/
-
         viewDetails = true;
-
         return "redirect:" + controllerPath;
     }
-/*
-    @GetMapping("/{id}")
-    public String getCustomerDetails(@PathVariable("id") int id, Model model) {
-        action = EntityActions.READ;
-
-
-        Customer customer = customersService.getCustomer(id);
-        displayedCustomer = new CustomerView(customer);
-        customersMobileNumbers = contractsService.getMobileNumbersOfCustomer(customer);
-        viewDetails = true;
-        return "redirect:" + controllerPath;
-    }*/
 
 }
