@@ -183,6 +183,27 @@ public class CommonEntityService {
         }
     }
 
+    /**
+     * Returns if business process was started in a correct way (from the start,
+     * not by direct link to random process page) based on model attribute processProgress
+     *
+     * @param model view model
+     * @return boolean value of legal or illegal start
+     */
+    public Boolean isLegalProcessEntry(Model model) {
+        if (model.containsAttribute("processProgress")) {
+            if (model.getAttribute("processProgress") != null) {
+                try {
+                    return (Boolean) model.getAttribute("processProgress");
+                } catch (NullPointerException | ClassCastException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
     public String resolveJpaObjectRetrievalFailureExceptionMessage(JpaObjectRetrievalFailureException e) {
         String specificMessage = e.getMostSpecificCause().getMessage();
         //Unable to find com.javaschool.microecare.catalogmanagement.dao.Option with id 283

@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +34,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("${endpoints.tvpp.customers.controller_path}")
 @PropertySource("messages.properties")
+@SessionAttributes("processProgress")
 public class CustomersPageTVPPController {
     @Resource(name = "sessionScopedCustomerDTO")
     CustomerDTO sessionScopedCustomerDTO;
@@ -151,16 +151,21 @@ public class CustomersPageTVPPController {
         }*/
         customersService.resetCustomerDTO(sessionScopedCustomerDTO);
         customersService.resetCustomerView(sessionScopedCustomerView);
+        model.addAttribute("processProgress", false);
         return templateFolder + "customers";
     }
 
     @GetMapping("${endpoints.tvpp.entity.path.new}")
     public String getCreateNewCustomer(PersonalDataDTO personalDataDTO, Model model) {
+        model.addAttribute("processProgress", true);
         return "redirect:" + controllerPath + personalDataPath;
     }
 
     @GetMapping("${endpoints.tvpp.customers.path.personal_data}")
     public String showNewCustomerPersonalDataPage(PersonalDataDTO personalDataDTO, Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_personal_data";
     }
@@ -188,6 +193,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.passport}")
     public String showPassportPage(PassportDTO passportDTO, Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         setPassportPageModel(model);
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_passport_page";
@@ -210,6 +218,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.address}")
     public String showAddressPage(AddressDTO addressDTO, Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_address_page";
     }
@@ -227,6 +238,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.login}")
     public String showLoginDataPage(LoginDataDTO loginDataDTO, Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("dataSubmitted", false);
         return templateFolder + "new_login_page";
     }
@@ -243,6 +257,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.overview}")
     public String showOverviewPage(Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
         return templateFolder + "overview_page";
     }
@@ -286,6 +303,7 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.personal_data.edit}")
     public String showUpdateForm(@PathVariable("id") long id, @RequestParam(required = false) Boolean back, Model model, PersonalDataDTO personalDataDTO) {
+        model.addAttribute("processProgress", true);
         model.addAttribute("personalDataDTO", sessionScopedCustomerDTO.getPersonalDataDTO());
         CustomerView customerView = new CustomerView(customersService.getCustomer(id));
         sessionScopedCustomerView.setCustomerViewFields(customerView);
@@ -308,6 +326,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.passport.edit}")
     public String showUpdatePassportPage(@PathVariable("id") long id, Model model, PassportDTO passportDTO) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         setPassportPageModel(model);
         model.addAttribute("passportDTO", sessionScopedCustomerDTO.getPassportDTO());
         model.addAttribute("customerView", sessionScopedCustomerView);
@@ -333,6 +354,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.address.edit}")
     public String showUpdateAddressForm(@PathVariable("id") long id, Model model, AddressDTO addressDTO) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("customerView", sessionScopedCustomerView);
         model.addAttribute("addressDTO", sessionScopedCustomerDTO.getAddressDTO());
         return templateFolder + "edit_address_page";
@@ -356,6 +380,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.login.edit}")
     public String showEditLoginDataPage(@PathVariable("id") long id, LoginDataDTO loginDataDTO, Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("customerView", sessionScopedCustomerView);
         model.addAttribute("loginDataDTO", sessionScopedCustomerDTO.getLoginDataDTO());
         return templateFolder + "edit_login_page";
@@ -374,6 +401,9 @@ public class CustomersPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.customers.path.overview.edit}")
     public String showOverviewPage(@PathVariable("id") long id, Model model) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
+            return "redirect:" + controllerPath;
+        }
         model.addAttribute("customerView", new CustomerView(sessionScopedCustomerDTO));
         return templateFolder + "edit_overview_page";
     }

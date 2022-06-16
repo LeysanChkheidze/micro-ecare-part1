@@ -128,24 +128,10 @@ public class ContractsPageTVPPController {
     }
 
 
-    //TODO: move to some util class and use in all controllers
-    private Boolean legalProcessEntry(Model model) {
-        if (model.containsAttribute("processProgress")) {
-            if (model.getAttribute("processProgress") != null) {
-                try {
-                    return (Boolean) model.getAttribute("processProgress");
-                } catch (NullPointerException | ClassCastException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
 
     @GetMapping("${endpoints.tvpp.contracts.path.customer}")
     public String showContractCustomerPage(ContractCustomerDTO contractCustomerDTO, Model model) {
-        if (!legalProcessEntry(model)) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
             return "redirect:" + controllerPath;
         }
 
@@ -167,7 +153,7 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.tariff_number}")
     public String showTariffAndNumberPage(TariffAndNumberDTO tariffAndNumberDTO, Model model) {
-        if (!legalProcessEntry(model)) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
             return "redirect:" + controllerPath;
         }
         model.addAttribute("dataSubmitted", false);
@@ -195,7 +181,7 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.options}")
     public String showContractOptionsPage(OptionListDTO optionListDTO, Model model) {
-        if (!legalProcessEntry(model)) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
             return "redirect:" + controllerPath;
         }
         model.addAttribute("allOptions", optionsService.getAllOptionViews());
@@ -218,7 +204,7 @@ public class ContractsPageTVPPController {
 
     @GetMapping("${endpoints.tvpp.contracts.path.overview}")
     public String showContractOverviewPage(Model model) {
-        if (!legalProcessEntry(model)) {
+        if (!commonEntityService.isLegalProcessEntry(model)) {
             return "redirect:" + controllerPath;
         }
         ContractView contractView = contractsService.getContractViewFromDTO(sessionScopedContractDTO);
