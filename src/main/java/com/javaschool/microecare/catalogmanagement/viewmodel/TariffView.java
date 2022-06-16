@@ -23,6 +23,7 @@ public class TariffView implements Comparable<TariffView> {
         this.compatibleOptionViews = resolveCompatibleOptionViews(tariff.getCompatibleOptions());
     }
 
+
     private SortedSet<ShortOptionView> resolveCompatibleOptionViews(Set<Option> compatibleOptions) {
         if (compatibleOptions == null || compatibleOptions.size() == 0) {
             return Collections.emptySortedSet();

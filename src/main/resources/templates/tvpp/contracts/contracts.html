@@ -17,6 +17,11 @@
     <div th:replace="tvpp/fragments/modal_confirmation_fragments.html :: confirmationModalFragment"></div>
 </div>
 
+<div th:if="${viewContractDetails == true}">
+    <div th:replace="tvpp/contracts/contract_details.html :: contract_details_modal"></div>
+    <div th:replace="tvpp/customers/contract_details.html :: contract_details_script"></div>
+</div>
+
 <div th:if="${contracts.empty}">
     <h2>No contracts yet!</h2>
 </div>
@@ -30,7 +35,7 @@
             <th>Phone Number</th>
             <th>Tariff</th>
             <th>Options</th>
-            <th sec:authorize="hasRole('ROLE_ADMIN')">View details</th>
+            <th>View details</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
             <th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
         </tr>
@@ -40,14 +45,22 @@
             <td th:text="${contract.id}"></td>
             <td th:text="${contract.customerView.id + ' ' + contract.customerView.personalDataView.firstName + ' ' + contract.customerView.personalDataView.lastName}"></td>
             <td th:text="${contract.numberView}"></td>
-            <td th:text="${contract.tariffName}"></td>
+            <td th:text="${contract.tariffView.tariffName}"></td>
             <td>
                 <ul>
-                    <li th:each="optionName : ${contract.optionNames}" th:text="${optionName}"></li>
+                    <li th:each="optionView : ${contract.optionViews}" th:text="${optionView.optionName}"></li>
                 </ul>
             </td>
-            <td sec:authorize="hasRole('ROLE_ADMIN')">
-                <a th:href="@{${pathView}(id=${contract.id})}">Details</a>
+            <td>
+                <button type="button"
+                        class="btn btn-primary"
+                        data-mdb-toggle="modal"
+                        data-mdb-target="#contractDetails"
+                        th:id="details_ + ${contract.id}"
+                        th:onclick="'location.href = \'' + @{${pathView}(id=${contract.id})} + '\''">
+                    Details
+                </button>
+                <!--a th:href="@{${pathView}(id=${contract.id})}">Details</a-->
             </td>
             <td>Edit link</td>
             <td sec:authorize="hasRole('ROLE_ADMIN')">

@@ -20,6 +20,7 @@ import com.javaschool.microecare.contractmanagement.viewmodel.MobileNumberView;
 import com.javaschool.microecare.customermanagement.dao.Customer;
 import com.javaschool.microecare.customermanagement.dto.CustomerDTO;
 import com.javaschool.microecare.customermanagement.service.CustomersService;
+import com.javaschool.microecare.customermanagement.viewmodel.CustomerView;
 import com.javaschool.microecare.utils.EntityActions;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +65,7 @@ public class ContractsPageTVPPController {
     private EntityActions action;
     private boolean viewDetails = false;
     private String errorMessage;
+    private ContractView displayedContract;
 
 
     private final ContractsService contractsService;
@@ -153,8 +155,6 @@ public class ContractsPageTVPPController {
     public String showTariffAndNumberPage(TariffAndNumberDTO tariffAndNumberDTO, Model model) {
         model.addAttribute("dataSubmitted", false);
         int randomNumber = mobileNumbersService.getRandomNumber();
-        MobileNumber mobileNumber = new MobileNumber(randomNumber);
-        //todo: проверить что конструктор работает:
         model.addAttribute("mobileNumberView", new MobileNumberView(randomNumber));
         model.addAttribute("randomMobileNumber", randomNumber);
         model.addAttribute("allTariffs", tariffsService.getAllTariffViews());
@@ -205,8 +205,8 @@ public class ContractsPageTVPPController {
         model.addAttribute("customerFirstName", contractView.getCustomerView().getPersonalDataView().getFirstName());
         model.addAttribute("customerLastName", contractView.getCustomerView().getPersonalDataView().getLastName());
         model.addAttribute("customerPersonalData", contractView.getCustomerView().getPersonalDataView());
-        model.addAttribute("tariffName", contractView.getTariffName());
-        model.addAttribute("optionNames", contractView.getOptionNames());
+        model.addAttribute("tariffName", contractView.getTariffView().getTariffName());
+        model.addAttribute("optionNames", contractsService.getContractOptionNames(contractView));
         model.addAttribute("mobileNumberView", contractView.getNumberView());
 
         return templateFolder + "contract_overview";
@@ -245,18 +245,33 @@ public class ContractsPageTVPPController {
 
     @GetMapping("/{id}")
     public String showDetails(@PathVariable("id") int id, Model model) {
+        action = EntityActions.READ;
+
         Contract contract = contractsService.getContract(id);
-        ContractView contractView = new ContractView(contract);
+        displayedContract = new ContractView(contract);
         TariffView tariffView = new TariffView(contract.getTariff());
         Set<String> optionViews = optionsService.getOptionDescriptions(contract.getOptions());
         model.addAttribute("id", id);
-        model.addAttribute("customerData", contractView.getCustomerView());
-        model.addAttribute("mobileNumber", contractView.getNumberView());
+        model.addAttribute("customerData", displayedContract.getCustomerView());
+        model.addAttribute("mobileNumber", displayedContract.getNumberView());
         model.addAttribute("tariffView", tariffView.getShortTariffView());
         model.addAttribute("optionViews", optionViews);
 
+        viewDetails = true;
 
-        return templateFolder + "contract_details";
+        return "redirect:" + controllerPath;
     }
+/*
+    @GetMapping("/{id}")
+    public String getCustomerDetails(@PathVariable("id") int id, Model model) {
+        action = EntityActions.READ;
+
+
+        Customer customer = customersService.getCustomer(id);
+        displayedCustomer = new CustomerView(customer);
+        customersMobileNumbers = contractsService.getMobileNumbersOfCustomer(customer);
+        viewDetails = true;
+        return "redirect:" + controllerPath;
+    }*/
 
 }

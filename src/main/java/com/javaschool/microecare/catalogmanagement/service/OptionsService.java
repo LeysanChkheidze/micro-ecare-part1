@@ -106,6 +106,16 @@ public class OptionsService {
                 .collect(Collectors.toSet());
     }
 
+    public Set<OptionView> getViewsByIDs(Set<Long> optionIDs) {
+        if (optionIDs == null || optionIDs.size() == 0) {
+            return Collections.emptySet();
+        }
+        return optionIDs.stream()
+                .map(id -> getOption(id))
+                .map(OptionView::new)
+                .collect(Collectors.toSet());
+    }
+
     public Set<String> getOptionDescriptions(Set<Option> options) {
         if (options == null || options.size() == 0) {
             return Collections.emptySet();

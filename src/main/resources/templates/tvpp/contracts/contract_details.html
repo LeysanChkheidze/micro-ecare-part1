@@ -7,13 +7,9 @@
     <div th:replace="tvpp/fragments/modal_error_fragments.html :: errorModalScript"></div>
 </head>
 <body>
-<div th:replace="tvpp/fragments/general_fragments.html :: stickyHeader"></div>
-<br>
-<br>
-<br>
-<div class="container">
-    <h1 class="mb-3">Contract Details</h1>
 
+<!--div class="container">
+    <h1 class="mb-3">Contract Details</h1>
     <hr>
 
     <section id="number">
@@ -80,6 +76,86 @@
 
 
     <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+
+</div-->
+
+<div th:fragment="contract_details_modal" class="modal show" tabindex="-1" id="contractDetails" aria-modal="true"
+     role="dialog" style="display: block;">
+    <h5 class="mb-3">Contract Details</h5>
+    <hr>
+
+    <section id="number">
+        <div>
+            <h5 class="card-title">Contract data</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Contract ID</dt>
+                <dd class="col-sm-9" th:text="${id}"></dd>
+                <dt class="col-sm-3">Mobile Number</dt>
+                <dd class="col-sm-9" th:text="${mobileNumber}"></dd>
+            </dl>
+        </div>
+    </section>
+    <hr>
+    <section id="customer">
+        <div>
+            <h5 class="card-title">Customer</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Customer ID</dt>
+                <!--dd class="col-sm-9" th:text="${customerData.id}"></dd-->
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9"
+                    th:text="${customerData.personalDataView.firstName + ' ' + customerData.personalDataView.lastName}"></dd>
+                <dt class="col-sm-3">Birthday</dt>
+                <dd class="col-sm-9" th:text="${customerData.personalDataView.birthday}"></dd>
+                <dt class="col-sm-3">Passport data</dt>
+                <dd class="col-sm-9" th:text="${customerData.passportView}"></dd>
+                <dt class="col-sm-3">Address</dt>
+                <dd class="col-sm-9" th:text="${customerData.addressView}"></dd>
+
+            </dl>
+        </div>
+    </section>
+    <hr>
+
+    <section id="tariff">
+        <div>
+            <h5 class="card-title">Tariff </h5>
+            <dl class="row">
+                <dt class="col-sm-3">Tariff description</dt>
+                <dd class="col-sm-9" th:text="${tariffView}"></dd>
+            </dl>
+        </div>
+    </section>
+
+    <hr>
+    <section id="login">
+        <div>
+            <h5 class="card-title">Options </h5>
+            <dl class="row">
+                <dt class="col-sm-3">Contract Options</dt>
+                <dd class="col-sm-9">
+                    <ul>
+                        <li th:each="option : ${optionViews}" th:text="${option}"></li>
+                    </ul>
+                </dd>
+            </dl>
+
+        </div>
+    </section>
+
+    <hr>
+    <a class="btn btn-primary" th:href=@{${controllerPath}} role="button">Cancel</a>
+
+
+    <div th:replace="tvpp/fragments/general_fragments.html :: formOutlineBorderScript"></div>
+
+
 </div>
+
+<script type="text/javascript" th:fragment="contract_details_script">
+    $(window).on('load', function () {
+        $('#contractDetails').modal('show');
+    });
+</script>
 </body>
 </html>

@@ -4,6 +4,8 @@ import com.javaschool.microecare.catalogmanagement.dao.Option;
 import com.javaschool.microecare.catalogmanagement.dao.Tariff;
 import com.javaschool.microecare.catalogmanagement.service.OptionsService;
 import com.javaschool.microecare.catalogmanagement.service.TariffsService;
+import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
+import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.commonentitymanagement.dao.EntityNotFoundInDBException;
 import com.javaschool.microecare.commonentitymanagement.service.CommonEntityService;
 import com.javaschool.microecare.contractmanagement.dao.Contract;
@@ -104,9 +106,11 @@ public class ContractsService {
         MobileNumber mobileNumber = new MobileNumber(contractDTO.getMobileNumber());
         contractView.setNumberView(new MobileNumberView(mobileNumber));
         String tariffName = tariffsService.getTariff(contractDTO.getTariffID()).getTariffName();
-        contractView.setTariffName(tariffName);
-        Set<String> optionNames = optionsService.getOptionNames(contractDTO.getOptionIDs());
-        contractView.setOptionNames(optionNames);
+        //contractView.setTariffName(tariffName);
+        contractView.setTariffView(tariffsService.getTariffViewFromTariffID(contractDTO.getTariffID()));
+        contractView.setOptionViews(optionsService.getViewsByIDs(contractDTO.getOptionIDs()));
+       /* Set<String> optionNames = optionsService.getOptionNames(contractDTO.getOptionIDs());
+        contractView.setOptionNames(optionNames);*/
         return contractView;
     }
 
@@ -122,9 +126,15 @@ public class ContractsService {
     private List<ContractView> getContractsWithOption(Option option) {
         List<ContractView> contractsWithOption = new ArrayList<>();
         for (ContractView contractView : getAllContractViews()) {
-            if (contractView.getOptionNames().contains(option.getOptionName())) {
-                contractsWithOption.add(contractView);
+            for (OptionView optionView : contractView.getOptionViews()) {
+                if (optionView.getOptionName().equals(option.getOptionName())) {
+                    contractsWithOption.add(contractView);
+                }
             }
+
+            /*if (contractView.getOptionNames().contains(option.getOptionName())) {
+                contractsWithOption.add(contractView);
+            }*/
         }
         return contractsWithOption;
     }
@@ -141,7 +151,8 @@ public class ContractsService {
     private List<ContractView> getContractsWithTariff(Tariff tariff) {
         List<ContractView> contractsWithOption = new ArrayList<>();
         for (ContractView contractView : getAllContractViews()) {
-            if (contractView.getTariffName().equals(tariff.getTariffName())) {
+            if (contractView.getTariffView().getTariffName().equals(tariff.getTariffName())) {
+           // if (contractView.getTariffName().equals(tariff.getTariffName())) {
                 contractsWithOption.add(contractView);
             }
         }
@@ -165,6 +176,13 @@ public class ContractsService {
                 .map(c -> new MobileNumberView(c.getPhoneNumber()))
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    public Set<String> getContractOptionNames(ContractView contractView) {
+        return contractView.getOptionViews()
+                .stream()
+                .map(v -> v.getOptionName())
+                .collect(Collectors.toSet());
     }
 
     /*public int getNumberOfContractsWithTariff(long tariffID) {

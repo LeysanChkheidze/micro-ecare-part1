@@ -160,5 +160,10 @@ public class TariffsService {
                 .collect(Collectors.toSet());
     }
 
+    public TariffView getTariffViewFromTariffID(long tariffID) {
+        Tariff tariff = getTariff(tariffID);
+        return new TariffView(tariff);
+    }
+
 
 }

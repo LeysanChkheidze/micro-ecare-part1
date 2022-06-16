@@ -1,6 +1,7 @@
 package com.javaschool.microecare.contractmanagement.viewmodel;
 
 import com.javaschool.microecare.catalogmanagement.dao.Option;
+import com.javaschool.microecare.catalogmanagement.viewmodel.OptionView;
 import com.javaschool.microecare.catalogmanagement.viewmodel.TariffView;
 import com.javaschool.microecare.contractmanagement.dao.Contract;
 import com.javaschool.microecare.contractmanagement.dao.MobileNumber;
@@ -23,20 +24,42 @@ public class ContractView implements Comparable<ContractView> {
     private long id;
     private CustomerView customerView;
     private MobileNumberView numberView;
-    private String tariffName;
-    private Set<String> optionNames;
+    private TariffView tariffView;
+    private Set<OptionView> optionViews;
+   // private String tariffName;
+   // private Set<String> optionNames;
 
     public ContractView() {
+    }
+
+    public TariffView getTariffView() {
+        return tariffView;
+    }
+
+    public void setTariffView(TariffView tariffView) {
+        this.tariffView = tariffView;
+    }
+
+    public Set<OptionView> getOptionViews() {
+        return optionViews;
+    }
+
+    public void setOptionViews(Set<OptionView> optionViews) {
+        this.optionViews = optionViews;
     }
 
     public ContractView(Contract contract) {
         this.id = contract.getId();
         this.customerView = new CustomerView(contract.getCustomer());
         this.numberView = new MobileNumberView(contract.getPhoneNumber());
-        this.tariffName = contract.getTariff().getTariffName();
+        this.tariffView = new TariffView(contract.getTariff());
+        this.optionViews = contract.getOptions().stream()
+                .map(OptionView::new)
+                .collect(Collectors.toSet());
+      /*  this.tariffName = contract.getTariff().getTariffName();
         this.optionNames = contract.getOptions().stream()
                 .map(Option::getOptionName)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet());*/
     }
 
     @Bean
@@ -70,7 +93,7 @@ public class ContractView implements Comparable<ContractView> {
         this.numberView = numberView;
     }
 
-    public String getTariffName() {
+    /*public String getTariffName() {
         return tariffName;
     }
 
@@ -84,7 +107,7 @@ public class ContractView implements Comparable<ContractView> {
 
     public void setOptionNames(Set<String> optionNames) {
         this.optionNames = optionNames;
-    }
+    }*/
 
     @Override
     public int compareTo(ContractView o) {
